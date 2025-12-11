@@ -1,0 +1,8 @@
+.pad {
+  padding-top: 100px;
+}
+
+.date {
+  color: #ff0000 !important;
+  -webkit-text-stroke: 1px #ffffff;
+}

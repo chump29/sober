@@ -1,0 +1,12 @@
+services:
+  sober-traker:
+    image: sober-traker
+    container_name: sober-traker
+    restart: unless-stopped
+    ports:
+      - 4321:80
+    environment:
+      - TZ=America/Chicago
+    labels:
+      - wud.watch=false
+      - dockge.imageupdates.check=false

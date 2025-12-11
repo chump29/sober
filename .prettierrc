@@ -3,5 +3,8 @@
   "bracketSameLine": true,
   "semi": false,
   "trailingComma": "none",
-  "plugins": ["prettier-plugin-organize-imports"]
+  "plugins": [
+    "prettier-plugin-organize-imports",
+    "@awmottaz/prettier-plugin-void-html"
+  ]
 }

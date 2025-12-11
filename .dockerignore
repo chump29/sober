@@ -1,0 +1,7 @@
+.prettier*
+eslint.config.ts
+node_modules
+dist
+*.md
+compose.yaml
+*.sh
