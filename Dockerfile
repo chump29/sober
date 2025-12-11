@@ -1,4 +1,4 @@
-#!/usr/bin/env -S docker build . --tag=sober-traker --file
+#!/usr/bin/env -S docker build . --tag=sober-tracker --file
 
 FROM node:25-alpine AS build
 

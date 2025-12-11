@@ -3,6 +3,18 @@
 }
 
 .date {
-  color: #ff0000 !important;
-  -webkit-text-stroke: 1px #ffffff;
+  color: #66cc00 !important;
+  text-shadow: 3px 3px 6px #000000;
+}
+
+#date {
+  color: #ccffff;
+}
+
+.count {
+  color: #66ccff !important;
+}
+
+form {
+  min-width: 200px;
 }

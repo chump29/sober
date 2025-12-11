@@ -7,16 +7,13 @@ YELLOW="\e[1;33m"
 
 clear
 
-echo -e "${RED}=> Soʙᴇᴙ Tᴙᴀᴋᴇᴙ <=${EOL}\n"
+echo -e "${RED}=> Soʙᴇᴙ Tᴙᴀcᴋᴇᴙ <=${EOL}\n"
 
 echo -e "${GREEN}=> Installing dependencies...${EOL}\n"
 pnpm install --frozen-lockfile
 
 echo -e "\n${GREEN}=> Linting...${EOL}"
 pnpm run lint
-
-#echo -e "\n${GREEN}=> Running tests...${EOL}"
-#pnpm run test
 
 echo -e "${GREEN}=> Creating image...${EOL}\n"
 ./Dockerfile
@@ -34,4 +31,4 @@ if [ "$answer" == "y" ] || [ "$answer" == "Y" ] || [ -z "$answer" ]; then
     docker compose up -d
 fi
 
-echo -e "\n\n"
+echo -e "\n"
