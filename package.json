@@ -14,14 +14,14 @@
   "dependencies": {
     "bootstrap": "^5.3.8",
     "date-fns": "^4.1.0",
-    "react": "^19.2.1",
+    "react": "^19.2.3",
     "react-bootstrap": "^2.10.10",
-    "react-dom": "^19.2.1"
+    "react-dom": "^19.2.3"
   },
   "devDependencies": {
     "@awmottaz/prettier-plugin-void-html": "^2.0.0",
     "@eslint/js": "^9.39.1",
-    "@types/node": "^25.0.0",
+    "@types/node": "^25.0.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.2",

@@ -6,7 +6,7 @@ import { formatDistanceToNowStrict } from "date-fns"
 import "./index.css"
 
 export default function Dashboard() {
-  const [date, setDate] = useState<Date | null>(null)
+  const [date, setDate] = useState<Date | null>(new Date(2025, 9, 11))
   const [seconds, setSeconds] = useState("")
   const [minutes, setMinutes] = useState("")
   const [hours, setHours] = useState("")
@@ -14,15 +14,15 @@ export default function Dashboard() {
   const [months, setMonths] = useState("")
   const [years, setYears] = useState("")
 
-  const toComma = (num: string) => {
+  function toComma(num: string) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
   }
 
-  const parse = (str: string) => {
+  function parse(str: string) {
     return str.startsWith("0") ? "" : str
   }
 
-  const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+  function handleDateChange(e: ChangeEvent<HTMLInputElement>) {
     const newDate = e.target.value
     if (newDate.length === 0) {
       setDate(null)
@@ -32,7 +32,7 @@ export default function Dashboard() {
     e.target.blur()
   }
 
-  const isValid = (): boolean => {
+  function isValid() {
     return date !== null
   }
 
@@ -102,6 +102,7 @@ export default function Dashboard() {
             type="date"
             onChange={handleDateChange}
             className="text-center fw-bold"
+            defaultValue={date?.toISOString().substring(0, 10)}
           />
         </Form.Group>
       </Form>
