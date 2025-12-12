@@ -7,7 +7,6 @@
     "build": "vite build",
     "build:dev": "vite",
     "clean": "rimraf dist node_modules",
-    "css": "css-pruner analyze --css '**/*.css' --source 'src'",
     "lint": "pnpm run lint:eslint && pnpm run lint:pretty",
     "lint:eslint": "eslint ./src --fix",
     "lint:pretty": "prettier . --write"
