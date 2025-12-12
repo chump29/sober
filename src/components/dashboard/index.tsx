@@ -5,8 +5,12 @@ import { formatDistanceToNowStrict } from "date-fns"
 
 import "./index.css"
 
+const year = import.meta.env.VITE_YEAR
+const month = import.meta.env.VITE_MONTH
+const day = import.meta.env.VITE_DAY
+
 export default function Dashboard() {
-  const [date, setDate] = useState<Date | null>(new Date(2025, 9, 11))
+  const [date, setDate] = useState<Date | null>(new Date(year, month, day))
   const [seconds, setSeconds] = useState("")
   const [minutes, setMinutes] = useState("")
   const [hours, setHours] = useState("")
@@ -42,7 +46,7 @@ export default function Dashboard() {
     }
 
     const interval = setInterval(() => {
-      setDate(new Date(2025, 9, 11))
+      setDate(new Date(year, month, day))
     }, 1000)
 
     setSeconds(

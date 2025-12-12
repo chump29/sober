@@ -4,6 +4,9 @@ interface ViteTypeOptions {
 
 interface ImportMetaEnv {
   readonly DEV: boolean
+  readonly VITE_YEAR: number
+  readonly VITE_MONTH: number
+  readonly VITE_DAY: number
 }
 
 interface ImportMeta {
