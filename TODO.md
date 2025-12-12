@@ -1,4 +1,0 @@
-# TODO
-
-- [ ] Database
-- [ ] Auto refresh

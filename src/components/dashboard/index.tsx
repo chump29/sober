@@ -40,6 +40,11 @@ export default function Dashboard() {
     if (!date) {
       return
     }
+
+    const interval = setInterval(() => {
+      setDate(new Date(2025, 9, 11))
+    }, 1000)
+
     setSeconds(
       toComma(
         formatDistanceToNowStrict(date as Date, {
@@ -88,6 +93,8 @@ export default function Dashboard() {
         })
       )
     )
+
+    return () => clearInterval(interval)
   }, [date])
 
   return (
@@ -103,6 +110,7 @@ export default function Dashboard() {
             onChange={handleDateChange}
             className="text-center fw-bold"
             defaultValue={date?.toISOString().substring(0, 10)}
+            title="Sober since"
           />
         </Form.Group>
       </Form>
