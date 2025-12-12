@@ -7,20 +7,22 @@
     "build": "vite build",
     "build:dev": "vite",
     "clean": "rimraf dist node_modules",
+    "css": "css-pruner analyze --css '**/*.css' --source 'src'",
     "lint": "pnpm run lint:eslint && pnpm run lint:pretty",
     "lint:eslint": "eslint ./src --fix",
     "lint:pretty": "prettier . --write"
   },
   "dependencies": {
-    "bootstrap": "^5.3.8",
     "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "react": "^19.2.3",
-    "react-bootstrap": "^2.10.10",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "@awmottaz/prettier-plugin-void-html": "^2.0.0",
     "@eslint/js": "^9.39.1",
+    "@tailwindcss/vite": "^4.1.18",
     "@types/node": "^25.0.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",

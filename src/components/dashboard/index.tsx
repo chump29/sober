@@ -1,13 +1,13 @@
 import { useEffect, useState, type ChangeEvent } from "react"
-import Form from "react-bootstrap/Form"
 
 import { formatDistanceToNowStrict } from "date-fns"
-
-import "./index.css"
+import { toZonedTime } from "date-fns-tz"
 
 const year = import.meta.env.VITE_YEAR
 const month = import.meta.env.VITE_MONTH
 const day = import.meta.env.VITE_DAY
+
+const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 export default function Dashboard() {
   const [date, setDate] = useState<Date | null>(new Date(year, month, day))
@@ -31,7 +31,7 @@ export default function Dashboard() {
     if (newDate.length === 0) {
       setDate(null)
     } else {
-      setDate(new Date(newDate))
+      setDate(new Date(toZonedTime(newDate, tz)))
     }
     e.target.blur()
   }
@@ -46,12 +46,12 @@ export default function Dashboard() {
     }
 
     const interval = setInterval(() => {
-      setDate(new Date(year, month, day))
+      setDate(new Date(date))
     }, 1000)
 
     setSeconds(
       toComma(
-        formatDistanceToNowStrict(date as Date, {
+        formatDistanceToNowStrict(date, {
           unit: "second",
           roundingMethod: "floor"
         })
@@ -59,7 +59,7 @@ export default function Dashboard() {
     )
     setMinutes(
       toComma(
-        formatDistanceToNowStrict(date as Date, {
+        formatDistanceToNowStrict(date, {
           unit: "minute",
           roundingMethod: "floor"
         })
@@ -67,7 +67,7 @@ export default function Dashboard() {
     )
     setHours(
       toComma(
-        formatDistanceToNowStrict(date as Date, {
+        formatDistanceToNowStrict(date, {
           unit: "hour",
           roundingMethod: "floor"
         })
@@ -75,7 +75,7 @@ export default function Dashboard() {
     )
     setDays(
       toComma(
-        formatDistanceToNowStrict(date as Date, {
+        formatDistanceToNowStrict(date, {
           unit: "day",
           roundingMethod: "floor"
         })
@@ -83,7 +83,7 @@ export default function Dashboard() {
     )
     setMonths(
       toComma(
-        formatDistanceToNowStrict(date as Date, {
+        formatDistanceToNowStrict(date, {
           unit: "month",
           roundingMethod: "floor"
         })
@@ -91,7 +91,7 @@ export default function Dashboard() {
     )
     setYears(
       toComma(
-        formatDistanceToNowStrict(date as Date, {
+        formatDistanceToNowStrict(date, {
           unit: "year",
           roundingMethod: "floor"
         })
@@ -103,23 +103,27 @@ export default function Dashboard() {
 
   return (
     <>
-      <Form className="container input-sm w-25">
-        <Form.Group className="text-center">
-          <Form.Label htmlFor="date" className="h2 fw-bold fst-italic pad date">
+      <div className="text-center mt-20 font-bold">
+        <form>
+          <label
+            htmlFor="date"
+            className="text-3xl italic text-[#66cc00] text-shadow-[3px_3px_6px_#000000]">
             Sober since:
-          </Form.Label>
-          <Form.Control
-            id="date"
-            type="date"
-            onChange={handleDateChange}
-            className="text-center fw-bold"
-            defaultValue={date?.toISOString().substring(0, 10)}
-            title="Sober since"
-          />
-        </Form.Group>
-      </Form>
+          </label>
+          <div>
+            <input
+              id="date"
+              type="date"
+              onChange={handleDateChange}
+              className="text-center border rounded-xl w-40 mt-2 text-[#ccffff] cursor-text"
+              defaultValue={date?.toISOString().substring(0, 10)}
+              title="Date of last drink"
+            />
+          </div>
+        </form>
+      </div>
       {isValid() ? (
-        <div className="h1 text-center pad fw-bold count">
+        <div className="text-4xl text-center font-bold mt-20 text-[#66ccff]">
           {parse(seconds)}
           <br />
           {parse(minutes)}
