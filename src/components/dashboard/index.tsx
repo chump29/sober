@@ -124,7 +124,7 @@ export default function Dashboard() {
         </form>
       </div>
       {isValid() ? (
-        <div className="text-4xl text-center font-bold mt-20 text-[#66ccff]">
+        <div className="text-4xl text-center font-bold mt-20 text-[#66ccff] mb-5">
           {seconds}
           <br />
           {parse(minutes)}
