@@ -4,7 +4,7 @@ services:
     container_name: sober-tracker
     restart: unless-stopped
     ports:
-      - 4321:80
+      - 89:80
     environment:
       - TZ=America/Chicago
     labels:
