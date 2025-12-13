@@ -118,13 +118,14 @@ export default function Dashboard() {
               className="text-center border rounded-xl w-40 mt-2 text-[#ccffff] cursor-text"
               defaultValue={date?.toISOString().substring(0, 10)}
               title="Date of last drink"
+              data-testid="date"
             />
           </div>
         </form>
       </div>
       {isValid() ? (
         <div className="text-4xl text-center font-bold mt-20 text-[#66ccff]">
-          {parse(seconds)}
+          {seconds}
           <br />
           {parse(minutes)}
           <br />

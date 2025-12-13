@@ -15,7 +15,10 @@ pnpm install --frozen-lockfile
 echo -e "\n${GREEN}=> Linting...${EOL}"
 pnpm run lint
 
-echo -e "\n${GREEN}=> Creating image...${EOL}\n"
+echo -e "\n${GREEN}=> Running tests...${EOL}"
+pnpm run test
+
+echo -e "${GREEN}=> Creating image...${EOL}\n"
 ./Dockerfile
 
 echo -e "\n${YELLOW}=> Done!${EOL}\n"
