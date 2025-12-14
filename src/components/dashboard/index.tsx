@@ -11,7 +11,9 @@ const dateNow = new Date()
 const maxDate = `${dateNow.getFullYear()}-${dateNow.getMonth() + 1}-${dateNow.getDate()}`
 
 export default function Dashboard() {
-  const [date, setDate] = useState<Date | null>(new Date(soberDate))
+  const [date, setDate] = useState<Date | null>(
+    new Date(toZonedTime(soberDate, tz))
+  )
   const [seconds, setSeconds] = useState("")
   const [minutes, setMinutes] = useState("")
   const [hours, setHours] = useState("")
@@ -47,7 +49,7 @@ export default function Dashboard() {
     }
 
     const interval = setInterval(() => {
-      setDate(new Date(date))
+      setDate(new Date(toZonedTime(date, tz)))
     }, 1000)
 
     setSeconds(
