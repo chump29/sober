@@ -3,14 +3,15 @@ import { useEffect, useState, type ChangeEvent } from "react"
 import { formatDistanceToNowStrict } from "date-fns"
 import { toZonedTime } from "date-fns-tz"
 
-const year = import.meta.env.VITE_YEAR
-const month = import.meta.env.VITE_MONTH
-const day = import.meta.env.VITE_DAY
+const soberDate = import.meta.env.VITE_DATE
 
 const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
 
+const dateNow = new Date()
+const maxDate = `${dateNow.getFullYear()}-${dateNow.getMonth() + 1}-${dateNow.getDate()}`
+
 export default function Dashboard() {
-  const [date, setDate] = useState<Date | null>(new Date(year, month, day))
+  const [date, setDate] = useState<Date | null>(new Date(soberDate))
   const [seconds, setSeconds] = useState("")
   const [minutes, setMinutes] = useState("")
   const [hours, setHours] = useState("")
@@ -119,6 +120,7 @@ export default function Dashboard() {
               defaultValue={date?.toISOString().substring(0, 10)}
               title="Date of last drink"
               data-testid="date"
+              max={maxDate}
             />
           </div>
         </form>
