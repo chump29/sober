@@ -1,10 +1,11 @@
+import yearPlugin from "@8hobbies/vite-plugin-year"
 import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react"
 import { ViteImageOptimizer } from "vite-plugin-image-optimizer"
 import { defineConfig } from "vitest/config"
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), ViteImageOptimizer()],
+  plugins: [react(), tailwindcss(), ViteImageOptimizer(), yearPlugin()],
   test: {
     environment: "jsdom",
     globals: true,

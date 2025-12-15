@@ -3,7 +3,8 @@
 FROM node:25-alpine AS build
 
 RUN npm install --global --force corepack && \
-    corepack enable pnpm
+    corepack enable pnpm && \
+    corepack use pnpm@10.26.0
 
 WORKDIR /app
 
