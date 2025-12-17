@@ -5,6 +5,7 @@ interface ViteTypeOptions {
 interface ImportMetaEnv {
   readonly DEV: boolean
   readonly VITE_DATE: string
+  readonly PACKAGE_VERSION: string
 }
 
 interface ImportMeta {

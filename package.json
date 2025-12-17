@@ -1,7 +1,11 @@
 {
   "name": "sober-tracker",
-  "private": true,
   "version": "1.0.0",
+  "description": "Sober date/time calculator",
+  "homepage": "https://github.com/chump29/sober",
+  "license": "GPL-3.0-only",
+  "author": "Chris Post",
+  "private": true,
   "type": "module",
   "scripts": {
     "build": "vite build",
@@ -27,7 +31,7 @@
     "@tailwindcss/vite": "^4.1.18",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
-    "@types/node": "^25.0.2",
+    "@types/node": "^25.0.3",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.2",
@@ -40,10 +44,11 @@
     "rimraf": "^6.1.2",
     "sharp": "^0.34.5",
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.49.0",
+    "typescript-eslint": "^8.50.0",
     "vite": "^7.3.0",
     "vite-plugin-image-optimizer": "^2.0.3",
-    "vitest": "^4.0.15"
+    "vite-plugin-package-version": "^1.1.0",
+    "vitest": "^4.0.16"
   },
   "engines": {
     "node": "~25",

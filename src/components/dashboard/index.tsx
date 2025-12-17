@@ -120,7 +120,7 @@ export default function Dashboard() {
               onChange={handleDateChange}
               className="text-center border rounded-xl w-40 mt-2 text-[#ccffff] cursor-text"
               defaultValue={date?.toISOString().substring(0, 10)}
-              title="Date of last drink"
+              title="Sober date"
               data-testid="date"
               max={maxDate}
             />
