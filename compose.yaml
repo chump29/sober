@@ -10,3 +10,12 @@ services:
     labels:
       - wud.watch=false
       - dockge.imageupdates.check=false
+      - homepage.group=Personal
+      - homepage.name=Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
+      - homepage.icon=https://sober.postfmly.com/favicon.png
+      - homepage.href=https://sober.postfmly.com/
+      - homepage.description=sober.postfmly.com
+networks: {}
+x-dockge:
+  urls:
+    - https://sober.postfmly.com
