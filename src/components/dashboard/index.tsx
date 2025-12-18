@@ -3,6 +3,8 @@ import { useEffect, useState, type ChangeEvent } from "react"
 import { formatDistanceToNowStrict } from "date-fns"
 import { toZonedTime } from "date-fns-tz"
 
+import Coin from "../coin"
+
 const soberDate = import.meta.env.VITE_DATE
 
 const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -142,6 +144,7 @@ export default function Dashboard() {
           {parse(years)}
         </div>
       ) : null}
+      <Coin months={parseInt(months)} years={parseInt(years)} />
     </>
   )
 }
