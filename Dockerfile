@@ -1,10 +1,13 @@
 #!/usr/bin/env -S docker build . --tag=sober-tracker --file
 
-FROM node:25-alpine AS build
+ARG NODE="25"
+ARG PNPM="10.26.1"
+
+FROM node:${NODE}-alpine AS build
 
 RUN npm install --global --force corepack && \
     corepack enable pnpm && \
-    corepack use pnpm@10.26.0
+    corepack use pnpm@${PNPM}}
 
 WORKDIR /app
 
