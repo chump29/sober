@@ -7,7 +7,7 @@ FROM node:${NODE}-alpine AS build
 
 RUN npm install --global --force corepack && \
     corepack enable pnpm && \
-    corepack use pnpm@${PNPM}}
+    corepack use pnpm@${PNPM}
 
 WORKDIR /app
 
