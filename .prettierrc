@@ -1,6 +1,7 @@
 {
   "arrowParens": "always",
   "bracketSameLine": true,
+  "htmlWhitespaceSensitivity": "ignore",
   "semi": false,
   "trailingComma": "none",
   "plugins": [
