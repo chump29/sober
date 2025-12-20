@@ -2,10 +2,12 @@
   "arrowParens": "always",
   "bracketSameLine": true,
   "htmlWhitespaceSensitivity": "ignore",
-  "semi": false,
-  "trailingComma": "none",
+  "jsonRecursiveSort": true,
   "plugins": [
+    "@awmottaz/prettier-plugin-void-html",
     "prettier-plugin-organize-imports",
-    "@awmottaz/prettier-plugin-void-html"
-  ]
+    "prettier-plugin-sort-json"
+  ],
+  "semi": false,
+  "trailingComma": "none"
 }
