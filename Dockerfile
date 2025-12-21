@@ -25,6 +25,8 @@ RUN apk add --no-cache tzdata && \
 
 COPY --from=build /app/dist /usr/share/nginx/html
 
+HEALTHCHECK --interval=60s CMD source /usr/share/nginx/html/healthcheck.sh
+
 EXPOSE 80
 
 ENTRYPOINT ["nginx", "-g", "daemon off;"]

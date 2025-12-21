@@ -4,4 +4,4 @@ node_modules
 dist
 *.md
 compose.yaml
-*.sh
+build.sh
