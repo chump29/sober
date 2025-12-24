@@ -1,10 +1,10 @@
 services:
   sober-tracker:
-    image: sober-tracker
     container_name: sober-tracker
+    image: sober-tracker
     restart: unless-stopped
     ports:
-      - 89:80
+      - '89:80'
     environment:
       - TZ=America/Chicago
     labels:
@@ -16,6 +16,7 @@ services:
       - homepage.href=https://sober.postfmly.com/
       - homepage.description=sober.postfmly.com
 networks: {}
+
 x-dockge:
   urls:
     - https://sober.postfmly.com

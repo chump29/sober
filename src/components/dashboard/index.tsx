@@ -5,7 +5,7 @@ import { toZonedTime } from "date-fns-tz"
 
 import Coin from "../coin"
 
-const soberDate = import.meta.env.VITE_DATE
+const soberDate = import.meta.env.VITE_SOBER_DATE
 
 const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
 
