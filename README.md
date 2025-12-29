@@ -1,35 +1,51 @@
-# ![Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ](/public/favicon.png) S&#7439;&#665;&#7431;&#7449; T&#7449;&#7424;&#7428;&#7435;&#7431;&#7449;
+# ![Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ logo](/frontend/public/sober.png) Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
 
 Choose a sober date and the date/time difference will be displayed
 
-## Development stuff
+# Compose flowchart
 
-To manually lint files:
-
-```bash
-pnpm run lint
+```mermaid
+flowchart LR
+frontend@{shape: rounded, label: "frontend"}
+frontendPort@{shape: rounded, label: "http://localhost:89"}
+backend@{shape: rounded, label: "backend (direct)"}
+backendPort@{shape: rounded, label: "http://localhost:5556"}
+frontend-->frontendPort
+backend-->backendPort
 ```
 
-To manually run tests:
+---
+
+# Development stuff
+
+### Backend:
 
 ```bash
-pnpm run test:dev # hot reloads
-# or
-pnpm run test # not interactive
+cd backend
+uv lock
+uv sync --extra dev
+python api.py &
 ```
 
-To manually build files:
+### Frontend:
 
 ```bash
-pnpm run build:dev #DEV
-# or
-pnpm run build #PROD
+cd frontend
+pnpm i
+pnpm run build:dev
 ```
 
-## Docker Stuff
+# Docker stuff
 
-To build:
+### To build images:
 
 ```bash
+# All
 ./build.sh
+
+# Backend
+cd backend && ./build.sh
+
+# Frontend
+cd frontend && ./build.sh
 ```

@@ -2,20 +2,21 @@ import { useEffect, useState, type ChangeEvent } from "react"
 
 import { formatDistanceToNowStrict } from "date-fns"
 import { toZonedTime } from "date-fns-tz"
+import Cookies from "js-cookie"
 
 import Coin from "../coin"
 
-const soberDate = import.meta.env.VITE_SOBER_DATE
-
 const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
 
-const dateNow = new Date()
-const maxDate = `${dateNow.getFullYear()}-${dateNow.getMonth() + 1}-${dateNow.getDate()}`
-
 export default function Dashboard() {
-  const [date, setDate] = useState<Date | null>(
-    new Date(toZonedTime(soberDate, tz))
-  )
+  function getNewDate(date: Date | null = null) {
+    const dateNow = date || new Date()
+    return `${dateNow.getFullYear()}-${dateNow.getMonth() + 1}-${dateNow.getDate()}`
+  }
+
+  const soberDate = Cookies.get("soberDate") || getNewDate()
+
+  const [date, setDate] = useState<Date>(new Date(toZonedTime(soberDate, tz)))
   const [seconds, setSeconds] = useState("")
   const [minutes, setMinutes] = useState("")
   const [hours, setHours] = useState("")
@@ -31,18 +32,22 @@ export default function Dashboard() {
     return str.startsWith("0") ? "" : str
   }
 
-  function handleDateChange(e: ChangeEvent<HTMLInputElement>) {
-    const newDate = e.target.value
-    if (newDate.length === 0) {
-      setDate(null)
-    } else {
-      setDate(new Date(toZonedTime(newDate, tz)))
+  function setCookie(str: string) {
+    if (Cookies.get("soberDate") !== str) {
+      Cookies.set("soberDate", str, {
+        expires: new Date().getDate() + 400,
+        sameSite: "strict",
+        secure: true
+      })
     }
-    e.target.blur()
   }
 
-  function isValid() {
-    return date !== null
+  function handleDateChange(e: ChangeEvent<HTMLInputElement>) {
+    const newDate = (e.target.value ||= getNewDate())
+    const d = new Date(toZonedTime(newDate, tz))
+    setDate(d)
+    setCookie(getNewDate(d))
+    e.target.blur()
   }
 
   useEffect(() => {
@@ -51,7 +56,9 @@ export default function Dashboard() {
     }
 
     const interval = setInterval(() => {
-      setDate(new Date(toZonedTime(date, tz)))
+      const d = new Date(toZonedTime(date, tz))
+      setDate(d)
+      setCookie(getNewDate(d))
     }, 1000)
 
     setSeconds(
@@ -124,26 +131,24 @@ export default function Dashboard() {
               defaultValue={date?.toISOString().substring(0, 10)}
               title="Sober date"
               data-testid="date"
-              max={maxDate}
+              max={getNewDate()}
             />
           </div>
         </form>
       </div>
-      {isValid() ? (
-        <div className="text-4xl text-center font-bold mt-20 text-[#66ccff] mb-5">
-          {seconds}
-          <br />
-          {parse(minutes)}
-          <br />
-          {parse(hours)}
-          <br />
-          {parse(days)}
-          <br />
-          {parse(months)}
-          <br />
-          {parse(years)}
-        </div>
-      ) : null}
+      <div className="text-4xl text-center font-bold mt-20 text-[#66ccff] mb-5">
+        {seconds}
+        <br />
+        {parse(minutes)}
+        <br />
+        {parse(hours)}
+        <br />
+        {parse(days)}
+        <br />
+        {parse(months)}
+        <br />
+        {parse(years)}
+      </div>
       <Coin months={parseInt(months)} years={parseInt(years)} />
     </>
   )

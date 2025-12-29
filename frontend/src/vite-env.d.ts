@@ -4,8 +4,8 @@ interface ViteTypeOptions {
 
 interface ImportMetaEnv {
   readonly DEV: boolean
-  readonly VITE_SOBER_DATE: string
   readonly PACKAGE_VERSION: string
+  readonly VITE_API_URL: string
 }
 
 interface ImportMeta {

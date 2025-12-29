@@ -1,4 +1,4 @@
-#!/usr/bin/env -S docker build . --tag=sober-tracker --file
+#!/usr/bin/env -S docker build . --tag=sober-frontend --file
 
 FROM node:alpine AS build
 
@@ -21,6 +21,8 @@ RUN apk add --no-cache tzdata && \
     rm -rf /usr/share/nginx/html/*
 
 COPY --from=build /app/dist /usr/share/nginx/html
+
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 HEALTHCHECK --interval=60s CMD source /usr/share/nginx/html/healthcheck.sh
 

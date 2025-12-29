@@ -1,8 +1,10 @@
 services:
-  sober-tracker:
-    container_name: sober-tracker
-    image: sober-tracker
+  sober-frontend:
+    container_name: sober-frontend
+    image: sober-frontend
     restart: unless-stopped
+    depends_on:
+      - sober-backend
     ports:
       - '89:80'
     environment:
@@ -15,6 +17,21 @@ services:
       - homepage.icon=https://sober.postfmly.com/favicon.png
       - homepage.href=https://sober.postfmly.com/
       - homepage.description=sober.postfmly.com
+      - homepage.widget.type=customapi
+      - homepage.widget.url=https://api.postfmly.com/sober
+      - homepage.widget.mappings[0].field=since
+      - homepage.widget.mappings[0].label=Since
+
+  sober-backend:
+    container_name: sober-backend
+    image: sober-backend
+    restart: unless-stopped
+    ports:
+      - '5556:5556'
+    labels:
+      - wud.watch=false
+      - dockge.imageupdates.check=false
+    stop_signal: SIGINT
 networks: {}
 
 x-dockge:
