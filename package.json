@@ -1,7 +1,7 @@
 {
-  "name": "sober-frontend",
+  "name": "sober",
   "version": "1.0.1",
-  "description": "Sober date/time calculator (Frontend)",
+  "description": "Sober date/time calculator",
   "homepage": "https://github.com/chump29/sober",
   "license": "GPL-3.0-only",
   "author": "Chris Post",

@@ -1,4 +1,4 @@
-#!/usr/bin/env -S docker build . --tag=sober-frontend --file
+#!/usr/bin/env -S docker build . --tag=sober --file
 
 FROM node:alpine AS build
 

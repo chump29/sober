@@ -1,7 +1,0 @@
-__pycache__
-.python-version
-.venv
-*.sh
-README.md
-
-!healthcheck.sh
