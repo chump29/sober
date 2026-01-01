@@ -6,6 +6,9 @@ import Dashboard from "./components/dashboard"
 document.getElementById("header")!.innerText =
   `v${import.meta.env.PACKAGE_VERSION}`
 
+document.getElementById("year")!.innerText +=
+  `-${new Date().getFullYear().toString()}`
+
 const POSTFMLY_US = "postfmly.us"
 const copyright = document.getElementById("copyright") as HTMLAnchorElement
 if (window.location.href.includes(POSTFMLY_US)) {

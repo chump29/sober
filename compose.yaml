@@ -4,7 +4,7 @@ services:
     image: sober
     restart: unless-stopped
     ports:
-      - '89:80'
+      - "89:80"
     environment:
       - TZ=America/Chicago
     labels:
