@@ -1,32 +1,44 @@
 #!/usr/bin/env -S bash -e
 
-EOL="\e[0m"
-GREEN="\e[1;32m"
-RED="\e[1;4;31m"
-YELLOW="\e[1;33m"
+_red="\e[4;91m"
+_green="\e[4;92m"
+_yellow="\e[4;93m"
+_nc="\e[0m"
+_title=✨
+_task="🛠️ "
+_lint=🔍
+_test=🧪
+_image=📦
+_done="✔️ "
 
 clear
 
-echo -e "${RED}=> Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ <=${EOL}\n"
+echo -e "${_title} ${_red}Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ${_nc} ${_title}\n\n"
 
-echo -e "${GREEN}=> Installing dependencies...${EOL}\n"
+echo -e "${_task} ${_green}Installing dependencies${_nc}:\n"
 pnpm install --frozen-lockfile
 
-echo -e "\n${GREEN}=> Linting...${EOL}"
+echo -e "\n${_lint} ${_green}Linting${_nc}:"
 pnpm run lint
 
-echo -e "\n${GREEN}=> Running tests...${EOL}"
+echo -e "\n${_test} ${_green}Testing${_nc}:"
 pnpm run test
 
-echo -e "${GREEN}=> Creating image...${EOL}\n"
+echo -e "${_image} ${_green}Creating image${_nc}:\n"
 docker build --tag=sober .
 
-echo -e "\n${YELLOW}=> Done!${EOL}\n"
+echo -e "\n${_done} ${_yellow}Done${_nc}!\n"
 
-unset EOL
-unset GREEN
-unset RED
-unset YELLOW
+unset _red
+unset _green
+unset _yellow
+unset _nc
+unset _title
+unset _task
+unset _lint
+unset _test
+unset _image
+unset _done
 
 # shellcheck disable=SC2162
 read -p "Run Docker Compose (Y/n)? " answer

@@ -2,6 +2,10 @@ import { render, screen } from "@testing-library/react"
 
 import Dashboard from "."
 
+Object.defineProperty(window.document, "cookie", {
+  value: "soberDate=2025-11-10"
+})
+
 beforeEach(() => {
   render(<Dashboard />)
 })
