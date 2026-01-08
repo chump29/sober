@@ -1,8 +1,9 @@
 import { useEffect, useState, type ChangeEvent } from "react"
 
-import { formatDistanceToNowStrict } from "date-fns"
+import { daysToWeeks, formatDistanceToNowStrict } from "date-fns"
 import { toZonedTime } from "date-fns-tz"
 import Cookies from "js-cookie"
+import pluralize from "pluralize"
 
 import Coin from "../coin"
 
@@ -11,7 +12,7 @@ const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
 export default function Dashboard() {
   function getNewDate(date: Date | null = null) {
     const dateNow = date || new Date()
-    return `${dateNow.getFullYear()}-${dateNow.getMonth() + 1}-${dateNow.getDate()}`
+    return `${dateNow.getFullYear()}-${(dateNow.getMonth() + 1).toString().padStart(2, "0")}-${dateNow.getDate().toString().padStart(2, "0")}`
   }
 
   const soberDate = Cookies.get("soberDate") || getNewDate()
@@ -21,6 +22,7 @@ export default function Dashboard() {
   const [minutes, setMinutes] = useState("")
   const [hours, setHours] = useState("")
   const [days, setDays] = useState("")
+  const [weeks, setWeeks] = useState("")
   const [months, setMonths] = useState("")
   const [years, setYears] = useState("")
 
@@ -85,14 +87,12 @@ export default function Dashboard() {
         })
       )
     )
-    setDays(
-      toComma(
-        formatDistanceToNowStrict(date, {
-          unit: "day",
-          roundingMethod: "floor"
-        })
-      )
-    )
+    const d = formatDistanceToNowStrict(date, {
+      unit: "day",
+      roundingMethod: "floor"
+    })
+    setDays(toComma(d))
+    setWeeks(toComma(pluralize("week", daysToWeeks(parseInt(d)), true)))
     setMonths(
       toComma(
         formatDistanceToNowStrict(date, {
@@ -144,6 +144,8 @@ export default function Dashboard() {
         {parse(hours)}
         <br />
         {parse(days)}
+        <br />
+        {parse(weeks)}
         <br />
         {parse(months)}
         <br />

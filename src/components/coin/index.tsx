@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react"
 
+const MAX_YEARS = 5
+
 export default function Coin({
   months,
   years
@@ -38,15 +40,9 @@ export default function Coin({
 
   return (
     <>
-      {months > 0 ? (
+      {months > 0 && years <= MAX_YEARS ? (
         <div>
-          {months > 0 ? (
-            <img
-              src={url}
-              alt={txt}
-              className="mx-auto w-[200px] mt-10 mb-10"
-            />
-          ) : null}
+          <img src={url} alt={txt} className="mx-auto w-[200px] mt-10 mb-10" />
         </div>
       ) : null}
     </>
