@@ -3,7 +3,6 @@ import "vitest-localstorage-mock"
 
 import Dashboard from "."
 
-
 beforeAll(() => {
   localStorage.setItem("soberDate", "2025-10-11")
 })
