@@ -12,7 +12,7 @@ services:
       - dockge.imageupdates.check=false
       - homepage.group=Personal
       - homepage.name=Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
-      - homepage.icon=https://sober.postfmly.com/favicon.png
+      - homepage.icon=https://sober.postfmly.com/sober.png
       - homepage.href=https://sober.postfmly.com/
       - homepage.description=sober.postfmly.com
 networks: {}

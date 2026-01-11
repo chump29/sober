@@ -1,9 +1,9 @@
 .prettier*
-eslint.config.ts
-node_modules
-dist
 *.md
-compose.yaml
 *.sh
+compose.yaml
+dist/
+eslint.config.ts
+node_modules/
 
 !healthcheck.sh
