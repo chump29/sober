@@ -1,4 +1,4 @@
-# <img src="./public/sober.png" title="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ logo" height="64" /> Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
+# <img src="./public/sober.png" title="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" alt="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ logo" width="64" height="64" /> Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
 
 - Choose a sober date and the date/time difference will be displayed
 
