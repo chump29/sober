@@ -2,7 +2,6 @@ import { useEffect, useState, type ChangeEvent } from "react"
 
 import { daysToWeeks, formatDistanceToNowStrict } from "date-fns"
 import { toZonedTime } from "date-fns-tz"
-import Cookies from "js-cookie"
 import pluralize from "pluralize"
 
 import Coin from "../coin"
@@ -15,7 +14,7 @@ export default function Dashboard() {
     return `${dateNow.getFullYear()}-${(dateNow.getMonth() + 1).toString().padStart(2, "0")}-${dateNow.getDate().toString().padStart(2, "0")}`
   }
 
-  const soberDate = Cookies.get("soberDate") || getNewDate()
+  const soberDate = localStorage.getItem("soberDate") || getNewDate()
 
   const [date, setDate] = useState<Date>(new Date(toZonedTime(soberDate, tz)))
   const [seconds, setSeconds] = useState("")
@@ -34,13 +33,9 @@ export default function Dashboard() {
     return str.startsWith("0") ? "" : str
   }
 
-  function setCookie(str: string) {
-    if (Cookies.get("soberDate") !== str) {
-      Cookies.set("soberDate", str, {
-        expires: new Date().getDate() + 400,
-        sameSite: "strict",
-        secure: true
-      })
+  function setSoberDate(str: string) {
+    if (localStorage.getItem("soberDate") !== str) {
+      localStorage.setItem("soberDate", str)
     }
   }
 
@@ -48,7 +43,7 @@ export default function Dashboard() {
     const newDate = (e.target.value ||= getNewDate())
     const d = new Date(toZonedTime(newDate, tz))
     setDate(d)
-    setCookie(getNewDate(d))
+    setSoberDate(getNewDate(d))
     e.target.blur()
   }
 
@@ -60,7 +55,7 @@ export default function Dashboard() {
     const interval = setInterval(() => {
       const d = new Date(toZonedTime(date, tz))
       setDate(d)
-      setCookie(getNewDate(d))
+      setSoberDate(getNewDate(d))
     }, 1000)
 
     setSeconds(

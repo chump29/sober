@@ -1,6 +1,6 @@
 {
   "name": "sober",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Sober date/time calculator",
   "homepage": "https://github.com/chump29/sober",
   "license": "GPL-3.0-only",
@@ -25,7 +25,6 @@
   "dependencies": {
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
-    "js-cookie": "^3.0.5",
     "pluralize": "^8.0.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
@@ -37,10 +36,9 @@
     "@tailwindcss/vite": "^4.1.18",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
-    "@types/js-cookie": "^3.0.6",
-    "@types/node": "^25.0.5",
+    "@types/node": "^25.0.6",
     "@types/pluralize": "^0.0.33",
-    "@types/react": "^19.2.7",
+    "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.2",
     "eslint": "^9.39.2",
@@ -57,7 +55,8 @@
     "vite": "^7.3.1",
     "vite-plugin-image-optimizer": "^2.0.3",
     "vite-plugin-package-version": "^1.1.0",
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.16",
+    "vitest-localstorage-mock": "^0.1.2"
   },
   "engineStrict": true,
   "engines": {

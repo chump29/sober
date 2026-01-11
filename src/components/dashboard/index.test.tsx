@@ -1,9 +1,15 @@
 import { render, screen } from "@testing-library/react"
+import "vitest-localstorage-mock"
 
 import Dashboard from "."
 
-Object.defineProperty(window.document, "cookie", {
-  value: "soberDate=2025-11-10"
+
+beforeAll(() => {
+  localStorage.setItem("soberDate", "2025-10-11")
+})
+
+afterAll(() => {
+  localStorage.removeItem("soberDate")
 })
 
 beforeEach(() => {
