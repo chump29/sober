@@ -13,7 +13,7 @@ _done="✔️ "
 
 clear
 
-echo -e "${_title} ${_red}Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ${_nc} ${_title}\n\n"
+echo -e "${_title} ${_red}Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ${_nc} ${_title}\n"
 
 echo -e "${_task} ${_green}Installing dependencies${_nc}:\n"
 pnpm install --frozen-lockfile
