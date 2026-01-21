@@ -102,6 +102,9 @@ importers:
       vite-plugin-package-version:
         specifier: ^1.1.0
         version: 1.1.0(vite@7.3.1(@types/node@25.0.9)(jiti@2.6.1)(lightningcss@1.30.2))
+      vite-plugin-simple-html:
+        specifier: ^1.1.0
+        version: 1.1.0(vite@7.3.1(@types/node@25.0.9)(jiti@2.6.1)(lightningcss@1.30.2))
       vitest:
         specifier: ^4.0.17
         version: 4.0.17(@types/node@25.0.9)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)
@@ -789,6 +792,73 @@ packages:
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+
+  '@swc/counter@0.1.3':
+    resolution: {integrity: sha512-e2BR4lsJkkRlKZ/qCHPw9ZaSxc0MVUd7gtbtaB7aMvHeJVYe8sOB8DBZkP2DtISHGSku9sCK6T6cnY0CtXrOCQ==}
+
+  '@swc/html-darwin-arm64@1.15.10':
+    resolution: {integrity: sha512-WmQiAZe3TSbIvdPKljsFUwGqj3j53CSNxNcJcLhbTPVCU8Z0QQ9cEpeyktkqGNrQWOGp5r5EorWi+nvFu4HfqQ==}
+    engines: {node: '>=10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@swc/html-darwin-x64@1.15.10':
+    resolution: {integrity: sha512-EQaa43uKUn48dOaXyY7JpA2DChFYTwdfyfFvqz+sN3LoEM1OV1QxocWoF+qHPTKEzvLUzIYH5Tm09GzJz9hWIA==}
+    engines: {node: '>=10'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@swc/html-linux-arm-gnueabihf@1.15.10':
+    resolution: {integrity: sha512-UymYHc37ejcKubESPGP5LlGqmx6vJnVs5CYCUbdpblar1XN1oW0SkxKOZVjURYCVAaB3XxfCTCptEol04uvhiw==}
+    engines: {node: '>=10'}
+    cpu: [arm]
+    os: [linux]
+
+  '@swc/html-linux-arm64-gnu@1.15.10':
+    resolution: {integrity: sha512-o9FzVmnpyD0Z4fzUbIrFz+1JZ72ZFaij+tZ4ZPtIWgA0ymyqlplPOHAbRsbt5/YoLoAx0wo2FN/sYsMdPv3mcA==}
+    engines: {node: '>=10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@swc/html-linux-arm64-musl@1.15.10':
+    resolution: {integrity: sha512-3bBKC6VbOCFH4zJECWmp6jpuoOTcRIaC33zXLJta/GL9bT4AL3PAP0TdSvjNJ4fCAnOJFmbhawlCIOJJ5mTl/g==}
+    engines: {node: '>=10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@swc/html-linux-x64-gnu@1.15.10':
+    resolution: {integrity: sha512-4Bb77cpu8fZ38+PqfctHzO3JuJ74B8HKG3/NaqGUlJbwQOiHy0RSAowAp9njyMZ1EzbEkpC9XXju75RLI1KdLA==}
+    engines: {node: '>=10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@swc/html-linux-x64-musl@1.15.10':
+    resolution: {integrity: sha512-amYNWp667VbuV+4cAJB0RWYwsBPyh+7WtV0CDpD0ATgB4UvkOWuencFqUYXKC9xczFriani6OqdMa1d2Bffbog==}
+    engines: {node: '>=10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@swc/html-win32-arm64-msvc@1.15.10':
+    resolution: {integrity: sha512-FRtTz1akAUfS1PH1WsILwBuRAgy/4E/d++il+dZAGkaAP5UaNUXPduNfLaJhT/mR3rVJaIqfAmAJEc1ts0u0lA==}
+    engines: {node: '>=10'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@swc/html-win32-ia32-msvc@1.15.10':
+    resolution: {integrity: sha512-eRscB+1U3WvxKyKrbh7aBioxNB/G3t+NP/RoTEAfSmKfIMuRTR3YX6FrPSU/7SFjv2lgswjRt5MGX7Ygjh5xuw==}
+    engines: {node: '>=10'}
+    cpu: [ia32]
+    os: [win32]
+
+  '@swc/html-win32-x64-msvc@1.15.10':
+    resolution: {integrity: sha512-UnKP25R8n3rxl3o0/04FK0iezi9m3Yp8Qrc9nzzrjFpso/TPbJwfgE+2bGUYaX482EsBU7TBorLY2t8fWcD7/Q==}
+    engines: {node: '>=10'}
+    cpu: [x64]
+    os: [win32]
+
+  '@swc/html@1.15.10':
+    resolution: {integrity: sha512-nlsp1DcT84fQPLcdOO8InIApoD6pI2gWmZCqyCfdu9WRIXZyKv43xIFEymtFrkZgR1iE0YlQV5mrsMnY2D2kxA==}
+    engines: {node: '>=14'}
 
   '@tailwindcss/node@4.1.18':
     resolution: {integrity: sha512-DoR7U1P7iYhw16qJ49fgXUlry1t4CpXeErJHnQ44JgTSKMaZUdf17cfn5mHchfJ4KRBZRFA/Coo+MUF5+gOaCQ==}
@@ -2379,6 +2449,11 @@ packages:
     peerDependencies:
       vite: '>=2.0.0-beta.69'
 
+  vite-plugin-simple-html@1.1.0:
+    resolution: {integrity: sha512-77yBF60RKUWIkmJtKKhGTExV8eW6UvrIcrXHBWNRFfqiH4Bt8MniCeIte1Jv1ef6SkckoIsg5QFG/wafgbm6ZQ==}
+    peerDependencies:
+      vite: '>=2.3.0 <9.0.0'
+
   vite@7.3.1:
     resolution: {integrity: sha512-w+N7Hifpc3gRjZ63vYBXA56dvvRlNWRczTdmCBBa+CotUzAPf5b7YMdMR/8CQoeYE5LX3W4wj6RYTgonm1b9DA==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -3088,6 +3163,53 @@ snapshots:
       '@sinonjs/commons': 3.0.1
 
   '@standard-schema/spec@1.1.0': {}
+
+  '@swc/counter@0.1.3': {}
+
+  '@swc/html-darwin-arm64@1.15.10':
+    optional: true
+
+  '@swc/html-darwin-x64@1.15.10':
+    optional: true
+
+  '@swc/html-linux-arm-gnueabihf@1.15.10':
+    optional: true
+
+  '@swc/html-linux-arm64-gnu@1.15.10':
+    optional: true
+
+  '@swc/html-linux-arm64-musl@1.15.10':
+    optional: true
+
+  '@swc/html-linux-x64-gnu@1.15.10':
+    optional: true
+
+  '@swc/html-linux-x64-musl@1.15.10':
+    optional: true
+
+  '@swc/html-win32-arm64-msvc@1.15.10':
+    optional: true
+
+  '@swc/html-win32-ia32-msvc@1.15.10':
+    optional: true
+
+  '@swc/html-win32-x64-msvc@1.15.10':
+    optional: true
+
+  '@swc/html@1.15.10':
+    dependencies:
+      '@swc/counter': 0.1.3
+    optionalDependencies:
+      '@swc/html-darwin-arm64': 1.15.10
+      '@swc/html-darwin-x64': 1.15.10
+      '@swc/html-linux-arm-gnueabihf': 1.15.10
+      '@swc/html-linux-arm64-gnu': 1.15.10
+      '@swc/html-linux-arm64-musl': 1.15.10
+      '@swc/html-linux-x64-gnu': 1.15.10
+      '@swc/html-linux-x64-musl': 1.15.10
+      '@swc/html-win32-arm64-msvc': 1.15.10
+      '@swc/html-win32-ia32-msvc': 1.15.10
+      '@swc/html-win32-x64-msvc': 1.15.10
 
   '@tailwindcss/node@4.1.18':
     dependencies:
@@ -4935,6 +5057,11 @@ snapshots:
 
   vite-plugin-package-version@1.1.0(vite@7.3.1(@types/node@25.0.9)(jiti@2.6.1)(lightningcss@1.30.2)):
     dependencies:
+      vite: 7.3.1(@types/node@25.0.9)(jiti@2.6.1)(lightningcss@1.30.2)
+
+  vite-plugin-simple-html@1.1.0(vite@7.3.1(@types/node@25.0.9)(jiti@2.6.1)(lightningcss@1.30.2)):
+    dependencies:
+      '@swc/html': 1.15.10
       vite: 7.3.1(@types/node@25.0.9)(jiti@2.6.1)(lightningcss@1.30.2)
 
   vite@7.3.1(@types/node@25.0.9)(jiti@2.6.1)(lightningcss@1.30.2):
