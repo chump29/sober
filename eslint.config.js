@@ -23,6 +23,7 @@ export default defineConfig([
       globals: { ...globals.browser }
     },
     rules: {
+      "no-console": ["error", { allow: ["error"] }],
       "react/jsx-uses-react": "error",
       "react/jsx-uses-vars": "error"
     },
