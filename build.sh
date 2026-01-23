@@ -27,7 +27,7 @@ echo -e "\n${_test} ${_green}Testing${_nc}:"
 pnpm run test
 
 echo -e "${_image} ${_green}Creating image${_nc}:\n"
-docker build --tag=git.postfmly.com/admin/sober .
+docker image build --tag=git.postfmly.com/admin/sober .
 
 echo -e "\n${_login} ${_green}Logging in${_nc}:\n"
 docker login git.postfmly.com

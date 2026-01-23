@@ -22,7 +22,7 @@ jobs:
         with:
           run_install: false
 
-      - name: Install Node.js v${{ env.NODE_VERSION }}
+      - name: Install Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -37,6 +37,9 @@ jobs:
       - name: Testing
         run: pnpm run test
 
+      - name: Build image
+        run: docker build --tag=git.postfmly.com/admin/sober .
+
       - name: Log in
         uses: docker/login-action@v3
         with:
@@ -44,13 +47,5 @@ jobs:
           username: admin
           password: ${{ secrets.PASSWORD }}
 
-      - name: Set up Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          push: true
-          tags: admin/sober
-          secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.PASSWORD }}
+      - name: Push image
+        run: docker image push git.postfmly.com/admin/sober
