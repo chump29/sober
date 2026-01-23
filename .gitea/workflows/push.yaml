@@ -16,11 +16,13 @@ jobs:
 
       - name: Install PNPM
         uses: pnpm/action-setup@v4
+        with:
+          cache: true
 
       - name: Use Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: latest
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies
@@ -39,9 +41,6 @@ jobs:
           username: admin
           password: ${{ secrets.PASSWORD }}
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -50,3 +49,5 @@ jobs:
         with:
           push: true
           tags: admin/sober
+          secrets: |
+            GIT_AUTH_TOKEN=${{ secrets.PASSWORD }}

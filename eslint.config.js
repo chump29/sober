@@ -5,7 +5,7 @@ import globals from "globals"
 import tseslint from "typescript-eslint"
 
 export default defineConfig([
-  globalIgnores(["dist"]),
+  globalIgnores(["dist/", ".pnpm-store/"]),
   {
     files: ["**/*.{ts,tsx}"],
     plugins: {

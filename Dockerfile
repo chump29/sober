@@ -1,6 +1,8 @@
 #!/usr/bin/env -S docker build . --tag=git.postfmly.com/admin/sober --file
 
-FROM node:alpine AS build
+ARG NODE_VERSION="24"
+
+FROM node:${NODE_VERSION}-alpine AS build
 
 RUN npm install --global --force corepack && \
     corepack enable pnpm && \
