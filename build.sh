@@ -9,6 +9,8 @@ _task="🛠️ "
 _lint=🔍
 _test=🧪
 _image=📦
+_login=🔑
+_push=🤚
 _done="✔️ "
 
 clear
@@ -25,7 +27,13 @@ echo -e "\n${_test} ${_green}Testing${_nc}:"
 pnpm run test
 
 echo -e "${_image} ${_green}Creating image${_nc}:\n"
-docker build --tag=sober .
+docker build --tag=git.postfmly.com/admin/sober .
+
+echo -e "\n${_login} ${_green}Logging in${_nc}:\n"
+docker login git.postfmly.com
+
+echo -e "\n${_push} ${_green}Pushing image${_nc}:\n"
+docker image push git.postfmly.com/admin/sober
 
 echo -e "\n${_done} ${_yellow}Done${_nc}!\n"
 
@@ -38,6 +46,8 @@ unset _task
 unset _lint
 unset _test
 unset _image
+unset _login
+unset _push
 unset _done
 
 # shellcheck disable=SC2162

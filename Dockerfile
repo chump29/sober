@@ -1,4 +1,4 @@
-#!/usr/bin/env -S docker build . --tag=sober --file
+#!/usr/bin/env -S docker build . --tag=git.postfmly.com/admin/sober --file
 
 FROM node:alpine AS build
 
@@ -17,8 +17,14 @@ RUN --mount=type=cache,target=/pnpm/store pnpm install --frozen-lockfile && \
 
 FROM nginx:alpine
 
+LABEL org.opencontainers.image.authors="chris@postfmly.com" \
+      org.opencontainers.image.description="Sober date/time calculator" \
+      org.opencontainers.image.licenses="GPL-3.0-only" \
+      org.opencontainers.image.title="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" \
+      org.opencontainers.image.url="https://github.com/chump29/sober"
+
 RUN apk --update-cache upgrade && \
-    apk add --no-cache tzdata && \
+    apk add tzdata && \
     rm -rf /usr/share/nginx/html/*
 
 COPY --from=build /app/dist /usr/share/nginx/html
