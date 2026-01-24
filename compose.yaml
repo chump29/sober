@@ -8,13 +8,13 @@ services:
     environment:
       - TZ=America/Chicago
     labels:
-      - wud.watch=false
-      - dockge.imageupdates.check=false
+      - wud.display.name=Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
       - homepage.group=Personal
       - homepage.name=Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
       - homepage.icon=https://sober.postfmly.com/sober.png
       - homepage.href=https://sober.postfmly.com/
       - homepage.description=sober.postfmly.com
+
 networks: {}
 
 x-dockge:

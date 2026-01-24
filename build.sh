@@ -8,9 +8,7 @@ _title=✨
 _task="🛠️ "
 _lint=🔍
 _test=🧪
-_image=📦
-_login=🔑
-_push=🤚
+_build=📦
 _done="✔️ "
 
 clear
@@ -26,14 +24,14 @@ pnpm run lint
 echo -e "\n${_test} ${_green}Testing${_nc}:"
 pnpm run test
 
-echo -e "${_image} ${_green}Creating image${_nc}:\n"
-docker image build --tag=git.postfmly.com/admin/sober .
-
-echo -e "\n${_login} ${_green}Logging in${_nc}:\n"
+echo -e "\n${_build} ${_green}Building image${_nc}:\n"
 docker login git.postfmly.com
-
-echo -e "\n${_push} ${_green}Pushing image${_nc}:\n"
-docker image push git.postfmly.com/admin/sober
+if ! docker buildx | grep -q builder; then
+    docker buildx create --use --name builder --platform linux/amd64,linux/arm64
+fi
+docker buildx build --platform linux/amd64,linux/arm64 --tag git.postfmly.com/admin/sober --push .
+docker container stop buildx_buildkit_builder0 > /dev/null
+docker container rm buildx_buildkit_builder0 > /dev/null
 
 echo -e "\n${_done} ${_yellow}Done${_nc}!\n"
 
@@ -45,9 +43,7 @@ unset _title
 unset _task
 unset _lint
 unset _test
-unset _image
-unset _login
-unset _push
+unset _build
 unset _done
 
 # shellcheck disable=SC2162
