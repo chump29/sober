@@ -1,4 +1,5 @@
 import js from "@eslint/js"
+import importPlugin from "eslint-plugin-import"
 import react from "eslint-plugin-react"
 import { defineConfig, globalIgnores } from "eslint/config"
 import globals from "globals"
@@ -19,7 +20,7 @@ export default defineConfig([
           jsx: true
         }
       },
-      ecmaVersion: 2020,
+      ecmaVersion: "latest",
       globals: { ...globals.browser }
     },
     rules: {
@@ -35,5 +36,7 @@ export default defineConfig([
   },
   tseslint.configs.recommended,
   react.configs.flat.recommended,
-  react.configs.flat["jsx-runtime"]
+  react.configs.flat["jsx-runtime"],
+  importPlugin.flatConfigs.recommended,
+  importPlugin.flatConfigs.typescript
 ])

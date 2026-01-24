@@ -25,13 +25,7 @@ echo -e "\n${_test} ${_green}Testing${_nc}:"
 pnpm run test
 
 echo -e "\n${_build} ${_green}Building image${_nc}:\n"
-docker login git.postfmly.com
-if ! docker buildx | grep -q builder; then
-    docker buildx create --use --name builder --platform linux/amd64,linux/arm64
-fi
-docker buildx build --platform linux/amd64,linux/arm64 --tag git.postfmly.com/admin/sober --push .
-docker container stop buildx_buildkit_builder0 > /dev/null
-docker container rm buildx_buildkit_builder0 > /dev/null
+docker buildx build --tag git.postfmly.com/admin/sober --push .
 
 echo -e "\n${_done} ${_yellow}Done${_nc}!\n"
 

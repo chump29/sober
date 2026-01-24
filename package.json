@@ -19,6 +19,7 @@
     "lint": "pnpm run lint:eslint && pnpm run lint:pretty",
     "lint:eslint": "eslint ./src --fix",
     "lint:pretty": "prettier . --write",
+    "preinstall": "npx only-allow pnpm",
     "test": "vitest run",
     "test:dev": "vitest"
   },
@@ -27,8 +28,7 @@
     "date-fns-tz": "^3.2.0",
     "pluralize": "^8.0.0",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "tailwindcss": "^4.1.18"
+    "react-dom": "^19.2.3"
   },
   "devDependencies": {
     "@awmottaz/prettier-plugin-void-html": "^2.0.0",
@@ -40,8 +40,10 @@
     "@types/pluralize": "^0.0.33",
     "@types/react": "^19.2.9",
     "@types/react-dom": "^19.2.3",
+    "@typescript-eslint/parser": "^8.53.1",
     "@vitejs/plugin-react": "^5.1.2",
     "eslint": "^9.39.2",
+    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^17.1.0",
     "jest-environment-jsdom": "^30.2.0",
@@ -51,6 +53,7 @@
     "rimraf": "^6.1.2",
     "rollup-plugin-jsx-remove-attributes": "^3.1.2",
     "sharp": "^0.34.5",
+    "tailwindcss": "^4.1.18",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.53.1",
     "vite": "^7.3.1",
@@ -65,5 +68,11 @@
     "node": "~24",
     "pnpm": "~10"
   },
-  "packageManager": "pnpm@10.28.1+sha512.7d7dbbca9e99447b7c3bf7a73286afaaf6be99251eb9498baefa7d406892f67b879adb3a1d7e687fc4ccc1a388c7175fbaae567a26ab44d1067b54fcb0d6a316"
+  "packageManager": "pnpm@10.28.1+sha512.7d7dbbca9e99447b7c3bf7a73286afaaf6be99251eb9498baefa7d406892f67b879adb3a1d7e687fc4ccc1a388c7175fbaae567a26ab44d1067b54fcb0d6a316",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ]
+  }
 }
