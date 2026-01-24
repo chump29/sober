@@ -20,6 +20,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v6
         with:
+          cache: pnpm
           node-version: 24
 
       - name: Install dependencies
