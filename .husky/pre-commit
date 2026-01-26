@@ -1,0 +1,4 @@
+pnpm run test
+pnpm run precommit
+
+#exit 1

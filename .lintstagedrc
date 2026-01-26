@@ -1,0 +1,6 @@
+{
+  "!(eslint.config).js": ["eslint --fix", "prettier --write"],
+  "*.html": "html-validator --ignore-config=.htmlignore",
+  "*.{css,json,md,yaml}": "prettier --write",
+  "*.{ts,tsx}": ["eslint --fix", "prettier --write"]
+}

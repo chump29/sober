@@ -1,0 +1,104 @@
+name: Check Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: 24
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Ubuntu
+        run: sudo apt-get update && sudo apt-get upgrade -y
+
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Install PNPM
+        uses: pnpm/action-setup@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{env.NODE_VERSION}}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Linting
+        run: pnpm run lint
+
+      - name: Testing
+        run: pnpm run test
+
+  amd64:
+    runs-on: [amd64-runner, ubuntu-latest]
+    steps:
+      - name: Update Ubuntu
+        run: sudo apt-get update && sudo apt-get upgrade -y
+
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Install PNPM
+        uses: pnpm/action-setup@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{env.NODE_VERSION}}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Login
+        uses: docker/login-action@v3
+        with:
+          registry: git.postfmly.com
+          username: admin
+          password: ${{ secrets.PASSWORD }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: admin/sober
+
+  arm64:
+    runs-on: [arm64-runner, ubuntu-latest]
+    steps:
+      - name: Update Ubuntu
+        run: sudo apt-get update && sudo apt-get upgrade -y
+
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Install PNPM
+        uses: pnpm/action-setup@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{env.NODE_VERSION}}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Login
+        uses: docker/login-action@v3
+        with:
+          registry: git.postfmly.com
+          username: admin
+          password: ${{ secrets.PASSWORD }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: admin/sober

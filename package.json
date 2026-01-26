@@ -12,14 +12,22 @@
   ],
   "private": true,
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chump29/sober.git"
+  },
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && pnpm run build:banner",
+    "build:banner": "add-dist-header --recursive --delimiter=● --ext=.css,.html,.js dist",
     "build:dev": "vite",
     "clean": "rimraf dist node_modules",
-    "lint": "pnpm run lint:eslint && pnpm run lint:pretty",
+    "lint": "pnpm run lint:eslint && pnpm run lint:pretty && pnpm run lint:html",
     "lint:eslint": "eslint ./src --fix",
+    "lint:html": "html-validator --exclude=dist --ignore-config=.htmlignore",
     "lint:pretty": "prettier . --write",
+    "precommit": "lint-staged",
     "preinstall": "npx only-allow pnpm",
+    "prepare": "husky",
     "test": "vitest run",
     "test:dev": "vitest"
   },
@@ -42,11 +50,15 @@
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/parser": "^8.53.1",
     "@vitejs/plugin-react": "^5.1.2",
+    "add-dist-header": "^1.6.3",
     "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^17.1.0",
+    "husky": "^9.1.7",
     "jest-environment-jsdom": "^30.2.0",
+    "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
     "prettier-plugin-organize-imports": "^4.3.0",
     "prettier-plugin-sort-json": "^4.2.0",
@@ -61,7 +73,8 @@
     "vite-plugin-package-version": "^1.1.0",
     "vite-plugin-simple-html": "^1.1.0",
     "vitest": "^4.0.18",
-    "vitest-localstorage-mock": "^0.1.2"
+    "vitest-localstorage-mock": "^0.1.2",
+    "w3c-html-validator": "^2.2.0"
   },
   "engineStrict": true,
   "engines": {

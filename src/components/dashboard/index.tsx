@@ -9,11 +9,6 @@ import Coin from "../coin"
 const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 export default function Dashboard() {
-  function getNewDate(date: Date | null = null) {
-    const dateNow = date || new Date()
-    return `${dateNow.getFullYear()}-${(dateNow.getMonth() + 1).toString().padStart(2, "0")}-${dateNow.getDate().toString().padStart(2, "0")}`
-  }
-
   const soberDate = localStorage.getItem("soberDate") || getNewDate()
 
   const [date, setDate] = useState<Date>(new Date(toZonedTime(soberDate, tz)))
@@ -25,11 +20,16 @@ export default function Dashboard() {
   const [months, setMonths] = useState("")
   const [years, setYears] = useState("")
 
-  function toComma(num: string) {
+  function getNewDate(date: Date | null = null): string {
+    const dateNow = date || new Date()
+    return `${dateNow.getFullYear()}-${(dateNow.getMonth() + 1).toString().padStart(2, "0")}-${dateNow.getDate().toString().padStart(2, "0")}`
+  }
+
+  function toComma(num: string): string {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
   }
 
-  function parse(str: string) {
+  function parse(str: string): string {
     return str.startsWith("0") ? "" : str
   }
 
@@ -61,46 +61,46 @@ export default function Dashboard() {
     setSeconds(
       toComma(
         formatDistanceToNowStrict(date, {
-          unit: "second",
-          roundingMethod: "floor"
+          roundingMethod: "floor",
+          unit: "second"
         })
       )
     )
     setMinutes(
       toComma(
         formatDistanceToNowStrict(date, {
-          unit: "minute",
-          roundingMethod: "floor"
+          roundingMethod: "floor",
+          unit: "minute"
         })
       )
     )
     setHours(
       toComma(
         formatDistanceToNowStrict(date, {
-          unit: "hour",
-          roundingMethod: "floor"
+          roundingMethod: "floor",
+          unit: "hour"
         })
       )
     )
     const d = formatDistanceToNowStrict(date, {
-      unit: "day",
-      roundingMethod: "floor"
+      roundingMethod: "floor",
+      unit: "day"
     })
     setDays(toComma(d))
     setWeeks(toComma(pluralize("week", daysToWeeks(parseInt(d)), true)))
     setMonths(
       toComma(
         formatDistanceToNowStrict(date, {
-          unit: "month",
-          roundingMethod: "floor"
+          roundingMethod: "floor",
+          unit: "month"
         })
       )
     )
     setYears(
       toComma(
         formatDistanceToNowStrict(date, {
-          unit: "year",
-          roundingMethod: "floor"
+          roundingMethod: "floor",
+          unit: "year"
         })
       )
     )
@@ -113,20 +113,20 @@ export default function Dashboard() {
       <div className="text-center mt-20 font-bold">
         <form>
           <label
-            htmlFor="date"
-            className="text-3xl italic text-[#66cc00] text-shadow-[3px_3px_6px_#000000]">
+            className="text-3xl italic text-[#66cc00] text-shadow-[3px_3px_6px_#000000]"
+            htmlFor="date">
             Sober since:
           </label>
           <div>
             <input
+              className="text-center border rounded-xl w-40 mt-2 text-[#ccffff] cursor-text"
+              data-testid="date"
+              defaultValue={date?.toISOString().substring(0, 10)}
               id="date"
+              max={getNewDate()}
+              title="Sober date"
               type="date"
               onChange={handleDateChange}
-              className="text-center border rounded-xl w-40 mt-2 text-[#ccffff] cursor-text"
-              defaultValue={date?.toISOString().substring(0, 10)}
-              title="Sober date"
-              data-testid="date"
-              max={getNewDate()}
             />
           </div>
         </form>
