@@ -131,7 +131,7 @@ export default function Dashboard() {
           </div>
         </form>
       </div>
-      <div className="text-4xl text-center font-bold mt-20 text-[#66ccff] mb-5">
+      <div className="text-4xl text-center font-bold mt-20 text-[#66ccff] font-counter">
         {seconds}
         <br />
         {parse(minutes)}

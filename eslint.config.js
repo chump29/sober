@@ -43,6 +43,9 @@ export default defineConfig([
       "react/jsx-uses-vars": "error"
     },
     settings: {
+      "import/resolver": {
+        typescript: {}
+      },
       react: {
         version: "detect"
       }

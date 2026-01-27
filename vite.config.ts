@@ -4,6 +4,7 @@ import removeAttributes from "rollup-plugin-jsx-remove-attributes"
 import { ViteImageOptimizer as imageOptimizer } from "vite-plugin-image-optimizer"
 import version from "vite-plugin-package-version"
 import simpleHtml from "vite-plugin-simple-html"
+import webFontDownload from "vite-plugin-webfont-dl"
 import { defineConfig } from "vitest/config"
 
 export default defineConfig({
@@ -23,7 +24,11 @@ export default defineConfig({
       minify: true
     }),
     tailwindcss(),
-    version()
+    version(),
+    webFontDownload(
+      ["https://fonts.googleapis.com/css2?family=Cairo+Play&display=swap"],
+      { assetsSubfolder: "fonts", injectAsStyleTag: false }
+    )
   ],
   test: {
     environment: "jsdom",
