@@ -48,7 +48,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
 
       - name: Build and push
-        run: docker buildx build --tag git.postfmly.com/admin/sober-amd64:latest --push .
+        run: docker buildx build --platform linux/amd64 --tag git.postfmly.com/admin/sober:amd64 --push .
 
   arm64:
     runs-on: arm64
@@ -64,4 +64,17 @@ jobs:
           password: ${{ secrets.PASSWORD }}
 
       - name: Build and push
-        run: docker buildx build --tag git.postfmly.com/admin/sober-arm64:latest --push .
+        run: docker buildx build --platform linux/arm64 --tag git.postfmly.com/admin/sober:arm64 --push .
+
+  manifest:
+    runs-on: amd64
+    steps:
+      - name: Create manifest
+        run: |
+          docker manifest create \
+            git.postfmly.com/admin/sober:latest \
+            git.postfmly.com/admin/sober:amd64 \
+            git.postfmly.com/admin/sober:arm64
+
+      - name: Push manifest
+        run: docker manifest push git.postfmly.com/admin/sober:latest

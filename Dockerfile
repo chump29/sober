@@ -1,4 +1,4 @@
-#!/usr/bin/env -S docker image build . --tag git.postfmly.com/admin/sober --push --file
+#!/usr/bin/env -S docker image build . --tag git.postfmly.com/admin/sober --file
 
 ARG NODE_VERSION="24"
 

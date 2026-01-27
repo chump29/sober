@@ -14,6 +14,7 @@ services:
       - homepage.icon=https://sober.postfmly.com/sober.png
       - homepage.href=https://sober.postfmly.com/
       - homepage.description=sober.postfmly.com
+    platform: linux/arm64
 
 networks: {}
 
