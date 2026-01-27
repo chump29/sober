@@ -10,7 +10,7 @@
 flowchart LR
 ui@{shape: rounded, label: "UI"}
 uiPort@{shape: rounded, label: "http://localhost:89"}
-ui-->uiPort
+ui-->uiPortport@{shape: comment, label: "&nbsp; Nginx exposes port 80"}
 ```
 
 ---
@@ -35,6 +35,7 @@ port@{shape: comment, label: "&nbsp; Nginx exposes port 80"}
 
 ```bash
 sudo n
+# select/delete from options
 ```
 
 ### To install version:
@@ -135,9 +136,11 @@ pnpm audit
 ### To manually lint files:
 
 ```bash
-pnpm run lint # runs eslint & prettier
+pnpm run lint # runs all
 # or
 pnpm run lint:eslint
+# or
+pnpm run lint:html
 # or
 pnpm run lint:prettier
 ```
@@ -175,3 +178,11 @@ pnpm run build # PROD
 # or
 ./Dockerfile
 ```
+
+## Git stuff
+
+- Staged files will be linted/tested before committed
+- Action will build/push multiple architecture Docker images
+  - latest
+    - amd64
+    - arm64
