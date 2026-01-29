@@ -43,6 +43,8 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64,amd64
 
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
@@ -51,5 +53,5 @@ jobs:
         run: |
           docker buildx build \
             --tag git.postfmly.com/admin/sober:latest \
-            --platform linux/amd64,linux/arm64
+            --platform linux/amd64,linux/arm64 \
             --push .
