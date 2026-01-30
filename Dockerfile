@@ -4,7 +4,7 @@ ARG NODE_VERSION="24"
 
 FROM node:${NODE_VERSION}-alpine AS build
 
-RUN npm install --global --force corepack && \
+RUN npm install --global --force corepack@latest && \
     corepack enable pnpm && \
     corepack use pnpm@latest
 
@@ -20,13 +20,15 @@ RUN --mount=type=cache,target=/pnpm/store pnpm install --frozen-lockfile && \
 FROM nginx:alpine
 
 LABEL org.opencontainers.image.authors="chris@postfmly.com" \
-      org.opencontainers.image.description="Sober date/time calculator" \
-      org.opencontainers.image.licenses="GPL-3.0-only" \
-      org.opencontainers.image.title="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" \
-      org.opencontainers.image.url="https://github.com/chump29/sober"
+    org.opencontainers.image.description="Sober date/time calculator" \
+    org.opencontainers.image.licenses="GPL-3.0-only" \
+    org.opencontainers.image.title="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" \
+    org.opencontainers.image.url="https://github.com/chump29/sober"
 
+# hadolint ignore=DL3018,DL3019
 RUN apk --update-cache upgrade && \
     apk add tzdata && \
+    rm -rf /var/cache/apk/* && \
     rm -rf /usr/share/nginx/html/*
 
 COPY --from=build /app/dist /usr/share/nginx/html

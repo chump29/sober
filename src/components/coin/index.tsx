@@ -40,7 +40,7 @@ export default function Coin({
 
   return (
     <>
-      {months > 0 && years <= MAX_YEARS ? (
+      {months > 0 && years <= MAX_YEARS && url ? (
         <div>
           <img alt={txt} className="mx-auto w-[200px] mt-20 mb-10" src={url} />
         </div>

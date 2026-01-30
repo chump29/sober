@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent } from "react"
+import { useEffect, useRef, useState, type ChangeEvent } from "react"
 
 import { daysToWeeks, formatDistanceToNowStrict } from "date-fns"
 import { toZonedTime } from "date-fns-tz"
@@ -8,10 +8,13 @@ import Coin from "../coin"
 
 const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
 
+const urlParam = new URLSearchParams(window.location.search)
+const soberDateFormat = /^\d{4}-\d{1,2}-\d{1,2}$/ // YYYY-MM-DD
+
 export default function Dashboard() {
   const soberDate = localStorage.getItem("soberDate") || getNewDate()
 
-  const [date, setDate] = useState<Date>(new Date(toZonedTime(soberDate, tz)))
+  const [date, setDate] = useState<Date>(getDateFromString(soberDate))
   const [seconds, setSeconds] = useState("")
   const [minutes, setMinutes] = useState("")
   const [hours, setHours] = useState("")
@@ -19,6 +22,20 @@ export default function Dashboard() {
   const [weeks, setWeeks] = useState("")
   const [months, setMonths] = useState("")
   const [years, setYears] = useState("")
+
+  const loadedDateFromUrl = useRef(false)
+
+  if (urlParam.has("soberDate") && !loadedDateFromUrl.current) {
+    const soberDateParam = urlParam.get("soberDate")
+    if (soberDateParam && soberDateFormat.test(soberDateParam)) {
+      setDate(getDateFromString(soberDateParam))
+      loadedDateFromUrl.current = true
+    }
+  }
+
+  function getDateFromString(date: string): Date {
+    return new Date(toZonedTime(date, tz))
+  }
 
   function getNewDate(date: Date | null = null): string {
     const dateNow = date || new Date()
@@ -39,11 +56,15 @@ export default function Dashboard() {
     }
   }
 
+  function setNewSoberDate(date: Date) {
+    setDate(date)
+    setSoberDate(getNewDate(date))
+  }
+
   function handleDateChange(e: ChangeEvent<HTMLInputElement>) {
-    const newDate = (e.target.value ||= getNewDate())
-    const d = new Date(toZonedTime(newDate, tz))
-    setDate(d)
-    setSoberDate(getNewDate(d))
+    setNewSoberDate(
+      new Date(toZonedTime((e.target.value ||= getNewDate()), tz))
+    )
     e.target.blur()
   }
 
@@ -53,9 +74,7 @@ export default function Dashboard() {
     }
 
     const interval = setInterval(() => {
-      const d = new Date(toZonedTime(date, tz))
-      setDate(d)
-      setSoberDate(getNewDate(d))
+      setNewSoberDate(new Date(toZonedTime(date, tz)))
     }, 1000)
 
     setSeconds(

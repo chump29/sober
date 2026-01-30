@@ -1,3 +1,8 @@
 {
-  "recommendations": ["bierner.markdown-mermaid", "esbenp.prettier-vscode"]
+  "recommendations": [
+    "bierner.markdown-mermaid",
+    "esbenp.prettier-vscode",
+    "raynigon.nginx-formatter",
+    "timonwong.shellcheck"
+  ]
 }

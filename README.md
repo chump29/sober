@@ -138,11 +138,15 @@ pnpm audit
 ```bash
 pnpm run lint # runs all
 # or
+pnpm run lint:css
+# or
 pnpm run lint:eslint
 # or
 pnpm run lint:html
 # or
-pnpm run lint:prettier
+pnpm run lint:md
+# or
+pnpm run lint:pretty
 ```
 
 ### To run tests:
