@@ -1,13 +1,14 @@
 {
   "name": "sober",
   "version": "1.0.2",
-  "description": "Sober date/time calculator",
+  "description": "Sobriety tracker",
   "homepage": "https://github.com/chump29/sober",
   "license": "GPL-3.0-only",
   "author": "Chris Post",
   "keywords": [
     "sober",
     "sobriety",
+    "time",
     "tracker"
   ],
   "private": true,
