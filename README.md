@@ -1,192 +1,112 @@
 # <img src="./public/sober.png" title="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" alt="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ logo" width="64" height="64"> Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
 
-- Choose a sober date and the date/time difference will be displayed
+> Choose a sober date and the date/time difference will be displayed
 
 ---
 
-## Compose flowchart
+## 🏗️ Architecture
+
+### Docker Compose Flow
 
 ```mermaid
 flowchart LR
 ui@{shape: rounded, label: "UI"}
 uiPort@{shape: rounded, label: "http://localhost:89"}
-ui-->uiPortport@{shape: comment, label: "&nbsp; Nginx exposes port 80"}
+ui-->uiPort
 ```
 
 ---
 
-## React flowchart
+### React Component Hierarchy
 
 ```mermaid
-flowchart
-index(index.html)
-main(src/main.tsx)
-dashboard(src/components/dashboard/index.tsx)
-coin(src/components/coin/index.tsx)
-index-->main-->dashboard-->coin
+flowchart TD
+index(index.html)-->main(src/main.tsx)
+main-->dashboard(src/components/dashboard/index.tsx)
+dashboard-->coin(src/components/coin/index.tsx)
 port@{shape: comment, label: "&nbsp; Nginx exposes port 80"}
 ```
 
 ---
 
-## Node.js stuff
+## 🔗 Deep Linking
 
-### To select/delete version:
+You can pre-load a specific date using a query parameter:
 
-```bash
-sudo n
-# select/delete from options
-```
-
-### To install version:
-
-```bash
-sudo n [version]
-```
+`?soberDate=YYYY-MM-DD`
 
 ---
 
-## NPM stuff
+## 🛠️ Environment Management
 
-### To enable PNPM:
+### Node.js (`n` manager)
 
-```bash
-corepack enable pnpm
-```
+|     📋 Task      |     🔧 Command     |
+| :--------------: | :----------------: |
+| Manage Versions  |      `sudo n`      |
+| Install Specific | `sudo n [version]` |
 
-### To update PNPM:
+### NPM (`pnpm` manager)
 
-```bash
-corepack up
-# or
-corepack use pnpm@latest
-# or
-corepack use pnpm@[version]
-```
+|   📋 Task    |          🔧 Command           |
+| :----------: | :---------------------------: |
+|    Enable    |    `corepack enable pnpm`     |
+|     Use      |  `corepack use pnpm@latest`   |
+| Use Specific | `corepack use pnpm@[version]` |
+|    Update    |         `corepack up`         |
 
-### To add dependency:
+## 📦 Dependency Management
 
-```bash
-# devDependencies:
-pnpm add -D [package][@version]
-# or
-pnpm add --save-dev [package][@version]
+### Installation & Removal
 
-# depenencies:
-pnpm add [package][@version]
-# or
-pnpm add --save-prod [package][@version]
+|        📋 Task         |               🔧 Command (Full)                |        🔧 Command (Short)         |
+| :--------------------: | :--------------------------------------------: | :-------------------------------: |
+|      Install All       |                 `pnpm install`                 |             `pnpm i`              |
+|   Install Prod Only    |             `pnpm install --prod`              |            `pnpm i -P`            |
+|     Add dependency     |   `pnpm add --save-prod [package][@version]`   |  `pnpm add [package][@version]`   |
+|   Add devDependency    |   `pnpm add --save-dev [package][@version]`    | `pnpm add -D [package][@version]` |
+| Add optionalDependency | `pnpm add --save-optional [package][@version]` | `pnpm add -O [package][@version]` |
+|   Add peerDependency   |   `pnpm add --save-peer [package][@version]`   |              &mdash;              |
+|       Add Global       |    `pnpm add --global [package][@version]`     | `pnpm add -g [package][@version]` |
+|   Remove Dependency    |            `pnpm remove [package]`             |        `pnpm rm [package]`        |
 
-# optionalDependencies:
-pnpm add -O [package][@version]
-# or
-pnpm add --save-optional [package][@version]
+### Maintenance & Quality
 
-# peerDependencies & devDependencies:
-pnpm add --save-peer [package][@version]
+|    📋 Task     |  🔧 Command (Full)  | 🔧 Command (Short) |
+| :------------: | :-----------------: | :----------------: |
+| Check Updates  |   `pnpm outdated`   |      &mdash;       |
+|   Update All   |    `pnpm update`    |     `pnpm up`      |
+| Security Audit |    `pnpm audit`     |      &mdash;       |
+|   Run Script   | `pnpm run [script]` |  `pnpm [script]`   |
 
-# global:
-pnpm add -g [package][@version]
-# or
-pnpm add --global [package][@version]
-```
+## 🧪 Development Workflow
 
-### To uninstall dependency:
+|       📜 Script        |       🔧 Command       |
+| :--------------------: | :--------------------: |
+|        Lint All        |    `pnpm run lint`     |
+|        Lint CSS        |  `pnpm run lint:css`   |
+|       Run ESLint       | `pnpm run lint:eslint` |
+|       Lint HTML        |  `pnpm run lint:html`  |
+|     Lint Markdown      |   `pnpm run lint:md`   |
+|      Run Prettier      | `pnpm run lint:pretty` |
+| Run Tests (Hot Reload) |  `pnpm run test:dev`   |
+|     Run Tests (CI)     |    `pnpm run test`     |
+|       Build Dev        |  `pnpm run build:dev`  |
+|       Build Prod       |    `pnpm run build`    |
 
-```bash
-pnpm rm [package]
-# or
-pnpm remove [package]
-```
-
-### To install dependencies:
-
-```bash
-# DEV:
-pnpm i
-# or
-pnpm install
-
-# PROD:
-pnpm i -P
-# or
-pnpm install --prod
-```
-
-### To check for outdated dependencies:
+### Manual Deployment
 
 ```bash
-pnpm outdated
-```
-
-### To update dependencies:
-
-```bash
-pnpm up
-# or
-pnpm update
-```
-
-### To audit dependencies:
-
-```bash
-pnpm audit
-```
-
-### To manually lint files:
-
-```bash
-pnpm run lint # runs all
-# or
-pnpm run lint:css
-# or
-pnpm run lint:eslint
-# or
-pnpm run lint:html
-# or
-pnpm run lint:md
-# or
-pnpm run lint:pretty
-```
-
-### To run tests:
-
-```bash
-pnpm run test:dev # hot reloads
-# or
-pnpm run test # not interactive
-```
-
-### To run a `package.json` script:
-
-```bash
-pnpm run [script]
-```
-
----
-
-## Development stuff
-
-### Manually run:
-
-```bash
-pnpm run build:dev # DEV
-# or
-pnpm run build # PROD
-```
-
-### Manually build:
-
-```bash
+# Build via script
 ./build.sh
-# or
+
+# Build via Docker
 ./Dockerfile
 ```
 
-## Git stuff
+## 🛰️ Git & CI/CD
 
-- Staged files will be linted/tested before committed
-- Action will build/push multiple architecture Docker images
-  - latest
-    - amd64
-    - arm64
+- **Pre-Commit:** Staged files are automatically linted and tested
+- **Github Actions:** Automatically builds and pushes multi-arch images to repository
+  - amd64
+  - arm64
