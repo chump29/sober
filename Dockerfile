@@ -28,7 +28,6 @@ LABEL org.opencontainers.image.authors="chris@postfmly.com" \
 # hadolint ignore=DL3018,DL3019
 RUN apk --update-cache upgrade && \
     apk add tzdata && \
-    rm -rf /var/cache/apk/* && \
     rm -rf /usr/share/nginx/html/*
 
 COPY --from=build /app/dist /usr/share/nginx/html
