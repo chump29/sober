@@ -26,10 +26,10 @@ pnpm run test
 
 if dpkg --print-architecture | grep -q amd64; then
     echo -e "${_build} ${_green}Building AMD64 image${_nc}:\n"
-    docker buildx build --platform linux/amd64 --tag git.postfmly.com/admin/sober .
+    docker buildx build --platform linux/amd64 --tag sober .
 else
     echo -e "${_build} ${_green}Building ARM64 image${_nc}:\n"
-    docker buildx build --platform linux/arm64 --tag git.postfmly.com/admin/sober .
+    docker buildx build --platform linux/arm64 --tag sober .
 fi
 
 echo -e "\n${_done} ${_yellow}Done${_nc}!\n"

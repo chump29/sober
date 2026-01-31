@@ -1,4 +1,4 @@
-#!/usr/bin/env -S docker image build . --tag git.postfmly.com/admin/sober --file
+#!/usr/bin/env -S docker image build . --tag sober --file
 
 ARG NODE_VERSION="24"
 
@@ -12,7 +12,10 @@ WORKDIR /app
 
 COPY . .
 
-RUN --mount=type=cache,target=/pnpm/store pnpm install --frozen-lockfile && \
+RUN --mount=type=cache,target=/pnpm_store \
+    pnpm config set store-dir /pnpm_store && \
+    pnpm config set package-import-method copy && \
+    pnpm install --frozen-lockfile --prefer-offline --ignore-scripts && \
     pnpm run build
 
 # -=-
