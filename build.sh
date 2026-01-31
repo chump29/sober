@@ -9,30 +9,30 @@ _task="🛠️ "
 _lint=🔍
 _test=🧪
 _build=📦
+_start="▶️ "
 _done="✔️ "
 
 clear
 
 echo -e "${_title} ${_red}Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ${_nc} ${_title}\n"
 
-echo -e "${_task} ${_green}Installing dependencies${_nc}:\n"
+echo -e "${_task} ${_yellow}Installing dependencies${_nc}:\n"
 pnpm install --frozen-lockfile
 
-echo -e "\n${_lint} ${_green}Linting${_nc}:"
+echo -e "\n${_lint} ${_yellow}Linting${_nc}:"
 pnpm run lint
 
-echo -e "\n${_test} ${_green}Testing${_nc}:"
+echo -e "${_test} ${_yellow}Testing${_nc}:"
 pnpm run test
 
-if dpkg --print-architecture | grep -q amd64; then
-    echo -e "${_build} ${_green}Building AMD64 image${_nc}:\n"
-    docker buildx build --platform linux/amd64 --tag sober .
-else
-    echo -e "${_build} ${_green}Building ARM64 image${_nc}:\n"
-    docker buildx build --platform linux/arm64 --tag sober .
-fi
+echo -e "${_build} ${_yellow}Building${_nc}:\n"
+./Dockerfile
 
-echo -e "\n${_done} ${_yellow}Done${_nc}!\n"
+echo -e "\n${_start} ${_yellow}Starting${_nc}:\n"
+docker rm -f sober > /dev/null 2>&1
+docker run --name sober --publish 89:80 --env TZ=America/Chicago --detach sober
+
+echo -e "\n${_done} ${_green}Done${_nc}!\n"
 
 unset _red
 unset _green
@@ -43,12 +43,5 @@ unset _task
 unset _lint
 unset _test
 unset _build
+unset _start
 unset _done
-
-# shellcheck disable=SC2162
-read -p "Run Docker Compose (Y/n)? " answer
-if [ "$answer" == "y" ] || [ "$answer" == "Y" ] || [ -z "$answer" ]; then
-    docker compose up -d
-fi
-
-echo -e "\n"

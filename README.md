@@ -72,12 +72,13 @@ You can pre-load a specific date using a query parameter:
 
 ### Maintenance & Quality
 
-|    📋 Task     |  🔧 Command (Full)  | 🔧 Command (Short) |
-| :------------: | :-----------------: | :----------------: |
-| Check Updates  |   `pnpm outdated`   |      &mdash;       |
-|   Update All   |    `pnpm update`    |     `pnpm up`      |
-| Security Audit |    `pnpm audit`     |      &mdash;       |
-|   Run Script   | `pnpm run [script]` |  `pnpm [script]`   |
+|     📋 Task     |    🔧 Command (Full)    | 🔧 Command (Short)  |
+| :-------------: | :---------------------: | :-----------------: |
+|  Check Updates  |     `pnpm outdated`     |       &mdash;       |
+|   Update All    |      `pnpm update`      |      `pnpm up`      |
+| Update Specific | `pnpm update [package]` | `pnpm up [package]` |
+| Security Audit  |      `pnpm audit`       |       &mdash;       |
+|   Run Script    |   `pnpm run [script]`   |   `pnpm [script]`   |
 
 ## 🧪 Development Workflow
 
@@ -97,11 +98,11 @@ You can pre-load a specific date using a query parameter:
 ### Manual Deployment
 
 ```bash
-# Build via script
+# Full build
 ./build.sh
 
-# Build via Docker
-./Dockerfile
+# Docker build
+./docker.sh
 ```
 
 ## 🛰️ Git & CI/CD
