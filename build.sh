@@ -25,12 +25,7 @@ pnpm run lint
 echo -e "${_test} ${_yellow}Testing${_nc}:"
 pnpm run test
 
-echo -e "${_build} ${_yellow}Building${_nc}:\n"
-./Dockerfile
-
-echo -e "\n${_start} ${_yellow}Starting${_nc}:\n"
-docker rm -f sober > /dev/null 2>&1
-docker run --name sober --publish 89:80 --env TZ=America/Chicago --detach sober
+source docker.sh
 
 echo -e "\n${_done} ${_green}Done${_nc}!\n"
 
