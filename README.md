@@ -1,12 +1,14 @@
-# <img src="./public/sober.png" title="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" alt="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ logo" width="64" height="64"> Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
-
-> Enter the day your recovery began to see your total sober time
+<p style="text-align: center; font-size: 3rem; font-weight: bold;">
+  <img src="./public/sober.png" title="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" alt="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ logo" width="64" height="64"> Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ<br/>
+  <!-- markdownlint-disable-next-line MD013 -->
+  <p style="text-align: center; font-size: 1.5rem; font-style: italic;">Enter the day your recovery began to see your total sober time</p>
+</p>
 
 ---
 
-## 🏗️ Architecture
+### 🏗️ <u>Architecture</u>
 
-### Docker Compose Flow
+#### Docker Compose Flow:
 
 ```mermaid
 flowchart LR
@@ -17,7 +19,7 @@ ui-->uiPort
 
 ---
 
-### React Component Hierarchy
+#### React Component Hierarchy:
 
 ```mermaid
 flowchart TD
@@ -29,7 +31,7 @@ port@{shape: comment, label: "&nbsp; Nginx exposes port 80"}
 
 ---
 
-## 🔗 Deep Linking
+### 🔗 Deep Linking
 
 You can pre-load a specific date using a query parameter:
 
@@ -37,16 +39,16 @@ You can pre-load a specific date using a query parameter:
 
 ---
 
-## 🛠️ Environment Management
+### 🛠️ Environment Management
 
-### Node.js (`n` manager)
+#### Node.js (`n` manager):
 
 |     📋 Task      |     🔧 Command     |
 | :--------------: | :----------------: |
 | Manage Versions  |      `sudo n`      |
 | Install Specific | `sudo n [version]` |
 
-### NPM (`pnpm` manager)
+#### NPM (`pnpm` manager):
 
 |   📋 Task    |          🔧 Command           |
 | :----------: | :---------------------------: |
@@ -55,9 +57,9 @@ You can pre-load a specific date using a query parameter:
 | Use Specific | `corepack use pnpm@[version]` |
 |    Update    |         `corepack up`         |
 
-## 📦 Dependency Management
+### 📦 Dependency Management
 
-### Installation & Removal
+#### Installation & Removal:
 
 |        📋 Task         |               🔧 Command (Full)                |        🔧 Command (Short)         |
 | :--------------------: | :--------------------------------------------: | :-------------------------------: |
@@ -70,7 +72,7 @@ You can pre-load a specific date using a query parameter:
 |       Add Global       |    `pnpm add --global [package][@version]`     | `pnpm add -g [package][@version]` |
 |   Remove Dependency    |            `pnpm remove [package]`             |        `pnpm rm [package]`        |
 
-### Maintenance & Quality
+#### Maintenance & Quality:
 
 |     📋 Task     |    🔧 Command (Full)    | 🔧 Command (Short)  |
 | :-------------: | :---------------------: | :-----------------: |
@@ -80,7 +82,7 @@ You can pre-load a specific date using a query parameter:
 | Security Audit  |      `pnpm audit`       |       &mdash;       |
 |   Run Script    |   `pnpm run [script]`   |   `pnpm [script]`   |
 
-## 🧪 Development Workflow
+### 🧪 Development Workflow
 
 |       📜 Script        |       🔧 Command       |
 | :--------------------: | :--------------------: |
@@ -95,7 +97,7 @@ You can pre-load a specific date using a query parameter:
 |       Build Dev        |  `pnpm run build:dev`  |
 |       Build Prod       |    `pnpm run build`    |
 
-### Manual Deployment
+#### Manual Deployment:
 
 ```bash
 # Full build
@@ -105,7 +107,7 @@ You can pre-load a specific date using a query parameter:
 ./docker.sh
 ```
 
-## 🛰️ Git & CI/CD
+### 🛰️ Git & CI/CD
 
 - **Pre-Commit:** Staged files are automatically linted and tested
 - **Github Actions:** Automatically builds and pushes multi-arch images to repository
