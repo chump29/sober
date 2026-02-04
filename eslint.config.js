@@ -8,7 +8,7 @@ import tseslint from "typescript-eslint"
 export default defineConfig([
   globalIgnores(["dist/", ".pnpm-store/"]),
   {
-    files: ["**/*.{html,ts,tsx}"],
+    files: ["**/*.{html,js,ts,tsx}"],
     plugins: {
       js,
       react
