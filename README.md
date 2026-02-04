@@ -1,12 +1,10 @@
-<p style="text-align: center; font-size: 3rem; font-weight: bold;">
-  <img src="./public/sober.png" title="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" alt="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ logo" width="64" height="64"> Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ<br/>
-  <!-- markdownlint-disable-next-line MD013 -->
-  <p style="text-align: center; font-size: 1.5rem; font-style: italic;">Enter the day your recovery began to see your total sober time</p>
-</p>
+# <img src="./public/sober.png" title="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" alt="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ logo" width="64" height="64"> Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
+
+> Enter the day your recovery began to see your total sober time
 
 ---
 
-### 🏗️ <u>Architecture</u>
+### 🏗️ <u>Architecture</u> <!-- markdownlint-disable-line MD001 -->
 
 #### Docker Compose Flow:
 
