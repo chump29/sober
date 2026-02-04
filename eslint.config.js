@@ -24,6 +24,8 @@ export default defineConfig([
       globals: { ...globals.browser }
     },
     rules: {
+      "@typescript-eslint/explicit-function-return-type": "error",
+      "@typescript-eslint/no-inferrable-types": "error",
       "no-console": ["error", { allow: ["error"] }],
       "react/jsx-sort-props": [
         "error",

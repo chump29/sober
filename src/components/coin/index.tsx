@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, type JSX } from "react"
 
 const MAX_YEARS = 5
 
@@ -8,9 +8,9 @@ export default function Coin({
 }: {
   months: number
   years: number
-}) {
-  const [url, setUrl] = useState("")
-  const [txt, setTxt] = useState("")
+}): JSX.Element {
+  const [url, setUrl] = useState<string>("")
+  const [txt, setTxt] = useState<string>("")
 
   useEffect(() => {
     if (isNaN(months)) {
@@ -36,7 +36,7 @@ export default function Coin({
       }
       setTxt(`${months} ${m}`)
     }
-  }, [months])
+  }, [months, years])
 
   return (
     <>

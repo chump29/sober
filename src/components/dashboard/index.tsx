@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ChangeEvent } from "react"
+import { useEffect, useRef, useState, type ChangeEvent, type JSX } from "react"
 
 import { daysToWeeks, formatDistanceToNowStrict } from "date-fns"
 import { toZonedTime } from "date-fns-tz"
@@ -6,24 +6,24 @@ import pluralize from "pluralize"
 
 import Coin from "../coin"
 
-const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
+const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone
 
-const urlParam = new URLSearchParams(window.location.search)
+const urlParam: URLSearchParams = new URLSearchParams(window.location.search)
 const soberDateFormat = /^\d{4}-\d{1,2}-\d{1,2}$/ // YYYY-MM-DD
 
-export default function Dashboard() {
-  const soberDate = localStorage.getItem("soberDate") || getNewDate()
+export default function Dashboard(): JSX.Element {
+  const soberDate: string = localStorage.getItem("soberDate") || getNewDate()
 
   const [date, setDate] = useState<Date>(getDateFromString(soberDate))
-  const [seconds, setSeconds] = useState("")
-  const [minutes, setMinutes] = useState("")
-  const [hours, setHours] = useState("")
-  const [days, setDays] = useState("")
-  const [weeks, setWeeks] = useState("")
-  const [months, setMonths] = useState("")
-  const [years, setYears] = useState("")
+  const [seconds, setSeconds] = useState<string>("")
+  const [minutes, setMinutes] = useState<string>("")
+  const [hours, setHours] = useState<string>("")
+  const [days, setDays] = useState<string>("")
+  const [weeks, setWeeks] = useState<string>("")
+  const [months, setMonths] = useState<string>("")
+  const [years, setYears] = useState<string>("")
 
-  const loadedDateFromUrl = useRef(false)
+  const loadedDateFromUrl = useRef<boolean>(false)
 
   if (urlParam.has("soberDate") && !loadedDateFromUrl.current) {
     const soberDateParam = urlParam.get("soberDate")
@@ -38,7 +38,7 @@ export default function Dashboard() {
   }
 
   function getNewDate(date: Date | null = null): string {
-    const dateNow = date || new Date()
+    const dateNow: Date = date || new Date()
     return `${dateNow.getFullYear()}-${(dateNow.getMonth() + 1).toString().padStart(2, "0")}-${dateNow.getDate().toString().padStart(2, "0")}`
   }
 
@@ -50,18 +50,18 @@ export default function Dashboard() {
     return str.startsWith("0") ? "" : str
   }
 
-  function setSoberDate(str: string) {
+  function setSoberDate(str: string): void {
     if (localStorage.getItem("soberDate") !== str) {
       localStorage.setItem("soberDate", str)
     }
   }
 
-  function setNewSoberDate(date: Date) {
+  function setNewSoberDate(date: Date): void {
     setDate(date)
     setSoberDate(getNewDate(date))
   }
 
-  function handleDateChange(e: ChangeEvent<HTMLInputElement>) {
+  function handleDateChange(e: ChangeEvent<HTMLInputElement>): void {
     setNewSoberDate(
       new Date(toZonedTime((e.target.value ||= getNewDate()), tz))
     )
@@ -73,7 +73,7 @@ export default function Dashboard() {
       return
     }
 
-    const interval = setInterval(() => {
+    const interval: number = setInterval(() => {
       setNewSoberDate(new Date(toZonedTime(date, tz)))
     }, 1000)
 
@@ -101,7 +101,7 @@ export default function Dashboard() {
         })
       )
     )
-    const d = formatDistanceToNowStrict(date, {
+    const d: string = formatDistanceToNowStrict(date, {
       roundingMethod: "floor",
       unit: "day"
     })
@@ -124,7 +124,7 @@ export default function Dashboard() {
       )
     )
 
-    return () => clearInterval(interval)
+    return (): void => clearInterval(interval)
   }, [date])
 
   return (

@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client"
 
 import Dashboard from "./components/dashboard"
 
-function getVersion(version: string) {
+function getVersion(version: string): string {
   return version.length ? `v${version}` : "N/A"
 }
 
