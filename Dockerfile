@@ -23,7 +23,7 @@ RUN --mount=type=cache,target=/.pnpm-store \
 FROM nginx:alpine
 
 LABEL org.opencontainers.image.authors="chris@postfmly.com" \
-    org.opencontainers.image.description="Sober date/time calculator" \
+    org.opencontainers.image.description="Sobriety tracker" \
     org.opencontainers.image.licenses="GPL-3.0-only" \
     org.opencontainers.image.title="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" \
     org.opencontainers.image.url="https://github.com/chump29/sober"
