@@ -83,7 +83,9 @@ You can pre-load a specific date using a query parameter:
 |   List Extra    |   `pnpm list --long`    |      `pnpm ll`      |
 |    Hierarchy    |  `pnpm why [package]`   |       &mdash;       |
 
-### 🧪 Development Scripts
+### 🧪 Development
+
+#### Scripts:
 
 |       📜 Script        |   🔧 Command (Full)    | 🔧 Command (Short) |
 | :--------------------: | :--------------------: | :----------------: |
@@ -98,15 +100,14 @@ You can pre-load a specific date using a query parameter:
 |       Build Dev        |  `pnpm run build:dev`  |  `pnpm build:dev`  |
 |       Build Prod       |    `pnpm run build`    |    `pnpm build`    |
 
-#### Manual Deployment:
+#### Docker Deployment:
 
-```bash
-# Full build
-./build.sh
+|   📋 Task   |  🔧 Command   |
+| :---------: | :-----------: |
+|    Full     | `./build.sh`  |
+| Docker Only | `./docker.sh` |
 
-# Docker build
-./docker.sh
-```
+---
 
 ### 🛰️ Git & CI/CD
 
