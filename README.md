@@ -4,7 +4,7 @@
 
 ---
 
-### 🏗️ <u>Architecture</u> <!-- markdownlint-disable-line MD001 -->
+### 🏗️ Architecture <!-- markdownlint-disable-line MD001 -->
 
 #### Docker Compose Flow:
 
@@ -39,14 +39,14 @@ You can pre-load a specific date using a query parameter:
 
 ### 🛠️ Environment Management
 
-#### Node.js (`n` manager):
+#### Node.js ([n](https://github.com/tj/n "n") manager):
 
-|     📋 Task      |     🔧 Command     |
-| :--------------: | :----------------: |
-| Manage Versions  |      `sudo n`      |
-| Install Specific | `sudo n [version]` |
+|     📋 Task      |  🔧 Command   |
+| :--------------: | :-----------: |
+| Manage Versions  |      `n`      |
+| Install Specific | `n [version]` |
 
-#### NPM (`pnpm` manager):
+#### NPM ([pnpm](https://github.com/pnpm/pnpm "pnpm") manager):
 
 |   📋 Task    |          🔧 Command           |
 | :----------: | :---------------------------: |
@@ -79,21 +79,24 @@ You can pre-load a specific date using a query parameter:
 | Update Specific | `pnpm update [package]` | `pnpm up [package]` |
 | Security Audit  |      `pnpm audit`       |       &mdash;       |
 |   Run Script    |   `pnpm run [script]`   |   `pnpm [script]`   |
+|      List       |       `pnpm list`       |      `pnpm ls`      |
+|   List Extra    |   `pnpm list --long`    |      `pnpm ll`      |
+|    Hierarchy    |  `pnpm why [package]`   |       &mdash;       |
 
-### 🧪 Development Workflow
+### 🧪 Development Scripts
 
-|       📜 Script        |       🔧 Command       |
-| :--------------------: | :--------------------: |
-|        Lint All        |    `pnpm run lint`     |
-|        Lint CSS        |  `pnpm run lint:css`   |
-|       Run ESLint       | `pnpm run lint:eslint` |
-|       Lint HTML        |  `pnpm run lint:html`  |
-|     Lint Markdown      |   `pnpm run lint:md`   |
-|      Run Prettier      | `pnpm run lint:pretty` |
-| Run Tests (Hot Reload) |  `pnpm run test:dev`   |
-|     Run Tests (CI)     |    `pnpm run test`     |
-|       Build Dev        |  `pnpm run build:dev`  |
-|       Build Prod       |    `pnpm run build`    |
+|       📜 Script        |   🔧 Command (Full)    | 🔧 Command (Short) |
+| :--------------------: | :--------------------: | :----------------: |
+|        Lint All        |    `pnpm run lint`     |    `pnpm lint`     |
+|        Lint CSS        |  `pnpm run lint:css`   |  `pnpm lint:css`   |
+|       Run ESLint       | `pnpm run lint:eslint` | `pnpm lint:eslint` |
+|       Lint HTML        |  `pnpm run lint:html`  |  `pnpm lint:html`  |
+|     Lint Markdown      |   `pnpm run lint:md`   |   `pnpm lint:md`   |
+|      Run Prettier      | `pnpm run lint:pretty` | `pnpm lint:pretty` |
+| Run Tests (Hot Reload) |  `pnpm run test:dev`   |  `pnpm test:dev`   |
+|     Run Tests (CI)     |    `pnpm run test`     |    `pnpm test`     |
+|       Build Dev        |  `pnpm run build:dev`  |  `pnpm build:dev`  |
+|       Build Prod       |    `pnpm run build`    |    `pnpm build`    |
 
 #### Manual Deployment:
 
