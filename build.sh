@@ -8,8 +8,6 @@ _title=✨
 _task="🛠️ "
 _lint=🔍
 _test=🧪
-_build=📦
-_start="▶️ "
 _done="✔️ "
 
 clear
@@ -37,6 +35,4 @@ unset _title
 unset _task
 unset _lint
 unset _test
-unset _build
-unset _start
 unset _done

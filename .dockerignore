@@ -1,9 +1,14 @@
+.htmlignore
+.lintstagedrc
+.markdownlint*
 .prettier*
+.stylelint*
 *.md
 *.sh
 compose.yaml
 dist/
 eslint.config.ts
 node_modules/
+tsconfig*
 
 !healthcheck.sh

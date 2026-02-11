@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, type ChangeEvent, type JSX } from "react"
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type JSX,
+  type RefObject
+} from "react"
 
 import { daysToWeeks, formatDistanceToNowStrict } from "date-fns"
 import { toZonedTime } from "date-fns-tz"
@@ -23,7 +30,7 @@ export default function Dashboard(): JSX.Element {
   const [months, setMonths] = useState<string>("")
   const [years, setYears] = useState<string>("")
 
-  const loadedDateFromUrl = useRef<boolean>(false)
+  const loadedDateFromUrl: RefObject<boolean> = useRef<boolean>(false)
 
   if (urlParam.has("soberDate") && !loadedDateFromUrl.current) {
     const soberDateParam = urlParam.get("soberDate")

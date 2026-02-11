@@ -1,4 +1,4 @@
-name: Check Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
+name: Build Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
 
 on:
   pull_request:
