@@ -1,8 +1,6 @@
 {
-  "!(eslint.config).js": ["eslint --fix", "prettier --write"],
-  "*.css": ["prettier --write", "stylelint --fix"],
+  "*.{js,json,ts,tsx,yaml}": "biome check --write",
+  "*.css": ["biome check --write", "stylelint --fix"],
   "*.html": "html-validator --ignore-config=.htmlignore",
-  "*.md": ["prettier --write", "markdownlint --fix"],
-  "*.{json,yaml}": "prettier --write",
-  "*.{ts,tsx}": ["eslint --fix", "prettier --write"]
+  "*.md": "markdownlint --fix"
 }

@@ -42,14 +42,14 @@ You can pre-load a specific date using a query parameter:
 #### Node.js ([n](https://github.com/tj/n "n") manager):
 
 |     📋 Task      |  🔧 Command   |
-| :--------------: | :-----------: |
+|:----------------:|:-------------:|
 | Manage Versions  |      `n`      |
 | Install Specific | `n [version]` |
 
 #### NPM ([pnpm](https://github.com/pnpm/pnpm "pnpm") manager):
 
 |   📋 Task    |          🔧 Command           |
-| :----------: | :---------------------------: |
+|:------------:|:-----------------------------:|
 |    Enable    |    `corepack enable pnpm`     |
 |     Use      |  `corepack use pnpm@latest`   |
 | Use Specific | `corepack use pnpm@[version]` |
@@ -60,7 +60,7 @@ You can pre-load a specific date using a query parameter:
 #### Installation & Removal:
 
 |        📋 Task         |               🔧 Command (Full)                |        🔧 Command (Short)         |
-| :--------------------: | :--------------------------------------------: | :-------------------------------: |
+|:----------------------:|:----------------------------------------------:|:---------------------------------:|
 |      Install All       |                 `pnpm install`                 |             `pnpm i`              |
 |   Install Prod Only    |             `pnpm install --prod`              |            `pnpm i -P`            |
 |     Add dependency     |   `pnpm add --save-prod [package][@version]`   |  `pnpm add [package][@version]`   |
@@ -73,7 +73,7 @@ You can pre-load a specific date using a query parameter:
 #### Maintenance & Quality:
 
 |     📋 Task     |    🔧 Command (Full)    | 🔧 Command (Short)  |
-| :-------------: | :---------------------: | :-----------------: |
+|:---------------:|:-----------------------:|:-------------------:|
 |  Check Updates  |     `pnpm outdated`     |       &mdash;       |
 |   Update All    |      `pnpm update`      |      `pnpm up`      |
 | Update Specific | `pnpm update [package]` | `pnpm up [package]` |
@@ -87,23 +87,22 @@ You can pre-load a specific date using a query parameter:
 
 #### Scripts:
 
-|       📜 Script        |   🔧 Command (Full)    | 🔧 Command (Short) |
-| :--------------------: | :--------------------: | :----------------: |
-|        Lint All        |    `pnpm run lint`     |    `pnpm lint`     |
-|        Lint CSS        |  `pnpm run lint:css`   |  `pnpm lint:css`   |
-|       Run ESLint       | `pnpm run lint:eslint` | `pnpm lint:eslint` |
-|       Lint HTML        |  `pnpm run lint:html`  |  `pnpm lint:html`  |
-|     Lint Markdown      |   `pnpm run lint:md`   |   `pnpm lint:md`   |
-|      Run Prettier      | `pnpm run lint:pretty` | `pnpm lint:pretty` |
-| Run Tests (Hot Reload) |  `pnpm run test:dev`   |  `pnpm test:dev`   |
-|     Run Tests (CI)     |    `pnpm run test`     |    `pnpm test`     |
-|       Build Dev        |  `pnpm run build:dev`  |  `pnpm build:dev`  |
-|       Build Prod       |    `pnpm run build`    |    `pnpm build`    |
+|       📜 Script        |   🔧 Command (Full)   | 🔧 Command (Short) |
+|:----------------------:|:---------------------:|:------------------:|
+|        Lint All        |    `pnpm run lint`    |    `pnpm lint`     |
+|       Lint Biome       | `pnpm run lint:biome` | `pnpm lint:biome`  |
+|        Lint CSS        |  `pnpm run lint:css`  |  `pnpm lint:css`   |
+|       Lint HTML        | `pnpm run lint:html`  |  `pnpm lint:html`  |
+|     Lint Markdown      |  `pnpm run lint:md`   |   `pnpm lint:md`   |
+| Run Tests (Hot Reload) |  `pnpm run test:dev`  |  `pnpm test:dev`   |
+|     Run Tests (CI)     |    `pnpm run test`    |    `pnpm test`     |
+|       Build Dev        | `pnpm run build:dev`  |  `pnpm build:dev`  |
+|       Build Prod       |   `pnpm run build`    |    `pnpm build`    |
 
 #### Docker Deployment:
 
 |   📋 Task   |  🔧 Command   |
-| :---------: | :-----------: |
+|:-----------:|:-------------:|
 |    Full     | `./build.sh`  |
 | Docker Only | `./docker.sh` |
 

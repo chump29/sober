@@ -1,13 +1,12 @@
 .htmlignore
 .lintstagedrc
 .markdownlint*
-.prettier*
 .stylelint*
 *.md
 *.sh
+biome.json
 compose.yaml
 dist/
-eslint.config.ts
 node_modules/
 tsconfig*
 

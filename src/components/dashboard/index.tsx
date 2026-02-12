@@ -1,10 +1,10 @@
 import {
-  useEffect,
-  useRef,
-  useState,
   type ChangeEvent,
   type JSX,
-  type RefObject
+  type RefObject,
+  useEffect,
+  useRef,
+  useState
 } from "react"
 
 import { daysToWeeks, formatDistanceToNowStrict } from "date-fns"
@@ -140,7 +140,8 @@ export default function Dashboard(): JSX.Element {
         <form>
           <label
             className="text-3xl italic text-[#66cc00] text-shadow-[3px_3px_6px_#000000]"
-            htmlFor="date">
+            htmlFor="date"
+          >
             Sober since:
           </label>
           <div>
@@ -150,9 +151,9 @@ export default function Dashboard(): JSX.Element {
               defaultValue={date?.toISOString().substring(0, 10)}
               id="date"
               max={getNewDate()}
+              onChange={handleDateChange}
               title="Sober date"
               type="date"
-              onChange={handleDateChange}
             />
           </div>
         </form>

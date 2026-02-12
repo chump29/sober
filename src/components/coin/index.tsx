@@ -1,4 +1,4 @@
-import { useEffect, useState, type JSX } from "react"
+import { type JSX, useEffect, useState } from "react"
 
 const MAX_YEARS = 5
 

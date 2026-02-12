@@ -1,7 +1,8 @@
 {
   "recommendations": [
     "bierner.markdown-mermaid",
-    "esbenp.prettier-vscode",
+    "biomejs.biome",
+    "darkriszty.markdown-table-prettify",
     "raynigon.nginx-formatter",
     "timonwong.shellcheck"
   ]

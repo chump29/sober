@@ -1,12 +1,15 @@
 {
-  "[css][dockercompose][javacript][javascriptreact][json][html][markdown][typescript][typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "[css][dockercompose][javacript][javascriptreact][json][html][typescript][typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
   },
   "[dockerfile]": {
     "editor.defaultFormatter": "ms-azuretools.vscode-containers"
   },
   "[github-actions-workflow][yaml]": {
     "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "darkriszty.markdown-table-prettify"
   },
   "[nginx]": {
     "editor.defaultFormatter": "raynigon.nginx-formatter"
@@ -17,6 +20,7 @@
   "css.lint.unknownAtRules": "ignore",
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit",
+    "source.fixAll.biome": "explicit",
     "source.formatDocument": "explicit"
   },
   "editor.detectIndentation": true,
@@ -24,5 +28,8 @@
   "editor.formatOnSave": true,
   "editor.tabSize": 2,
   "files.trimTrailingWhitespace": true,
-  "git.autofetch": true
+  "git.autofetch": true,
+  "json.schemaDownload.trustedDomains": {
+    "https://biomejs.dev/schemas/2.3.15/schema.json": true
+  }
 }
