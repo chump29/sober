@@ -1,6 +1,6 @@
 {
-  "*.{js,json,ts,tsx,yaml}": "biome check --write",
-  "*.css": ["biome check --write", "stylelint --fix"],
+  "*.{js,json,ts,tsx,yaml}": "biome check --write --no-errors-on-unmatched",
+  "*.css": ["biome check --write --no-errors-on-unmatched", "stylelint --fix"],
   "*.html": "html-validator --ignore-config=.htmlignore",
   "*.md": "markdownlint --fix"
 }
