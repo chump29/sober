@@ -32,12 +32,11 @@
     "ignoreUnknown": true,
     "includes": [
       "**",
-      "!!.pnpm-store/",
+      "!!.pnpm-store",
       "!!dist/",
       "!!**/*.html",
       "!!package.json",
-      "!!pnpm-lock.json",
-      "!!node_modules/"
+      "!!node_modules"
     ]
   },
   "formatter": {
