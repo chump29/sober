@@ -20,7 +20,6 @@
   "css.lint.unknownAtRules": "ignore",
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit",
-    "source.fixAll.biome": "explicit",
     "source.formatDocument": "explicit"
   },
   "editor.detectIndentation": true,

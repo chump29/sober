@@ -75,6 +75,8 @@ export default function Dashboard(): JSX.Element {
     e.target.blur()
   }
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies(toComma): not a dependency
+  // biome-ignore lint/correctness/useExhaustiveDependencies(setNewSoberDate): not a dependency
   useEffect(() => {
     if (!date) {
       return
@@ -149,7 +151,6 @@ export default function Dashboard(): JSX.Element {
               className="text-center border rounded-xl w-40 mt-2 text-[#ccffff] cursor-text"
               data-testid="date"
               defaultValue={date?.toISOString().substring(0, 10)}
-              id="date"
               max={getNewDate()}
               onChange={handleDateChange}
               title="Sober date"

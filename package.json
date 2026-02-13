@@ -16,22 +16,27 @@
     "url": "git+https://github.com/chump29/sober.git"
   },
   "type": "module",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "scripts": {
     "build": "vite build",
     "build:dev": "vite",
     "clean": "rimraf dist node_modules",
     "lint": "pnpm run lint:biome && pnpm run lint:html && pnpm run lint:css && pnpm run lint:md",
-    "lint:biome": "pnpm exec biome check --write",
+    "lint:biome": "pnpm exec biome check --write --verbose",
     "lint:css": "stylelint **/*.css --fix --formatter=verbose",
     "lint:html": "html-validator --exclude=dist --ignore-config=.htmlignore",
     "lint:md": "markdownlint **/*.md --fix",
     "nolyfill": "pnpm exec nolyfill install",
-    "precommit": "lint-staged",
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky",
     "test": "vitest run",
     "test:dev": "vitest"
+  },
+  "lint-staged": {
+    "*.{js,json,ts,tsx,yaml}": "biome check --write --no-errors-on-unmatched",
+    "*.css": ["biome check --write --no-errors-on-unmatched", "stylelint --fix"],
+    "*.html": "html-validator --ignore-config=.htmlignore",
+    "*.md": "markdownlint --fix"
   },
   "dependencies": {
     "date-fns": "^4.1.0",

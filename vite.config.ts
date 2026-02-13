@@ -12,7 +12,6 @@ export default defineConfig({
     imageOptimizer(),
     react(),
     removeAttributes({
-      attributes: ["data-testid"],
       usage: "vite"
     }),
     simpleHtml({

@@ -1,4 +1,4 @@
-pnpm run precommit
+pnpm exec lint-staged
 pnpm run test
 
 #exit 1

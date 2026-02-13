@@ -1,5 +1,4 @@
 .htmlignore
-.lintstagedrc
 .markdownlint*
 .stylelint*
 *.md
