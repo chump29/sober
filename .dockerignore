@@ -1,5 +1,4 @@
 .htmlignore
-.markdownlint*
 .stylelint*
 *.md
 *.sh

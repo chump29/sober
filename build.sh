@@ -20,7 +20,7 @@ pnpm install --frozen-lockfile
 echo -e "\n${_lint} ${_yellow}Linting${_nc}:"
 pnpm run lint
 
-echo -e "${_test} ${_yellow}Testing${_nc}:"
+echo -e "\n${_test} ${_yellow}Testing${_nc}:"
 pnpm run test
 
 source docker.sh

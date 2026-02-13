@@ -22,11 +22,11 @@
     "build:dev": "vite",
     "clean": "rimraf dist node_modules",
     "lint": "pnpm run lint:biome && pnpm run lint:html && pnpm run lint:css && pnpm run lint:md",
-    "lint:biome": "pnpm exec biome check --write --verbose",
+    "lint:biome": "biome check --write --verbose",
     "lint:css": "stylelint **/*.css --fix --formatter=verbose",
     "lint:html": "html-validator --exclude=dist --ignore-config=.htmlignore",
-    "lint:md": "markdownlint **/*.md --fix",
-    "nolyfill": "pnpm exec nolyfill install",
+    "lint:md": "markdownlint-cli2 **/*.md",
+    "nolyfill": "nolyfill install",
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky",
     "test": "vitest run",
@@ -34,9 +34,32 @@
   },
   "lint-staged": {
     "*.{js,json,ts,tsx,yaml}": "biome check --write --no-errors-on-unmatched",
-    "*.css": ["biome check --write --no-errors-on-unmatched", "stylelint --fix"],
+    "*.css": [
+      "biome check --write --no-errors-on-unmatched",
+      "stylelint --fix"
+    ],
     "*.html": "html-validator --ignore-config=.htmlignore",
-    "*.md": "markdownlint --fix"
+    "*.md": "markdownlint"
+  },
+  "markdownlint-cli2": {
+    "config": {
+      "MD013": {
+        "line_length": 120
+      },
+      "MD026": {
+        "punctuation": ".,;!"
+      },
+      "MD033": {
+        "allowed_elements": [
+          "img"
+        ]
+      }
+    },
+    "fix": true,
+    "gitignore": true,
+    "outputFormatters": [
+      [ "markdownlint-cli2-formatter-pretty" ]
+    ]
   },
   "dependencies": {
     "date-fns": "^4.1.0",
@@ -59,8 +82,8 @@
     "husky": "^9.1.7",
     "jest-environment-jsdom": "^30.2.0",
     "lint-staged": "^16.2.7",
-    "markdownlint": "^0.40.0",
-    "markdownlint-cli": "^0.47.0",
+    "markdownlint-cli2": "^0.20.0",
+    "markdownlint-cli2-formatter-pretty": "^0.0.9",
     "nolyfill": "^1.0.44",
     "rimraf": "^6.1.2",
     "rollup-plugin-jsx-remove-attributes": "^3.1.2",
