@@ -61,8 +61,8 @@ You can pre-load a specific date using a query parameter:
 
 |        📋 Task         |               🔧 Command (Full)                |        🔧 Command (Short)         |
 |:----------------------:|:----------------------------------------------:|:---------------------------------:|
-|      Install All       |                 `pnpm install`                 |             `pnpm i`              |
-|   Install Prod Only    |             `pnpm install --prod`              |            `pnpm i -P`            |
+|      Install DEV       |                 `pnpm install`                 |             `pnpm i`              |
+|      Install PROD      |             `pnpm install --prod`              |            `pnpm i -P`            |
 |     Add dependency     |   `pnpm add --save-prod [package][@version]`   |  `pnpm add [package][@version]`   |
 |   Add devDependency    |   `pnpm add --save-dev [package][@version]`    | `pnpm add -D [package][@version]` |
 | Add optionalDependency | `pnpm add --save-optional [package][@version]` | `pnpm add -O [package][@version]` |
@@ -89,15 +89,16 @@ You can pre-load a specific date using a query parameter:
 
 |       📜 Script        |   🔧 Command (Full)   | 🔧 Command (Short) |
 |:----------------------:|:---------------------:|:------------------:|
-|        Lint All        |    `pnpm run lint`    |    `pnpm lint`     |
+|     Lint All (DEV)     |    `pnpm run lint`    |    `pnpm lint`     |
+|     Lint All (CI)      |  `pnpm run lint:ci`   |   `pnpm lint:ci`   |
 |       Lint Biome       | `pnpm run lint:biome` | `pnpm lint:biome`  |
 |        Lint CSS        |  `pnpm run lint:css`  |  `pnpm lint:css`   |
 |       Lint HTML        | `pnpm run lint:html`  |  `pnpm lint:html`  |
 |     Lint Markdown      |  `pnpm run lint:md`   |   `pnpm lint:md`   |
 | Run Tests (Hot Reload) |  `pnpm run test:dev`  |  `pnpm test:dev`   |
 |     Run Tests (CI)     |    `pnpm run test`    |    `pnpm test`     |
-|       Build Dev        | `pnpm run build:dev`  |  `pnpm build:dev`  |
-|       Build Prod       |   `pnpm run build`    |    `pnpm build`    |
+|       Build DEV        | `pnpm run build:dev`  |  `pnpm build:dev`  |
+|       Build PROD       |   `pnpm run build`    |    `pnpm build`    |
 
 #### Docker Deployment:
 
@@ -111,6 +112,7 @@ You can pre-load a specific date using a query parameter:
 ### 🛰️ Git & CI/CD
 
 - **Pre-Commit:** Staged files are automatically linted and tested
-- **Github Actions:** Automatically builds and pushes multi-arch images to repository
-  - amd64
-  - arm64
+- **Github Actions:** Lints, tests, builds, and pushes multi-architecture images to repository
+  - latest
+    - amd64
+    - arm64

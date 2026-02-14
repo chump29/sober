@@ -1,9 +1,11 @@
 {
   "recommendations": [
+    "ahmadalli.vscode-nginx-conf",
     "bierner.markdown-mermaid",
     "biomejs.biome",
     "darkriszty.markdown-table-prettify",
-    "raynigon.nginx-formatter",
+    "ms-azuretools.vscode-containers",
+    "redhat.vscode-yaml",
     "timonwong.shellcheck"
   ]
 }
