@@ -51,8 +51,9 @@ jobs:
       - name: Remove packages
         uses: actions/delete-package-versions@v5
         with:
-          package-name: amd64
+          package-name: sober
           package-type: container
+          package-version-ids: amd64
 
       - name: Build and push
         run: docker buildx build --platform linux/amd64 --tag git.postfmly.com/admin/sober:amd64 --push .
@@ -74,8 +75,9 @@ jobs:
       - name: Remove packages
         uses: actions/delete-package-versions@v5
         with:
-          package-name: arm64
+          package-name: sober
           package-type: container
+          package-version-ids: arm64
 
       - name: Build and push
         run: docker buildx build --platform linux/arm64 --tag git.postfmly.com/admin/sober:arm64 --push .
