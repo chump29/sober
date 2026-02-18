@@ -15,12 +15,12 @@ export default defineConfig({
       usage: "vite"
     }),
     simpleHtml({
+      minify: true,
       inject: {
         data: {
           title: "Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ"
         }
-      },
-      minify: true
+      }
     }),
     tailwindcss(),
     version(),

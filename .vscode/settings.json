@@ -1,4 +1,12 @@
 {
+  "css.lint.unknownAtRules": "ignore",
+  "editor.detectIndentation": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "git.autofetch": true,
   "[css][dockercompose][javacript][javascriptreact][json][typescript][typescriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
@@ -20,19 +28,8 @@
   "[sh]": {
     "editor.defaultFormatter": "timonwong.shellcheck"
   },
-  "css.lint.unknownAtRules": "ignore",
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit",
     "source.formatDocument": "explicit"
-  },
-  "editor.detectIndentation": true,
-  "editor.formatOnPaste": true,
-  "editor.formatOnSave": true,
-  "editor.tabSize": 2,
-  "files.insertFinalNewline": true,
-  "files.trimTrailingWhitespace": true,
-  "git.autofetch": true,
-  "json.schemaDownload.trustedDomains": {
-    "https://biomejs.dev/schemas/2.3.15/schema.json": true
   }
 }

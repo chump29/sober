@@ -1,8 +1,12 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.15/schema.json",
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "assist": {
+    "enabled": true,
     "actions": {
       "source": {
+        "noDuplicateClasses": "on",
+        "useSortedAttributes": "on",
+        "useSortedProperties": "on",
         "organizeImports": {
           "level": "on",
           "options": {
@@ -17,12 +21,14 @@
             ]
           }
         },
-        "useSortedAttributes": "on",
-        "useSortedKeys": "on",
-        "useSortedProperties": "on"
+        "useSortedKeys": {
+          "level": "on",
+          "options": {
+            "groupByNesting": true
+          }
+        }
       }
-    },
-    "enabled": true
+    }
   },
   "css": {
     "parser": {
@@ -51,6 +57,7 @@
     "indentWidth": 2,
     "lineEnding": "lf",
     "lineWidth": 80,
+    "trailingNewline": true,
     "useEditorconfig": true
   },
   "javascript": {
@@ -63,7 +70,8 @@
       "quoteProperties": "asNeeded",
       "quoteStyle": "double",
       "semicolons": "asNeeded",
-      "trailingCommas": "none"
+      "trailingCommas": "none",
+      "trailingNewline": true
     },
     "globals": [
       "onanimationend",
@@ -190,16 +198,18 @@
       "ondragenter",
       "onpopstate",
       "onpagereveal",
-      "onemptied"
+      "onemptied",
+      "vi"
     ]
   },
   "linter": {
+    "enabled": true,
     "domains": {
       "react": "all",
       "test": "all"
     },
-    "enabled": true,
     "rules": {
+      "recommended": false,
       "complexity": {
         "noBannedTypes": "error",
         "noUselessThisAlias": "error",
@@ -213,7 +223,6 @@
       "nursery": {
         "useExplicitType": "error"
       },
-      "recommended": false,
       "security": {
         "noBlankTarget": "error",
         "noDangerouslySetInnerHtmlWithChildren": "error"
@@ -288,10 +297,6 @@
             "noCatchAssign": "error",
             "noClassAssign": "error",
             "noCompareNegZero": "error",
-            "noConsole": {
-              "level": "error",
-              "options": { "allow": ["error"] }
-            },
             "noConstantBinaryExpressions": "error",
             "noControlCharactersInRegex": "error",
             "noDebugger": "error",
@@ -315,7 +320,11 @@
             "noUnsafeNegation": "error",
             "noUselessRegexBackrefs": "error",
             "noWith": "error",
-            "useGetterReturn": "error"
+            "useGetterReturn": "error",
+            "noConsole": {
+              "level": "error",
+              "options": { "allow": ["error"] }
+            }
           }
         }
       }
