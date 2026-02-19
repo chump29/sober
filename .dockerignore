@@ -6,6 +6,5 @@ biome.json
 compose.yaml
 dist/
 node_modules/
-tsconfig*
 
 !healthcheck.sh
