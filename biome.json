@@ -6,6 +6,7 @@
       "source": {
         "noDuplicateClasses": "on",
         "useSortedAttributes": "on",
+        "useSortedInterfaceMembers": "on",
         "useSortedProperties": "on",
         "organizeImports": {
           "level": "on",
@@ -218,7 +219,8 @@
       "correctness": {
         "noChildrenProp": "error",
         "noUnusedVariables": "error",
-        "useJsxKeyInIterable": "error"
+        "useJsxKeyInIterable": "error",
+        "useUniqueElementIds": "off"
       },
       "nursery": {
         "useExplicitType": "error"
@@ -286,7 +288,7 @@
             "useYield": "error"
           },
           "style": {
-            "noInferrableTypes": "error",
+            "noInferrableTypes": "off",
             "useImportType": {
               "level": "error",
               "options": { "style": "inlineType" }

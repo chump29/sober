@@ -1,7 +1,7 @@
 services:
   sober:
     container_name: sober
-    image: git.postfmly.com/admin/sober
+    image: git.postfmly.com/admin/sober:arm64
     restart: unless-stopped
     ports:
       - "89:80"

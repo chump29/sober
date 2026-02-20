@@ -1,4 +1,6 @@
 {
+  "biome.lsp.bin": "./node_modules/@biomejs/biome/bin/biome",
+  "biome.suggestInstallingGlobally": false,
   "css.lint.unknownAtRules": "ignore",
   "editor.detectIndentation": true,
   "editor.formatOnPaste": true,
@@ -7,8 +9,16 @@
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
   "git.autofetch": true,
-  "[css][dockercompose][javacript][javascriptreact][json][typescript][typescriptreact]": {
+  "python.analysis.typeCheckingMode": "basic",
+  "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "shellcheck.customArgs": ["-x"],
+  "terminal.integrated.scrollback": 10000,
+  "[css][dockercompose][javacript][javascriptreact][json][jsonc][typescript][typescriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[dockercompose]": {
+    "editor.defaultFormatter": "SashaBusinaro.yaml-compose-sorter"
   },
   "[dockerfile]": {
     "editor.defaultFormatter": "ms-azuretools.vscode-containers"
@@ -24,6 +34,9 @@
   },
   "[nginx]": {
     "editor.defaultFormatter": "ahmadalli.vscode-nginx-conf"
+  },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
   },
   "[sh]": {
     "editor.defaultFormatter": "timonwong.shellcheck"
