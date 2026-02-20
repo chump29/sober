@@ -94,7 +94,6 @@ You can pre-load a specific date using a query parameter:
 |       Lint Biome       | `pnpm run lint:biome` | `pnpm lint:biome`  |
 |        Lint CSS        |  `pnpm run lint:css`  |  `pnpm lint:css`   |
 |       Lint HTML        | `pnpm run lint:html`  |  `pnpm lint:html`  |
-|     Lint Markdown      |  `pnpm run lint:md`   |   `pnpm lint:md`   |
 | Run Tests (Hot Reload) |  `pnpm run test:dev`  |  `pnpm test:dev`   |
 |     Run Tests (CI)     |    `pnpm run test`    |    `pnpm test`     |
 |       Build DEV        | `pnpm run build:dev`  |  `pnpm build:dev`  |

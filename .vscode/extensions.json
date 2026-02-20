@@ -4,6 +4,7 @@
     "bierner.markdown-mermaid",
     "biomejs.biome",
     "darkriszty.markdown-table-prettify",
+    "davidanson.vscode-markdownlint",
     "humao.rest-client",
     "ms-azuretools.vscode-containers",
     "redhat.vscode-yaml",
