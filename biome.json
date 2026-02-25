@@ -214,10 +214,12 @@
       "complexity": {
         "noBannedTypes": "error",
         "noUselessThisAlias": "error",
-        "noUselessTypeConstraint": "error"
+        "noUselessTypeConstraint": "error",
+        "useArrowFunction": "error"
       },
       "correctness": {
         "noChildrenProp": "error",
+        "noUnusedFunctionParameters": "error",
         "noUnusedVariables": "error",
         "useJsxKeyInIterable": "error",
         "useUniqueElementIds": "off"
@@ -234,7 +236,8 @@
         "noNamespace": "error",
         "useArrayLiterals": "error",
         "useAsConstAssertion": "error",
-        "useBlockStatements": "off"
+        "useBlockStatements": "off",
+        "useConst": "error"
       },
       "suspicious": {
         "noCommentText": "error",

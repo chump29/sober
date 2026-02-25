@@ -19,6 +19,15 @@ const urlParam: URLSearchParams = new URLSearchParams(window.location.search)
 const soberDateFormat = /^\d{4}-\d{1,2}-\d{1,2}$/ // YYYY-MM-DD
 
 export default function Dashboard(): JSX.Element {
+  const getDateFromString = (date: string): Date => {
+    return new Date(toZonedTime(date, tz))
+  }
+
+  const getNewDate = (date: Date | null = null): string => {
+    const dateNow: Date = date || new Date()
+    return `${dateNow.getFullYear()}-${(dateNow.getMonth() + 1).toString().padStart(2, "0")}-${dateNow.getDate().toString().padStart(2, "0")}`
+  }
+
   const soberDate: string = localStorage.getItem("soberDate") || getNewDate()
 
   const [date, setDate] = useState<Date>(getDateFromString(soberDate))
@@ -40,35 +49,26 @@ export default function Dashboard(): JSX.Element {
     }
   }
 
-  function getDateFromString(date: string): Date {
-    return new Date(toZonedTime(date, tz))
-  }
-
-  function getNewDate(date: Date | null = null): string {
-    const dateNow: Date = date || new Date()
-    return `${dateNow.getFullYear()}-${(dateNow.getMonth() + 1).toString().padStart(2, "0")}-${dateNow.getDate().toString().padStart(2, "0")}`
-  }
-
-  function toComma(num: string): string {
+  const toComma = (num: string): string => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
   }
 
-  function parse(str: string): string {
+  const parse = (str: string): string => {
     return str.startsWith("0") ? "" : str
   }
 
-  function setSoberDate(str: string): void {
+  const setSoberDate = (str: string): void => {
     if (localStorage.getItem("soberDate") !== str) {
       localStorage.setItem("soberDate", str)
     }
   }
 
-  function setNewSoberDate(date: Date): void {
+  const setNewSoberDate = (date: Date): void => {
     setDate(date)
     setSoberDate(getNewDate(date))
   }
 
-  function handleDateChange(e: ChangeEvent<HTMLInputElement>): void {
+  const handleDateChange = (e: ChangeEvent<HTMLInputElement>): void => {
     setNewSoberDate(
       new Date(toZonedTime((e.target.value ||= getNewDate()), tz))
     )
