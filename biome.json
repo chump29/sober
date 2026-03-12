@@ -52,12 +52,12 @@
     "bracketSameLine": false,
     "bracketSpacing": true,
     "enabled": true,
-    "expand": "auto",
+    "expand": "always",
     "formatWithErrors": false,
     "indentStyle": "space",
     "indentWidth": 2,
     "lineEnding": "lf",
-    "lineWidth": 80,
+    "lineWidth": 120,
     "trailingNewline": true,
     "useEditorconfig": true
   },
@@ -65,7 +65,7 @@
     "formatter": {
       "arrowParentheses": "always",
       "attributePosition": "auto",
-      "bracketSameLine": false,
+      "bracketSameLine": true,
       "bracketSpacing": true,
       "jsxQuoteStyle": "double",
       "quoteProperties": "asNeeded",
@@ -254,7 +254,9 @@
   },
   "overrides": [
     {
-      "includes": ["**/*.{js,ts,tsx}"],
+      "includes": [
+        "**/*.{js,ts,tsx}"
+      ],
       "linter": {
         "rules": {
           "complexity": {
@@ -295,7 +297,9 @@
             "noInferrableTypes": "off",
             "useImportType": {
               "level": "error",
-              "options": { "style": "inlineType" }
+              "options": {
+                "style": "inlineType"
+              }
             }
           },
           "suspicious": {
@@ -329,7 +333,11 @@
             "useGetterReturn": "error",
             "noConsole": {
               "level": "error",
-              "options": { "allow": ["error"] }
+              "options": {
+                "allow": [
+                  "error"
+                ]
+              }
             }
           }
         }

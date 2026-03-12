@@ -2,13 +2,7 @@ import { type JSX, useEffect, useState } from "react"
 
 const MAX_YEARS = 5
 
-export default function Coin({
-  months,
-  years
-}: {
-  months: number
-  years: number
-}): JSX.Element {
+const Coin = ({ months, years, showCoin }: { months: number; years: number; showCoin: boolean }): JSX.Element => {
   const [url, setUrl] = useState<string>("")
   const [txt, setTxt] = useState<string>("")
 
@@ -36,15 +30,20 @@ export default function Coin({
       }
       setTxt(`${months} ${m}`)
     }
-  }, [months, years])
+  }, [
+    months,
+    years
+  ])
 
   return (
     <>
-      {months > 0 && years <= MAX_YEARS && url ? (
+      {showCoin && months > 0 && years <= MAX_YEARS && url ? (
         <div>
-          <img alt={txt} className="mx-auto w-[200px] mt-20 mb-10" src={url} />
+          <img alt={txt} className="mx-auto mt-20 mb-10" src={url} title={txt} />
         </div>
       ) : null}
     </>
   )
 }
+
+export default Coin

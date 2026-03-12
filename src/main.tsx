@@ -8,9 +8,7 @@ const getVersion = (version: string): string => {
   return version.length ? `v${version}` : "N/A"
 }
 
-document.getElementById("frontend")!.innerText = getVersion(
-  import.meta.env.PACKAGE_VERSION
-)
+document.getElementById("frontend")!.innerText = getVersion(import.meta.env.PACKAGE_VERSION)
 
 if (import.meta.env.DEV) {
   createRoot(document.getElementById("root")!).render(<Dashboard />)

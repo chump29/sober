@@ -3,14 +3,11 @@ import { render, screen } from "@testing-library/react"
 import Coin from "."
 
 beforeEach(() => {
-  render(<Coin months={18} years={1} />)
+  render(<Coin months={18} showCoin={true} years={1} />)
 })
 
-describe("Dashboard", () => {
+describe("Coin", () => {
   it("should display image", () => {
-    expect(
-      screen.queryByAltText("18 months"),
-      "Image not found"
-    ).toBeInTheDocument()
+    expect(screen.queryByAltText("18 months"), "Image not found").toBeInTheDocument()
   })
 })

@@ -1,24 +1,21 @@
-import {
-  type ChangeEvent,
-  type JSX,
-  type RefObject,
-  useEffect,
-  useRef,
-  useState
-} from "react"
+import { type ChangeEvent, type JSX, type RefObject, useEffect, useRef, useState } from "react"
 
+import { Cog8ToothIcon } from "@heroicons/react/24/outline"
 import { daysToWeeks, formatDistanceToNowStrict } from "date-fns"
 import { toZonedTime } from "date-fns-tz"
 import pluralize from "pluralize"
 
 import Coin from "../coin"
+import Cost from "../cost"
+import Settings from "../settings"
+import { toComma } from "../shared"
 
 const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 const urlParam: URLSearchParams = new URLSearchParams(window.location.search)
 const soberDateFormat = /^\d{4}-\d{1,2}-\d{1,2}$/ // YYYY-MM-DD
 
-export default function Dashboard(): JSX.Element {
+const Dashboard = (): JSX.Element => {
   const getDateFromString = (date: string): Date => {
     return new Date(toZonedTime(date, tz))
   }
@@ -30,6 +27,18 @@ export default function Dashboard(): JSX.Element {
 
   const soberDate: string = localStorage.getItem("soberDate") || getNewDate()
 
+  const getShowCoin = (): string | null => {
+    return localStorage.getItem("soberDate-showCoin")
+  }
+
+  const getShowCost = (): string | null => {
+    return localStorage.getItem("soberDate-showCost")
+  }
+
+  const getCost = (): string | null => {
+    return localStorage.getItem("soberDate-cost")
+  }
+
   const [date, setDate] = useState<Date>(getDateFromString(soberDate))
   const [seconds, setSeconds] = useState<string>("")
   const [minutes, setMinutes] = useState<string>("")
@@ -38,6 +47,10 @@ export default function Dashboard(): JSX.Element {
   const [weeks, setWeeks] = useState<string>("")
   const [months, setMonths] = useState<string>("")
   const [years, setYears] = useState<string>("")
+  const [showSettings, setShowSettings] = useState<boolean>(false)
+  const [showCoin, setShowCoin] = useState<boolean>(Boolean(getShowCoin()))
+  const [showCost, setShowCost] = useState<boolean>(Boolean(getShowCost()))
+  const [cost, setCost] = useState<number>(Number(getCost()))
 
   const loadedDateFromUrl: RefObject<boolean> = useRef<boolean>(false)
 
@@ -49,8 +62,13 @@ export default function Dashboard(): JSX.Element {
     }
   }
 
-  const toComma = (num: string): string => {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  if (getShowCoin() === null) {
+    localStorage.setItem("soberDate-showCoin", true.toString())
+  }
+
+  if (getShowCost() === null || getCost() === null) {
+    localStorage.setItem("soberDate-showCost", true.toString())
+    localStorage.setItem("soberDate-cost", "0")
   }
 
   const parse = (str: string): string => {
@@ -69,14 +87,18 @@ export default function Dashboard(): JSX.Element {
   }
 
   const handleDateChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    setNewSoberDate(
-      new Date(toZonedTime((e.target.value ||= getNewDate()), tz))
-    )
+    setNewSoberDate(new Date(toZonedTime((e.target.value ||= getNewDate()), tz)))
     e.target.blur()
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies(toComma): not a dependency
+  const handleShowSettings = (): void => {
+    setShowSettings(!showSettings)
+  }
+
   // biome-ignore lint/correctness/useExhaustiveDependencies(setNewSoberDate): not a dependency
+  // biome-ignore lint/correctness/useExhaustiveDependencies(showCoin): is a dependency
+  // biome-ignore lint/correctness/useExhaustiveDependencies(showCost): is a dependency
+  // biome-ignore lint/correctness/useExhaustiveDependencies(cost): is a dependency
   useEffect(() => {
     if (!date) {
       return
@@ -134,16 +156,34 @@ export default function Dashboard(): JSX.Element {
     )
 
     return (): void => clearInterval(interval)
-  }, [date])
+  }, [
+    date,
+    showCoin,
+    showCost,
+    cost
+  ])
 
   return (
     <>
+      <Cog8ToothIcon
+        className="size-7 absolute top-2 right-2 text-[#cccccc] cursor-pointer"
+        onClick={handleShowSettings}
+        title="Settings"
+      />
+      {showSettings ? (
+        <Settings
+          cost={cost}
+          handleShowSettings={handleShowSettings}
+          setCost={setCost}
+          setShowCoin={setShowCoin}
+          setShowCost={setShowCost}
+          showCoin={showCoin}
+          showCost={showCost}
+        />
+      ) : null}
       <div className="text-center mt-20 font-bold">
         <form>
-          <label
-            className="text-3xl italic text-[#66cc00] text-shadow-[3px_3px_6px_#000000]"
-            htmlFor="date"
-          >
+          <label className="text-3xl italic text-[#66cc00] text-shadow-[3px_3px_6px_#000000]" htmlFor="date">
             Sober since:
           </label>
           <div>
@@ -174,7 +214,10 @@ export default function Dashboard(): JSX.Element {
         <br />
         {parse(years)}
       </div>
-      <Coin months={parseInt(months)} years={parseInt(years)} />
+      {showCost ? <Cost cost={cost} showCost={showCost} weeks={parseInt(weeks)} /> : null}
+      {showCoin ? <Coin months={parseInt(months)} showCoin={showCoin} years={parseInt(years)} /> : null}
     </>
   )
 }
+
+export default Dashboard

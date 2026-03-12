@@ -17,17 +17,11 @@ beforeEach(() => {
 
 describe("Dashboard", () => {
   it("should display label", () => {
-    expect(
-      screen.queryByText("Sober since:"),
-      "Label not found"
-    ).toBeInTheDocument()
+    expect(screen.queryByText("Sober since:"), "Label not found").toBeInTheDocument()
   })
 
   it("should display date dropdown", () => {
-    expect(
-      screen.queryByTestId("date"),
-      "Date dropdown not found"
-    ).toBeInTheDocument()
+    expect(screen.queryByTestId("date"), "Date dropdown not found").toBeInTheDocument()
   })
 
   it("should display stats", () => {
