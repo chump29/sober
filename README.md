@@ -1,4 +1,4 @@
-# <img src="./public/sober.png" title="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" alt="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ logo" style="vertical-align: middle;"> Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
+# <img src="./public/sober.png" title="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" alt="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ logo" style="vertical-align: middle;"> Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ <!-- markdownlint-disable MD013 -->
 
 > Enter the day your sobriety began to see your total sober time
 
