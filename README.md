@@ -1,6 +1,6 @@
 # <img src="./public/sober.png" title="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" alt="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ logo" style="vertical-align: middle;"> Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
 
-> Enter the day your recovery began to see your total sober time
+> Enter the day your sobriety began to see your total sober time
 
 ---
 
@@ -23,7 +23,9 @@ ui-->uiPort
 flowchart TD
 index(index.html)-->main(src/main.tsx)
 main-->dashboard(src/components/dashboard/index.tsx)
+dashboard-->settings(src/components/settings/index.tsx)
 dashboard-->coin(src/components/coin/index.tsx)
+dashboard-->cost(src/components/cost/index.tsx)
 port@{shape: comment, label: "&nbsp; Nginx exposes port 80"}
 ```
 
