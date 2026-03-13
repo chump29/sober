@@ -38,8 +38,8 @@ const Coin = ({ months, years, showCoin }: { months: number; years: number; show
   return (
     <>
       {showCoin && months > 0 && years <= MAX_YEARS && url ? (
-        <div>
-          <img alt={txt} className="mx-auto mt-20 mb-10" src={url} title={txt} />
+        <div className="my-10">
+          <img alt={txt} className="mx-auto" src={url} title={txt} />
         </div>
       ) : null}
     </>
