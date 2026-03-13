@@ -201,17 +201,17 @@ const Dashboard = (): JSX.Element => {
       </div>
       <div className="text-4xl text-center font-bold mt-20 text-[#66ccff] font-counter">
         {seconds}
-        <br />
+        {parse(minutes) ? <br /> : null}
         {parse(minutes)}
-        <br />
+        {parse(hours) ? <br /> : null}
         {parse(hours)}
-        <br />
+        {parse(days) ? <br /> : null}
         {parse(days)}
-        <br />
+        {parse(weeks) ? <br /> : null}
         {parse(weeks)}
-        <br />
+        {parse(months) ? <br /> : null}
         {parse(months)}
-        <br />
+        {parse(years) ? <br /> : null}
         {parse(years)}
       </div>
       {showCost ? <Cost cost={cost} showCost={showCost} weeks={parseInt(weeks)} /> : null}
