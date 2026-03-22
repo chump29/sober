@@ -1,5 +1,8 @@
+.gitea/
 .htmlignore
+.husky/
 .stylelint*
+.vscode/
 *.md
 *.sh
 biome.json
