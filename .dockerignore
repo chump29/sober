@@ -8,6 +8,7 @@
 biome.json
 compose.yaml
 dist/
+images/
 node_modules/
 
 !healthcheck.sh
