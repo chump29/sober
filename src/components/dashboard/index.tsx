@@ -13,7 +13,7 @@ import { toComma } from "../shared"
 const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 const urlParam: URLSearchParams = new URLSearchParams(window.location.search)
-const soberDateFormat = /^\d{4}-\d{1,2}-\d{1,2}$/ // YYYY-MM-DD
+const soberDateFormat = /^\d{4}-\d{1,2}-\d{1,2}$/ // * YYYY-MM-DD
 
 const Dashboard = (): JSX.Element => {
   const getDateFromString = (date: string): Date => {

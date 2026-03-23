@@ -23,7 +23,7 @@ pnpm run lint
 echo -e "\n${_test} ${_yellow}Testing${_nc}:"
 pnpm run test
 
-source docker.sh
+./docker.sh
 
 echo -e "\n${_done} ${_green}Done${_nc}!\n"
 
