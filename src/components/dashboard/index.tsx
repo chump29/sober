@@ -26,7 +26,7 @@ const Dashboard = (): JSX.Element => {
   }
 
   const getNewDate = (date: Date | null = null): string => {
-    const dateNow: Date = date || new Date()
+    const dateNow: Date = date ?? new Date()
     return `${dateNow.getFullYear()}-${(dateNow.getMonth() + 1).toString().padStart(2, "0")}-${dateNow.getDate().toString().padStart(2, "0")}`
   }
 

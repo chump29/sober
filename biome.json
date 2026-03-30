@@ -226,7 +226,12 @@
         "useUniqueElementIds": "off"
       },
       "nursery": {
-        "useExplicitType": "error"
+        "noConditionalExpect": "error",
+        "noImpliedEval": "error",
+        "useExpect": "error",
+        "useExplicitType": "error",
+        "useImportsFirst": "error",
+        "useNullishCoalescing": "error"
       },
       "security": {
         "noBlankTarget": "error",
