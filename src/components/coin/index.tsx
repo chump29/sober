@@ -1,6 +1,6 @@
 import { type JSX, useEffect, useState } from "react"
 
-const MAX_YEARS = 5
+const MAX_YEARS: number = 5
 
 const Coin = ({ months, years, showCoin }: { months: number; years: number; showCoin: boolean }): JSX.Element => {
   const [url, setUrl] = useState<string>("")
@@ -11,20 +11,20 @@ const Coin = ({ months, years, showCoin }: { months: number; years: number; show
       return
     }
 
-    const path = "/coins/"
+    const path: string = "/coins/"
     if (months === 18) {
       setUrl(`${path}18m.png`)
       setTxt("18 months")
     } else if (years > 0) {
       setUrl(`${path}${years}y.png`)
-      let y = "year"
+      let y: string = "year"
       if (years > 1) {
         y += "s"
       }
       setTxt(`${years} ${y}`)
     } else {
       setUrl(`${path}${months}m.png`)
-      let m = "month"
+      let m: string = "month"
       if (months > 1) {
         m += "s"
       }

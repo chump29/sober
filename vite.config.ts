@@ -48,6 +48,7 @@ export default defineConfig({
     )
   ],
   test: {
+    disableConsoleIntercept: false, // for debug
     environment: "jsdom",
     globals: true,
     setupFiles: "./src/setup.ts",
@@ -59,7 +60,7 @@ export default defineConfig({
       ]
     },
     include: [
-      "./src/**/*.test.tsx"
+      "./src/**/*.test.{ts,tsx}"
     ],
     reporters: [
       [

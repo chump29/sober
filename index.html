@@ -7,12 +7,13 @@
   <meta charset="utf-8">
   <meta name="robots" content="none">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- html-validate-disable-next no-raw-characters -->
   <title>
     <%= title %>
   </title>
 </head>
 
-<body class="bg-gray-800">
+<body>
   <main>
     <div class="text-center">
       <img src="sober.png" alt="<%= title %> logo" title="<%= title %>" class="inline align-top min-w-0">
@@ -24,7 +25,7 @@
     <div id="root"></div>
     <script type="module" src="./src/main.tsx"></script>
   </main>
-  <footer class="text-center text-xs text-gray-200/75 bg-slate-700 fixed bottom-0 w-full italic">
+  <footer class="text-center text-xs text-black bg-blue-400 fixed bottom-0 w-full italic">
     <span id="frontend"></span>
   </footer>
 </body>

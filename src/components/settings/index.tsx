@@ -1,5 +1,17 @@
 import { type ChangeEvent, type Dispatch, type JSX, type MouseEvent, type SetStateAction } from "react"
 
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import InputAdornment from "@mui/material/InputAdornment"
+import Switch from "@mui/material/Switch"
+import TextField from "@mui/material/TextField"
+
+import { info } from "../shared"
+
+const DEBUG: boolean = false
+
 const Settings = ({
   handleShowSettings,
   showCoin,
@@ -19,19 +31,33 @@ const Settings = ({
 }): JSX.Element => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     e.preventDefault()
+    const val: boolean = e.target.checked
     if (e.target.id === "coin") {
-      setShowCoin(e.target.checked)
-      localStorage.setItem("soberDate-showCoin", e.target.checked.toString())
+      setShowCoin(val)
+      localStorage.setItem("soberDate-showCoin", val.toString())
+      if (DEBUG) {
+        info(`Show Coin: ${val}`)
+      }
     } else {
-      setShowCost(e.target.checked)
-      localStorage.setItem("soberDate-showCost", e.target.checked.toString())
+      setShowCost(val)
+      localStorage.setItem("soberDate-showCost", val.toString())
+      if (DEBUG) {
+        info(`Show Cost: ${val}`)
+      }
     }
   }
 
   const handleCost = (e: ChangeEvent<HTMLInputElement>): void => {
     e.preventDefault()
-    setCost(Number(e.target.value))
-    localStorage.setItem("soberDate-cost", e.target.value)
+    const c: number = Number(e.target.value)
+    if (isNaN(c) || c < 0) {
+      return
+    }
+    setCost(c)
+    localStorage.setItem("soberDate-cost", c.toString())
+    if (DEBUG) {
+      info(`Cost: $${c}`)
+    }
   }
 
   const handleClose = (e: MouseEvent<HTMLButtonElement>): void => {
@@ -40,66 +66,85 @@ const Settings = ({
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-800 flex items-center justify-center">
-      <div className="bg-white p-5 rounded-xl w-50">
-        <div className="text-xl font-bold mb-5">Settings</div>
+    <Box
+      sx={{
+        alignItems: "center",
+        bgcolor: "#292929",
+        borderRadius: "6px",
+        display: "flex",
+        justifyContent: "center",
+        marginTop: "20px",
+        marginX: "auto",
+        width: "300px"
+      }}>
+      <div className="p-5 rounded-xl w-50">
+        <div className="text-2xl font-bold mb-5 text-center text-shadow-[3px_3px_6px_#000000]">Settings</div>
         <div>
-          <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-            <input
-              checked={showCoin}
-              className="checked:right-0 checked:border-[#1e2939] absolute block w-6 h-6 rounded-full bg-gray-800 border-4 appearance-none cursor-pointer"
-              id="coin"
-              onChange={handleChange}
-              title="Show Coin"
-              type="checkbox"
-            />
-            <label
-              className="peer-checked:bg-[#d1d5dc] block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
-              htmlFor="coin"></label>
-          </div>
-          <label className="text-sm" htmlFor="coin">
-            Show AA coin
-          </label>
+          <FormControlLabel
+            control={
+              <Switch checked={showCoin} data-testid="showCoin" id="coin" onChange={handleChange} size="small" />
+            }
+            label="Show AA Coin"
+            sx={{
+              "& .MuiFormControlLabel-label": {
+                fontSize: "0.8rem"
+              }
+            }}
+            title="Show AA Coin"
+          />
         </div>
         <div>
-          <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-            <input
-              checked={showCost}
-              className="checked:right-0 checked:border-[#1e2939] absolute block w-6 h-6 rounded-full bg-gray-800 border-4 appearance-none cursor-pointer"
-              id="cost"
-              onChange={handleChange}
-              title="Show Cost"
-              type="checkbox"
-            />
-            <label
-              className="peer-checked:bg-[#d1d5dc] block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
-              htmlFor="cost"></label>
-          </div>
-          <label className="text-sm" htmlFor="cost">
-            Show weekly cost
-          </label>
+          <FormControlLabel
+            control={<Switch checked={showCost} data-testid="showCost" onChange={handleChange} size="small" />}
+            label="Show Weekly Cost"
+            sx={{
+              "& .MuiFormControlLabel-label": {
+                fontSize: "0.8rem"
+              }
+            }}
+            title="Show Weekly Cost"
+          />
         </div>
         {showCost ? (
           <div>
-            <input
-              className="mt-2 w-40 p-1 rounded-xl border"
+            <TextField
+              data-testid="cost"
+              label="Weekly Amount"
               onChange={handleCost}
-              placeholder="Weekly Amount"
+              size="small"
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <AttachMoneyIcon />
+                    </InputAdornment>
+                  )
+                }
+              }}
+              sx={{
+                marginTop: "10px"
+              }}
               title="Weekly Amount"
-              type="text"
-              value={cost}></input>
+              type="search"
+              value={cost}
+              variant="filled"
+            />
           </div>
         ) : null}
         <div className="text-center">
-          <button
-            className="mt-5 text-white text-sm bg-gray-800 px-5 py-2 rounded-xl cursor-pointer"
+          <Button
             onClick={handleClose}
-            title="Close">
+            sx={{
+              fontWeight: "bold",
+              marginTop: "20px"
+            }}
+            title="Close"
+            variant="contained">
             Close
-          </button>
+          </Button>
         </div>
       </div>
-    </div>
+    </Box>
   )
 }
 

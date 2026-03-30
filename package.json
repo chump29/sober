@@ -19,7 +19,7 @@
     "url": "git+https://github.com/chump29/sober.git"
   },
   "type": "module",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "scripts": {
     "build": "vite build",
     "build:dev": "vite",
@@ -28,7 +28,7 @@
     "lint:biome": "biome check --write --verbose",
     "lint:ci": "biome ci --verbose --reporter=default --reporter=github && pnpm run lint:html && stylelint **/*.css --formatter verbose --ignore-path .gitignore",
     "lint:css": "stylelint **/*.css --fix --formatter verbose --ignore-path .gitignore",
-    "lint:html": "html-validator --exclude=dist --ignore-config=.htmlignore",
+    "lint:html": "html-validate *.html",
     "nolyfill": "nolyfill install",
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky",
@@ -41,18 +41,24 @@
       "biome ci --no-errors-on-unmatched",
       "stylelint"
     ],
-    "*.html": "html-validator --ignore-config=.htmlignore"
+    "*.html": "html-validate"
   },
   "dependencies": {
-    "@heroicons/react": "^2.2.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.9",
+    "@mui/material": "^7.3.9",
+    "@mui/x-date-pickers": "^8.27.2",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "pluralize": "^8.0.0",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "recolors": "^1.0.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.8",
+    "@biomejs/biome": "^2.4.9",
     "@tailwindcss/vite": "^4.2.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -61,31 +67,31 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
-    "@vitest/coverage-v8": "^4.1.1",
+    "@vitest/coverage-v8": "^4.1.2",
     "globals": "^17.4.0",
+    "html-validate": "^10.11.2",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "nolyfill": "^1.0.44",
     "rimraf": "^6.1.3",
     "rollup-plugin-jsx-remove-attributes": "^3.1.2",
-    "stylelint": "^17.5.0",
+    "stylelint": "^17.6.0",
     "stylelint-config-standard": "^40.0.0",
     "tailwindcss": "^4.2.2",
     "typescript": "~6.0.2",
-    "vite": "^8.0.2",
+    "vite": "^8.0.3",
     "vite-plugin-package-version": "^1.1.0",
     "vite-plugin-simple-html": "^1.1.0",
     "vite-plugin-webfont-dl": "^3.12.0",
-    "vitest": "^4.1.1",
-    "vitest-localstorage-mock": "^0.1.2",
-    "w3c-html-validator": "^2.2.0"
+    "vitest": "^4.1.2",
+    "vitest-localstorage-mock": "^0.1.2"
   },
   "engineStrict": true,
   "engines": {
     "node": "~24",
     "pnpm": "~10"
   },
-  "packageManager": "pnpm@10.32.1+sha512.a706938f0e89ac1456b6563eab4edf1d1faf3368d1191fc5c59790e96dc918e4456ab2e67d613de1043d2e8c81f87303e6b40d4ffeca9df15ef1ad567348f2be",
+  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild"
@@ -93,8 +99,10 @@
     "overrides": {
       "es-set-tostringtag": "npm:@nolyfill/es-set-tostringtag@^1",
       "hasown": "npm:@nolyfill/hasown@^1",
-      "safer-buffer": "npm:@nolyfill/safer-buffer@^1",
-      "side-channel": "npm:@nolyfill/side-channel@^1"
+      "is-core-module": "npm:@nolyfill/is-core-module@^1"
     }
-  }
+  },
+  "browserslist": [
+    ">0.2%, not dead"
+  ]
 }

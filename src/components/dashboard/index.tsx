@@ -1,19 +1,24 @@
-import { type ChangeEvent, type JSX, type RefObject, useEffect, useRef, useState } from "react"
+import { type JSX, type RefObject, useEffect, useRef, useState } from "react"
 
-import { Cog8ToothIcon } from "@heroicons/react/24/outline"
-import { daysToWeeks, formatDistanceToNowStrict } from "date-fns"
+import SettingsIcon from "@mui/icons-material/Settings"
+import IconButton from "@mui/material/IconButton"
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
+import { DatePicker } from "@mui/x-date-pickers/DatePicker"
+import { type PickerValue } from "@mui/x-date-pickers/internals"
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
+import { constructFrom, daysToWeeks, format, formatDistanceToNowStrict } from "date-fns"
 import { toZonedTime } from "date-fns-tz"
 import pluralize from "pluralize"
+import { z } from "zod/mini"
 
 import Coin from "../coin"
 import Cost from "../cost"
 import Settings from "../settings"
-import { toComma } from "../shared"
+import { error, info, toComma } from "../shared"
+
+const DEBUG: boolean = false
 
 const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone
-
-const urlParam: URLSearchParams = new URLSearchParams(window.location.search)
-const soberDateFormat = /^\d{4}-\d{1,2}-\d{1,2}$/ // * YYYY-MM-DD
 
 const Dashboard = (): JSX.Element => {
   const getDateFromString = (date: string): Date => {
@@ -54,12 +59,21 @@ const Dashboard = (): JSX.Element => {
 
   const loadedDateFromUrl: RefObject<boolean> = useRef<boolean>(false)
 
-  if (urlParam.has("soberDate") && !loadedDateFromUrl.current) {
-    const soberDateParam = urlParam.get("soberDate")
-    if (soberDateParam && soberDateFormat.test(soberDateParam)) {
-      setDate(getDateFromString(soberDateParam))
-      loadedDateFromUrl.current = true
+  try {
+    const urlParam: URLSearchParams = new URLSearchParams(window.location.search)
+    if (urlParam.has("soberDate") && !loadedDateFromUrl.current) {
+      const soberDateParam = urlParam.get("soberDate")
+      if (soberDateParam && z.iso.date().parse(soberDateParam)) {
+        setDate(getDateFromString(soberDateParam))
+        loadedDateFromUrl.current = true
+        if (DEBUG) {
+          info(`Got date: ${soberDateParam}`)
+        }
+      }
     }
+    // biome-ignore lint/suspicious/noExplicitAny: catch everything
+  } catch (e: any) {
+    error(e)
   }
 
   if (getShowCoin() === null) {
@@ -86,9 +100,8 @@ const Dashboard = (): JSX.Element => {
     setSoberDate(getNewDate(date))
   }
 
-  const handleDateChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    setNewSoberDate(new Date(toZonedTime((e.target.value ||= getNewDate()), tz)))
-    e.target.blur()
+  const handleDateChange = (date: PickerValue): void => {
+    setNewSoberDate(new Date(toZonedTime(format(date as Date, "yyyy-MM-dd"), tz)))
   }
 
   const handleShowSettings = (): void => {
@@ -165,11 +178,18 @@ const Dashboard = (): JSX.Element => {
 
   return (
     <>
-      <Cog8ToothIcon
-        className="size-7 absolute top-2 right-2 text-[#cccccc] cursor-pointer"
+      <IconButton
         onClick={handleShowSettings}
-        title="Settings"
-      />
+        sx={{
+          color: "#ccc",
+          cursor: "pointer",
+          position: "absolute",
+          right: "2px",
+          top: "2px"
+        }}
+        title="Settings">
+        <SettingsIcon />
+      </IconButton>
       {showSettings ? (
         <Settings
           cost={cost}
@@ -180,42 +200,49 @@ const Dashboard = (): JSX.Element => {
           showCoin={showCoin}
           showCost={showCost}
         />
-      ) : null}
-      <div className="text-center mt-20 font-bold">
-        <form>
-          <label className="text-3xl italic text-[#66cc00] text-shadow-[3px_3px_6px_#000000]" htmlFor="date">
-            Sober since:
-          </label>
-          <div>
-            <input
-              className="text-center border rounded-xl w-40 mt-2 text-[#ccffff] cursor-text"
-              data-testid="date"
-              defaultValue={date?.toISOString().substring(0, 10)}
-              max={getNewDate()}
-              onChange={handleDateChange}
-              title="Sober date"
-              type="date"
-            />
+      ) : (
+        <>
+          <div className="text-center mt-20 font-bold">
+            <form>
+              <label className="text-3xl italic text-[#66cc00] text-shadow-[3px_3px_6px_#000000]" htmlFor="date">
+                Sober since:
+              </label>
+              <div>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    closeOnSelect
+                    defaultValue={constructFrom(date, date)}
+                    label="Sober date"
+                    maxDate={constructFrom(getNewDate(), getNewDate())}
+                    onChange={handleDateChange}
+                    sx={{
+                      marginTop: "20px",
+                      width: "150px"
+                    }}
+                  />
+                </LocalizationProvider>
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
-      <div className="text-4xl text-center font-bold mt-20 mb-10 text-[#66ccff] font-counter">
-        {seconds}
-        {parse(minutes) ? <br /> : null}
-        {parse(minutes)}
-        {parse(hours) ? <br /> : null}
-        {parse(hours)}
-        {parse(days) ? <br /> : null}
-        {parse(days)}
-        {parse(weeks) ? <br /> : null}
-        {parse(weeks)}
-        {parse(months) ? <br /> : null}
-        {parse(months)}
-        {parse(years) ? <br /> : null}
-        {parse(years)}
-      </div>
-      {showCost ? <Cost cost={cost} days={parseInt(days)} showCost={showCost} /> : null}
-      {showCoin ? <Coin months={parseInt(months)} showCoin={showCoin} years={parseInt(years)} /> : null}
+          <div className="text-4xl text-center font-bold mt-20 mb-10 text-[#66ccff] font-counter">
+            {seconds}
+            {parse(minutes) ? <br /> : null}
+            {parse(minutes)}
+            {parse(hours) ? <br /> : null}
+            {parse(hours)}
+            {parse(days) ? <br /> : null}
+            {parse(days)}
+            {parse(weeks) ? <br /> : null}
+            {parse(weeks)}
+            {parse(months) ? <br /> : null}
+            {parse(months)}
+            {parse(years) ? <br /> : null}
+            {parse(years)}
+          </div>
+          {showCost ? <Cost cost={cost} days={parseInt(days)} showCost={showCost} /> : null}
+          {showCoin ? <Coin months={parseInt(months)} showCoin={showCoin} years={parseInt(years)} /> : null}
+        </>
+      )}
     </>
   )
 }

@@ -336,7 +336,8 @@
               "level": "error",
               "options": {
                 "allow": [
-                  "error"
+                  "error",
+                  "info"
                 ]
               }
             }

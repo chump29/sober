@@ -38,6 +38,8 @@ COPY --from=build /app/dist .
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+ENV TZ=Etc/GMT
+
 HEALTHCHECK --interval=60s CMD source /usr/share/nginx/html/healthcheck.sh
 
 EXPOSE 80
