@@ -7,7 +7,7 @@
 ### 📷 Screenshots <!-- markdownlint-disable-line MD001 -->
 
 <img src="./images/screenshot1.png" title="Screenshot 1" alt="Screenshot 1">
-<img src="./images/screenshot2.png" title="Screenshot 2" alt="Screenshot 2">
+<img src="./images/screenshot2.png" title="Screenshot 2" alt="Screenshot 2" style="vertical-align: top;">
 
 ---
 
