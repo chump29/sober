@@ -103,7 +103,6 @@ You can pre-load a specific date using a query parameter:
 |     Lint All (CI)      |  `pnpm run lint:ci`   |   `pnpm lint:ci`   |
 |       Lint Biome       | `pnpm run lint:biome` | `pnpm lint:biome`  |
 |        Lint CSS        |  `pnpm run lint:css`  |  `pnpm lint:css`   |
-|        Lint ENV        |  `pnpm run lint:env`  |  `pnpm lint:env`   |
 |       Lint HTML        | `pnpm run lint:html`  |  `pnpm lint:html`  |
 | Run Tests (Hot Reload) |  `pnpm run test:dev`  |  `pnpm test:dev`   |
 |     Run Tests (CI)     |    `pnpm run test`    |    `pnpm test`     |

@@ -2,8 +2,8 @@ import { type Mock } from "vitest"
 
 import { error, info, toComma } from "./index"
 
-describe("toComma", () => {
-  it("should display comma", () => {
+describe("toComma", (): void => {
+  it("should display comma", (): void => {
     expect(toComma("1000"), "Comma not found").toBe("1,000")
   })
 })

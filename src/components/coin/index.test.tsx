@@ -7,7 +7,7 @@ beforeEach((): void => {
 })
 
 describe("Coin", (): void => {
-  it("should display coin", () => {
+  it("should display coin", (): void => {
     expect(screen.queryByAltText("18 months"), "Image not found").toBeInTheDocument()
   })
 })

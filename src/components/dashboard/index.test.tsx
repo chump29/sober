@@ -23,7 +23,7 @@ beforeEach((): void => {
 })
 
 describe("Dashboard", (): void => {
-  it("should display label", () => {
+  it("should display label", (): void => {
     expect(screen.queryByText("Sober since:"), "Label not found").toBeInTheDocument()
   })
 

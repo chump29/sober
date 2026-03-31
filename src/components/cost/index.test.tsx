@@ -7,7 +7,7 @@ beforeEach((): void => {
 })
 
 describe("Cost", (): void => {
-  it("should display cost", () => {
+  it("should display cost", (): void => {
     expect(screen.queryByText("$20.00"), "Cost not found").toBeInTheDocument()
   })
 })

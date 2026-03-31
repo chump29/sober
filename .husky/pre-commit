@@ -1,3 +1,5 @@
+#!/usr/bin/env -S bash -e
+
 pnpm exec lint-staged
 pnpm run test
 

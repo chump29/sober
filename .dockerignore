@@ -1,5 +1,5 @@
 .gitea/
-.htmlignore
+.htmlvalidate.json
 .husky/
 .stylelint*
 .vscode/

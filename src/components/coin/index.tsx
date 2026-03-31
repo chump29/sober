@@ -6,7 +6,7 @@ const Coin = ({ months, years, showCoin }: { months: number; years: number; show
   const [url, setUrl] = useState<string>("")
   const [txt, setTxt] = useState<string>("")
 
-  useEffect(() => {
+  useEffect((): void => {
     if (isNaN(months)) {
       return
     }

@@ -112,12 +112,12 @@ const Dashboard = (): JSX.Element => {
   // biome-ignore lint/correctness/useExhaustiveDependencies(showCoin): is a dependency
   // biome-ignore lint/correctness/useExhaustiveDependencies(showCost): is a dependency
   // biome-ignore lint/correctness/useExhaustiveDependencies(cost): is a dependency
-  useEffect(() => {
+  useEffect((): void => {
     if (!date) {
       return
     }
 
-    const interval: number = setInterval(() => {
+    const interval: number = setInterval((): void => {
       setNewSoberDate(new Date(toZonedTime(date, tz)))
     }, 1000)
 
