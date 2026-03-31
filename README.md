@@ -9,6 +9,7 @@
 <img src="./images/screenshot1.png" title="Screenshot 1" alt="Screenshot 1">
 <img src="./images/screenshot2.png" title="Screenshot 2" alt="Screenshot 2" style="vertical-align: top;">
 
+
 ---
 
 ### 🏗️ Architecture
@@ -125,3 +126,7 @@ You can pre-load a specific date using a query parameter:
   - latest
     - amd64
     - arm64
+
+---
+
+<img src="https://img.shields.io/badge/AI-FREE-green?style=plastic" title="AI FREE" alt="AI FREE">
