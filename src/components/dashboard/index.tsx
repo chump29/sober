@@ -1,4 +1,4 @@
-import { type JSX, type RefObject, useEffect, useRef, useState } from "react"
+import { type EffectCallback, type JSX, type RefObject, useEffect, useRef, useState } from "react"
 
 import SettingsIcon from "@mui/icons-material/Settings"
 import IconButton from "@mui/material/IconButton"
@@ -112,7 +112,7 @@ const Dashboard = (): JSX.Element => {
   // biome-ignore lint/correctness/useExhaustiveDependencies(showCoin): is a dependency
   // biome-ignore lint/correctness/useExhaustiveDependencies(showCost): is a dependency
   // biome-ignore lint/correctness/useExhaustiveDependencies(cost): is a dependency
-  useEffect((): void => {
+  useEffect((): ReturnType<EffectCallback> => {
     if (!date) {
       return
     }
