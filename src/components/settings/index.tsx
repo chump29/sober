@@ -35,12 +35,14 @@ const Settings = ({
     if (e.target.id === "coin") {
       setShowCoin(val)
       localStorage.setItem("soberDate-showCoin", val.toString())
+      // v8 ignore if -- @preserve
       if (DEBUG) {
         info(`Show Coin: ${val}`)
       }
     } else {
       setShowCost(val)
       localStorage.setItem("soberDate-showCost", val.toString())
+      // v8 ignore if -- @preserve
       if (DEBUG) {
         info(`Show Cost: ${val}`)
       }
@@ -55,6 +57,7 @@ const Settings = ({
     }
     setCost(c)
     localStorage.setItem("soberDate-cost", c.toString())
+    // v8 ignore if -- @preserve
     if (DEBUG) {
       info(`Cost: $${c}`)
     }

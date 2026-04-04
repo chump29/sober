@@ -66,6 +66,7 @@ const Dashboard = (): JSX.Element => {
       if (soberDateParam && z.iso.date().parse(soberDateParam)) {
         setDate(getDateFromString(soberDateParam))
         loadedDateFromUrl.current = true
+        // v8 ignore if -- @preserve
         if (DEBUG) {
           info(`Got date: ${soberDateParam}`)
         }

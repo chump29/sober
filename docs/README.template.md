@@ -18,7 +18,7 @@
 ```mermaid
 flowchart LR
 ui@{shape: rounded, label: "UI"}
-uiPort@{shape: rounded, label: "http://localhost:89"}
+uiPort@{shape: rounded, label: "$_uiPort"}
 ui-->uiPort
 ```
 

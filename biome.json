@@ -42,6 +42,7 @@
       "**",
       "!!.pnpm-store",
       "!!**/*.html",
+      "!!coverage",
       "!!dist",
       "!!node_modules",
       "!!package.json"
@@ -243,7 +244,8 @@
         "useArrayLiterals": "error",
         "useAsConstAssertion": "error",
         "useBlockStatements": "off",
-        "useConst": "error"
+        "useConst": "error",
+        "useTemplate": "error"
       },
       "suspicious": {
         "noCommentText": "error",
@@ -301,6 +303,7 @@
           },
           "style": {
             "noInferrableTypes": "off",
+            "noUnusedTemplateLiteral": "error",
             "useImportType": {
               "level": "error",
               "options": {
