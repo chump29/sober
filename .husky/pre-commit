@@ -1,6 +1,5 @@
 #!/usr/bin/env -S bash -e
 
-pnpm exec lint-staged
-pnpm run test
+#bun run lint-staged
 
 #exit 1

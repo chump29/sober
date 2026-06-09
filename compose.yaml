@@ -11,7 +11,7 @@ services:
       - wud.display.name=Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
       - homepage.group=Personal
       - homepage.name=Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
-      - homepage.icon=https://sober.postfmly.com/sober.png
+      - homepage.icon=https://sober.postfmly.com/sober.webp
       - homepage.href=https://sober.postfmly.com/
       - homepage.description=sober.postfmly.com
 

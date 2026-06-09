@@ -1,11 +1,12 @@
 {
-  "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.node.json"
-    }
-  ]
+  "extends": "./node_modules/@postfmly/config/tsconfig.json",
+  "compilerOptions": {
+    "types": [
+      "bun",
+      "node",
+      "react",
+      "react-dom",
+      "semver"
+    ]
+  }
 }

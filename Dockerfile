@@ -1,22 +1,14 @@
 #!/usr/bin/env -S docker image build . --tag sober --file
 
-ARG NODE_VERSION="24"
-
-FROM node:${NODE_VERSION}-alpine AS build
-
-RUN npm install --global --force corepack@latest && \
-    corepack enable pnpm && \
-    corepack use pnpm@latest
+FROM oven/bun:alpine AS build
 
 WORKDIR /app
 
 COPY . .
 
-RUN --mount=type=cache,target=/.pnpm-store \
-    pnpm config set store-dir /.pnpm-store && \
-    pnpm config set package-import-method copy && \
-    pnpm install --frozen-lockfile --prefer-offline --ignore-scripts && \
-    pnpm run build
+RUN --mount=type=cache,target=/.bun-cache \
+    bun install --frozen-lockfile --ignore-scripts && \
+    bun run build
 
 # -=-
 

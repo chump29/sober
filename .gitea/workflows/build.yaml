@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: 24
+  BUN_INSTALL_CACHE_DIR: /tmp/.bun-cache
 
 jobs:
   check:
@@ -17,34 +17,26 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
-      - name: Install PNPM
-        uses: pnpm/action-setup@v5
-        with:
-          package_json_file: ./package.json
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
 
-      - name: Get PNPM store
-        run: echo "PNPM_STORE=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
-        id: pnpm-store
-
-      - name: Install Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{env.NODE_VERSION}}
-
-      - name: Get PNPM cache
+      - name: Get Bun cache
         uses: actions/cache@v5
         with:
-          key: pnpm-${{ github.event.repository.name }}-${{ hashFiles('./pnpm-lock.yaml') }}
-          path: ${{ steps.pnpm-store.outputs.PNPM_STORE }}
+          key: bun-${{ github.event.repository.name }}-${{ hashFiles('./bun.lock') }}
+          path: ${{ env.BUN_INSTALL_CACHE_DIR }}
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
+        run: bun install --frozen-lockfile --ignore-scripts
+
+      - name: Install dotenv-linter
+        run: curl -sSfL https://git.io/JLbXn | sh -s -- -b /usr/local/bin
 
       - name: Linting
-        run: pnpm run lint:ci
+        run: bun run lint:ci
 
       - name: Testing
-        run: pnpm run test
+        run: bun run test
 
   amd64:
     needs: check

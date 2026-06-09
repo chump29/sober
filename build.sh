@@ -8,6 +8,7 @@ _title=✨
 _task="🛠️ "
 _lint=🔍
 _test=🧪
+_build=📦
 _done="✔️ "
 
 clear
@@ -15,24 +16,15 @@ clear
 echo -e "${_title} ${_red}Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ${_nc} ${_title}\n"
 
 echo -e "${_task} ${_yellow}Installing dependencies${_nc}:\n"
-pnpm install --frozen-lockfile
+bun install --frozen-lockfile
 
 echo -e "\n${_lint} ${_yellow}Linting${_nc}:"
-pnpm run lint
+bun run lint
 
 echo -e "\n${_test} ${_yellow}Testing${_nc}:"
-pnpm run test
+bun run test
 
-./docker.sh
+echo -e "\n${_build} ${_yellow}Building${_nc}:\n"
+./Dockerfile
 
 echo -e "\n${_done} ${_green}Done${_nc}!\n"
-
-unset _red
-unset _green
-unset _yellow
-unset _nc
-unset _title
-unset _task
-unset _lint
-unset _test
-unset _done

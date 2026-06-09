@@ -1,22 +1,54 @@
 #!/usr/bin/env -S bash -e
 
-export _uiPort=http://localhost:89
 export _user=chump29
 export _repo=sober
 
+export _uiPort=89
+
+
 clear
 
-mkdir dist
+echo -e "🛈 Info:\n"
 
-echo "🛠️  Creating README file"
-envsubst < README.template.md > dist/README.md
+_version=$(jq -r '.version // "❓"' package.json)
+export _version
+echo -e " • Version: $_version"
 
-cd dist || exit 1
+echo -e " • Port: $_uiPort"
 
-echo "⿻ Moving README file"
+echo -e "\n📌 Packages:\n"
 
-mv README.md ../../
+_bun=$(bun --version)
+bun pm pkg set packageManager="bun@$_bun" engines.bun="~$_bun" > /dev/null 2>&1
+_bun=~$_bun
+export _bun
+echo -e " • Bun: $_bun"
 
-cd .. || exit 1
+_mantine=$(jq -r '.dependencies."@mantine/core" // "❓"' package.json)
+export _mantine
+echo -e " • @mantine/core: $_mantine"
 
-rm -rf dist
+_react=$(jq -r '.dependencies.react // "❓"' package.json)
+export _react
+echo -e " • react: $_react"
+
+_tailwind=$(jq -r '.devDependencies.tailwindcss // "❓"' package.json)
+export _tailwind
+echo -e " • tailwindcss: $_tailwind"
+
+_vite=$(jq -r '.devDependencies.vite // "❓"' package.json)
+export _vite
+echo -e " • vite: $_vite"
+
+_coverage=-1
+if [ -f "coverage/lcov.info" ]; then
+  _coverage=$(bun run lcov-total coverage/lcov.info)
+fi
+export _coverage
+echo -e "\n☂️  Coverage: $_coverage%"
+
+echo -e "\n🛠️  Creating README.md...\n"
+
+envsubst < README.template.md > ../README.md
+
+echo -e "✔️  Done!\n"

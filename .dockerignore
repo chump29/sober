@@ -1,12 +1,15 @@
+.env.*
 .gitea/
 .htmlvalidate.json
 .husky/
-.stylelint*
+.npmrc
+.stylelintrc
 .vscode/
 *.md
 *.sh
 biome.json
 compose.yaml
+coverage/
 dist/
 images/
 node_modules/

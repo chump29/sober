@@ -1,15 +1,29 @@
-# ![Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ](./public/sober.png) Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
+# ![Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ](./public/sober.png "Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ") Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
 
-> Enter the day your sobriety began to see your total sober time
+### Enter the day your sobriety began to see your total sober time <!-- markdownlint-disable-line MD001 -->
+
+---
+![Bun](https://img.shields.io/badge/Bun-$_bun-informational?style=plastic&logo=bun "Bun") &nbsp;
+![Mantine](https://img.shields.io/badge/Mantine-$_mantine-informational?style=plastic&logo=mantine "Mantine") &nbsp;
+![React](https://img.shields.io/badge/React-$_react-informational?style=plastic&logo=react "React") &nbsp;
+![Tailwind](https://img.shields.io/badge/Tailwind-$_tailwind-informational?style=plastic&logo=tailwindcss "Tailwind") &nbsp;
+![Vite](https://img.shields.io/badge/Vite-$_vite-informational?style=plastic&logo=vite "Vite")
+
+![Coverage](https://img.shields.io/badge/Coverage-$_coverage%25-success?style=plastic&logo=v8 "Coverage")
+
+![CodeQL](https://github.com/$_user/$_repo/workflows/CodeQL/badge.svg "CodeQL") &nbsp;
+![License](https://img.shields.io/github/license/$_user/$_repo?style=plastic&color=blueviolet&label=License&logo=gplv3 "GPLv3")
 
 ---
 
-### 📷 Screenshots <!-- markdownlint-disable-line MD001 -->
+<!-- ! TODO
+### 📷 Screenshots
 
 ![Screehshot 1](./images/screenshot1.png) &nbsp;
 ![Screenshot 2](./images/screenshot2.png)
 
 ---
+-->
 
 ### 🏗️ Architecture
 
@@ -28,11 +42,16 @@ ui-->uiPort
 
 ```mermaid
 flowchart TD
-index(index.html)-->main(src/main.tsx)
-main-->dashboard(src/components/dashboard/index.tsx)
-dashboard-->settings(src/components/settings/index.tsx)
-dashboard-->coin(src/components/coin/index.tsx)
-dashboard-->cost(src/components/cost/index.tsx)
+index(index.html)
+main(src/main.tsx)
+dashboard(src/components/dashboard/index.tsx)
+settings(src/components/settings/index.tsx)
+coin(src/components/coin/index.tsx)
+cost(src/components/cost/index.tsx)
+index-->main-->dashboard
+dashboard-->settings
+dashboard-->coin
+dashboard-->cost
 port@{shape: comment, label: "&nbsp; Nginx exposes port 80"}
 ```
 
@@ -48,80 +67,65 @@ You can pre-load a specific date using a query parameter:
 
 ### 🛠️ Environment Management
 
-#### Node.js ([n](https://github.com/tj/n "n") manager):
+#### Node.js ([Bun](https://github.com/oven-sh/bun "Bun") manager):
 
-|     📋 Task      |  🔧 Command   |
-|:----------------:|:-------------:|
-| Manage Versions  |      `n`      |
-| Install Specific | `n [version]` |
-
-#### NPM ([pnpm](https://github.com/pnpm/pnpm "pnpm") manager):
-
-|   📋 Task    |          🔧 Command           |
-|:------------:|:-----------------------------:|
-|    Enable    |    `corepack enable pnpm`     |
-|     Use      |  `corepack use pnpm@latest`   |
-| Use Specific | `corepack use pnpm@[version]` |
-|    Update    |         `corepack up`         |
+| 📋 Task |  🔧 Command   |
+|:-------:|:-------------:|
+| Upgrade | `bun upgrade` |
 
 ### 📦 Dependency Management
 
 #### Installation & Removal:
 
-|        📋 Task         |               🔧 Command (Full)                |        🔧 Command (Short)         |
-|:----------------------:|:----------------------------------------------:|:---------------------------------:|
-|      Install DEV       |                 `pnpm install`                 |             `pnpm i`              |
-|      Install PROD      |             `pnpm install --prod`              |            `pnpm i -P`            |
-|     Add dependency     |   `pnpm add --save-prod [package][@version]`   |  `pnpm add [package][@version]`   |
-|   Add devDependency    |   `pnpm add --save-dev [package][@version]`    | `pnpm add -D [package][@version]` |
-| Add optionalDependency | `pnpm add --save-optional [package][@version]` | `pnpm add -O [package][@version]` |
-|   Add peerDependency   |   `pnpm add --save-peer [package][@version]`   |              &mdash;              |
-|       Add Global       |    `pnpm add --global [package][@version]`     | `pnpm add -g [package][@version]` |
-|   Remove Dependency    |            `pnpm remove [package]`             |        `pnpm rm [package]`        |
+|        📋 Task         |            🔧 Command (Full)             |           🔧 Command (Short)           |
+|:----------------------:|:----------------------------------------:|:--------------------------------------:|
+|      Install DEV       |              `bun install`               |                `bun i`                 |
+|      Install PROD      |        `bun install --production`        |               `bun i -p`               |
+|     Add dependency     |      `bun add [package][@version]`       |      `bun a [package][@version]`       |
+|   Add devDependency    | `bun add --save-dev [package][@version]` |     `bun a -d [package][@version]`     |
+| Add optionalDependency | `bun add --optional [package][@version]` | `bun a --optional [package][@version]` |
+|   Add peerDependency   |   `bun add --peer [package][@version]`   |   `bun a --peer [package][version]`    |
+|       Add Global       |  `bun add --global [package][@version]`  |     `bun a -g [package][@version]`     |
+|   Remove Dependency    |          `bun remove [package]`          |           `bun r [package]`            |
 
 #### Maintenance & Quality:
 
-|     📋 Task     |    🔧 Command (Full)    | 🔧 Command (Short)  |
-|:---------------:|:-----------------------:|:-------------------:|
-|  Check Updates  |     `pnpm outdated`     |       &mdash;       |
-|   Update All    |      `pnpm update`      |      `pnpm up`      |
-| Update Specific | `pnpm update [package]` | `pnpm up [package]` |
-| Security Audit  |      `pnpm audit`       |       &mdash;       |
-|   Run Script    |   `pnpm run [script]`   |   `pnpm [script]`   |
-|      List       |       `pnpm list`       |      `pnpm ls`      |
-|   List Extra    |   `pnpm list --long`    |      `pnpm ll`      |
-|    Hierarchy    |  `pnpm why [package]`   |       &mdash;       |
+|     📋 Task     |   🔧 Command (Full)    | 🔧 Command (Short)  |
+|:---------------:|:----------------------:|:-------------------:|
+|  Check Updates  |     `bun outdated`     |       &mdash;       |
+|   Update All    |      `bun update`      |       &mdash;       |
+| Update Specific | `bun update [package]` |       &mdash;       |
+| Security Audit  |      `bun audit`       |       &mdash;       |
+|  Package Info   |  `bun info [package]`  |       &mdash;       |
+|   Run Script    |   `bun run [script]`   |   `bun [script]`    |
+|      List       |       `bun list`       |       &mdash;       |
+|   List Extra    |    `bun list --all`    |       &mdash;       |
+|    Hierarchy    | `bun pm why [package]` | `bun why [package]` |
 
 ### 🧪 Development
 
 #### Scripts:
 
-|       📜 Script        |   🔧 Command (Full)   | 🔧 Command (Short) |
-|:----------------------:|:---------------------:|:------------------:|
-|     Lint All (DEV)     |    `pnpm run lint`    |    `pnpm lint`     |
-|     Lint All (CI)      |  `pnpm run lint:ci`   |   `pnpm lint:ci`   |
-|       Lint Biome       | `pnpm run lint:biome` | `pnpm lint:biome`  |
-|        Lint CSS        |  `pnpm run lint:css`  |  `pnpm lint:css`   |
-|       Lint HTML        | `pnpm run lint:html`  |  `pnpm lint:html`  |
-| Run Tests (Hot Reload) |  `pnpm run test:dev`  |  `pnpm test:dev`   |
-|     Run Tests (CI)     |    `pnpm run test`    |    `pnpm test`     |
-|       Build DEV        | `pnpm run build:dev`  |  `pnpm build:dev`  |
-|       Build PROD       |   `pnpm run build`    |    `pnpm build`    |
+|    📋 Task     |  🔧 Command (Full)   | 🔧 Command (Short) |
+|:--------------:|:--------------------:|:------------------:|
+| Lint All (DEV) |    `bun run lint`    |     `bun lint`     |
+| Lint All (CI)  |  `bun run lint:ci`   |   `bun lint:ci`    |
+|   Lint Biome   | `bun run lint:biome` |  `bun lint:biome`  |
+|    Lint CSS    |  `bun run lint:css`  |   `bun lint:css`   |
+|    Lint ENV    |  `bun run lint:env`  |   `bun lint:env`   |
+|   Lint HTML    | `bun run lint:html`  |  `bun lint:html`   |
+| Lint Spelling  | `bun run lint:spell` |  `bun lint:spell`  |
+|    Run DEV     |    `bun run dev`     |     `bun dev`      |
+| Build/Run PROD |    `bun run prod`    |     `bun prod`     |
+|   Build PROD   |   `bun run build`    |      &mdash;       |
+|      Test      |    `bun run test`    |      &mdash;       |
 
 #### Docker Deployment:
 
-|   📋 Task   |  🔧 Command   |
-|:-----------:|:-------------:|
-|    Full     | `./build.sh`  |
-| Docker Only | `./docker.sh` |
-
----
-
-#### Building Image:
-
-```bash
-./build.sh
-```
+| 📜 Script  |   🔧 Command   |
+|:----------:|:--------------:|
+|    Full    |  `./build.sh`  |
+| Image Only | `./Dockerfile` |
 
 ---
 
