@@ -1,4 +1,4 @@
-# ![Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ](./public/sober.png "Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ") Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
+# ![Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ](./public/sober.webp "Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ") Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
 
 ### Enter the day your sobriety began to see your total sober time <!-- markdownlint-disable-line MD001 -->
 
@@ -19,7 +19,7 @@
 <!-- ! TODO
 ### 📷 Screenshots
 
-![Screehshot 1](./images/screenshot1.png) &nbsp;
+![Screenshot 1](./images/screenshot1.png) &nbsp;
 ![Screenshot 2](./images/screenshot2.png)
 
 ---
@@ -44,24 +44,16 @@ ui-->uiPort
 flowchart TD
 index(index.html)
 main(src/main.tsx)
-dashboard(src/components/dashboard/index.tsx)
+display(src/components/display/index.tsx)
 settings(src/components/settings/index.tsx)
 coin(src/components/coin/index.tsx)
 cost(src/components/cost/index.tsx)
-index-->main-->dashboard
-dashboard-->settings
-dashboard-->coin
-dashboard-->cost
+index-->main-->display
+display-->settings
+display-->coin
+display-->cost
 port@{shape: comment, label: "&nbsp; Nginx exposes port 80"}
 ```
-
----
-
-### 🔗 Deep Linking
-
-You can pre-load a specific date using a query parameter:
-
-`?soberDate=YYYY-MM-DD`
 
 ---
 

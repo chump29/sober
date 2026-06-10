@@ -8,6 +8,8 @@ export _uiPort=89
 
 clear
 
+pushd .. > /dev/null
+
 echo -e "🛈 Info:\n"
 
 _version=$(jq -r '.version // "❓"' package.json)
@@ -40,12 +42,14 @@ _vite=$(jq -r '.devDependencies.vite // "❓"' package.json)
 export _vite
 echo -e " • vite: $_vite"
 
-_coverage=-1
+_coverage=0
 if [ -f "coverage/lcov.info" ]; then
   _coverage=$(bun run lcov-total coverage/lcov.info)
 fi
 export _coverage
 echo -e "\n☂️  Coverage: $_coverage%"
+
+popd > /dev/null
 
 echo -e "\n🛠️  Creating README.md...\n"
 

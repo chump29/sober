@@ -1,14 +1,15 @@
 import { StrictMode } from "react"
 
+import { error, info } from "@postfmly/logger"
+
 import { MantineProvider } from "@mantine/core"
 import { ModalsProvider } from "@mantine/modals"
 import { createRoot } from "react-dom/client"
 import { type SafeParseResult, safeParse, summarize } from "valibot"
-import { error, info } from "@postfmly/logger"
 
-import Dashboard from "./components/dashboard"
-import { findElement, getVersion } from "./components/shared"
-import { VersionSchema, BooleanSchema } from "./components/shared/schemas"
+import { default as Display } from "./components/display/index.tsx"
+import { findElement, getVersion } from "./components/shared/index.tsx"
+import { BooleanSchema, VersionSchema } from "./components/shared/schemas.ts"
 
 const d: SafeParseResult<BooleanSchema> = safeParse(BooleanSchema, import.meta.env.VITE_DEBUG)
 const DEBUG: boolean = d.success ? d.output : false
@@ -27,15 +28,15 @@ if (DEBUG) {
   info(`Got UI version: ${version}`)
 }
 
-;(await findElement("#frontend")).textContent = version
+;(await findElement("#version")).innerHTML =
+  `<span class="text-green">ᓚᘏᗢ</span> &nbsp; <span class="text-blue">〃</span> &nbsp; <span class="text-red">&copy; 2026 postfmly</span> &nbsp; <span class="text-blue">〃</span> &nbsp; <span class="text-green">${version}</span>`
 
 createRoot(await findElement("#root")).render(
   <StrictMode>
     <MantineProvider defaultColorScheme="dark">
       <ModalsProvider>
-        <Dashboard />
+        <Display />
       </ModalsProvider>
     </MantineProvider>
   </StrictMode>
-
 )

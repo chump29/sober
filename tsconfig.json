@@ -3,6 +3,7 @@
   "compilerOptions": {
     "types": [
       "bun",
+      "ms",
       "node",
       "react",
       "react-dom",

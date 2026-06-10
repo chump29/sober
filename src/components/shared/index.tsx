@@ -27,4 +27,4 @@ const getVersion = async (version: string | undefined): Promise<string> => {
   return version ? `v${version}` : "N/A"
 }
 
-export { findElement, getVersion}
+export { findElement, getVersion }

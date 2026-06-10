@@ -4,7 +4,7 @@
 .husky/
 .npmrc
 .stylelintrc
-.vscode/
+.vscode
 *.md
 *.sh
 biome.json

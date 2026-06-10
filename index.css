@@ -1,5 +1,17 @@
+/* cSpell: ignore carpaccio */
+
 @import "tailwindcss";
+
+/*
+** name: https://colorkit.co/color/123456
+** oklch: https://oklch.com/
+*/
 
 @theme {
   --font-counter: "Cairo Play", sans-serif;
+  --color-green: oklch(73.82% 0.1187 148.71deg); /* 72bf80, Frog Pond */
+  --color-blue: oklch(65.56% 0.0937 241.25deg); /* 5998c5, Canadian Tuxedo */
+  --color-red: oklch(60.91% 0.2082 27.22deg); /* e53a35, Carpaccio */
+  --color-yellow: oklch(86.15% 0.1423 82.66deg); /* ffc857, Angry Pasta */
+  --color-black: oklch(23.08% 0 0deg); /* 1d1d1d, Coco’s Black */
 }
