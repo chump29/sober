@@ -4,17 +4,17 @@ import {
   boolean,
   type CheckIssue,
   check,
+  gtValue,
   isoDate,
-  minValue,
   nonEmpty,
   nullish,
   number,
+  optional,
   pipe,
   string,
   toBoolean,
   transform,
-  trim,
-  unknown
+  trim
 } from "valibot"
 
 /**
@@ -36,11 +36,20 @@ const VersionSchema = pipe(
 type VersionSchema = typeof VersionSchema
 
 /**
+ * Validate string as boolean
+ * @function
+ * @summary non-empty string, valid boolean {@link https://developer.mozilla.org/en-US/docs/Glossary/Truthy value}
+ */
+const StringAsBooleanSchema = pipe(string(), nonEmpty(), toBoolean())
+
+type StringAsBooleanSchema = typeof StringAsBooleanSchema
+
+/**
  * Validate boolean
  * @function
  * @summary valid boolean {@link https://developer.mozilla.org/en-US/docs/Glossary/Truthy value}
  */
-const BooleanSchema = pipe(unknown(), toBoolean())
+const BooleanSchema = boolean()
 
 type BooleanSchema = typeof BooleanSchema
 
@@ -63,25 +72,13 @@ const DateSchema = nullish(
 type DateSchema = typeof DateSchema
 
 /**
- * Validate toggle
- * @function
- * @summary true | false
- */
-const ToggleSchema = boolean()
-
-type ToggleSchema = typeof ToggleSchema
-
-/**
  * Validate cost
  * @function
- * @summary positive number
+ * @summary undefined | number, must be greater than 0
+ * @default undefined
  */
-const CostSchema = pipe(
-  number(),
-  minValue(0),
-  transform((n: number): number => (n > 0 ? +n.toFixed(2) : n))
-)
+const CostSchema = optional(pipe(number(), gtValue(0)))
 
 type CostSchema = typeof CostSchema
 
-export { BooleanSchema, CostSchema, DateSchema, ToggleSchema, VersionSchema }
+export { BooleanSchema, CostSchema, DateSchema, StringAsBooleanSchema, VersionSchema }

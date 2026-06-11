@@ -2,6 +2,7 @@
   "extends": "./node_modules/@postfmly/config/tsconfig.json",
   "compilerOptions": {
     "types": [
+      "big.js",
       "bun",
       "ms",
       "node",

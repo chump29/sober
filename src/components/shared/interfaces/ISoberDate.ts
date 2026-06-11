@@ -1,23 +1,23 @@
 import { type InferInput, object } from "valibot"
 
-import { CostSchema, DateSchema, ToggleSchema } from "./schemas.ts"
+import { BooleanSchema, CostSchema, DateSchema } from "../schemas.ts"
 
 /**
  * Validate an {@link ISoberDate} object
  * @property {number} cost
  * @see {@link CostSchema}
- * @property {string} date
+ * @property { undefined | null | string} date
  * @see {@link DateSchema}
  * @property {boolean} showCoin
- * @see {@link ToggleSchema}
+ * @see {@link BooleanSchema}
  * @property {boolean} showCost
- * @see {@link ToggleSchema}
+ * @see {@link BooleanSchema}
  */
 const SoberDateSchema = object({
   cost: CostSchema,
   date: DateSchema,
-  showCoin: ToggleSchema,
-  showCost: ToggleSchema
+  showCoin: BooleanSchema,
+  showCost: BooleanSchema
 })
 
 type SoberDateSchema = typeof SoberDateSchema
@@ -25,8 +25,8 @@ type SoberDateSchema = typeof SoberDateSchema
 /**
  * Interface for SoberDateSchema
  * @interface ISoberDate
- * @see {@link SoberDateSchema SoberDateSchema}
+ * @see {@link SoberDateSchema}
  */
-type ISoberDate = InferInput<typeof SoberDateSchema>
+type ISoberDate = InferInput<SoberDateSchema>
 
 export { type ISoberDate, SoberDateSchema }
