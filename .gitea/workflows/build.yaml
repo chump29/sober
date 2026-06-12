@@ -33,7 +33,7 @@ jobs:
         run: curl -sSfL https://git.io/JLbXn | sh -s -- -b /usr/local/bin
 
       - name: TEST
-        run: pwd
+        run: ls node_modules
 
       - name: Linting
         run: bun run lint:ci
