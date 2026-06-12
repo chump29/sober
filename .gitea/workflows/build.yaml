@@ -32,8 +32,8 @@ jobs:
       - name: Install dotenv-linter
         run: curl -sSfL https://git.io/JLbXn | sh -s -- -b /usr/local/bin
 
-      - name: TEST
-        run: ls node_modules
+      - name: Copy cspell.json
+        run: cp ./node_modules/@postfmly/config/.vscode/cspell.json .
 
       - name: Linting
         run: bun run lint:ci
