@@ -33,7 +33,7 @@ jobs:
         run: curl -sSfL https://git.io/JLbXn | sh -s -- -b /usr/local/bin
 
       - name: Copy cspell.json
-        run: cp ./node_modules/@postfmly/config/.vscode/cspell.json
+        run: cp ./node_modules/@postfmly/config/.vscode/cspell.json .
 
       - name: Run cspell
         uses: streetsidesoftware/cspell-action@v8
