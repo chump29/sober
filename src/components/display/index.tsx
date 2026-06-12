@@ -118,14 +118,14 @@ const Display = (): JSX.Element => {
 
       resolve(null)
     })
-      .then(async (): Promise<void> => {
+      .then((): void => {
         const weeks: number = displayStore.getState().w
 
         if (weeks > 0) {
           cost.current = weeks * (soberDate?.cost ?? 0)
         }
       })
-      .then(async (): Promise<void> => {
+      .then((): void => {
         const MAX_YEARS: number = 5 // ! TODO: more images
         const EIGHTEEN_MONTHS: number = 18
 

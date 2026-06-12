@@ -22,6 +22,7 @@
         "zustand": "^5.0.14",
       },
       "devDependencies": {
+        "@faker-js/faker": "^10.4.0",
         "@happy-dom/global-registrator": "^20.10.2",
         "@postfmly/config": "^1.4.3",
         "@tailwindcss/vite": "^4.3.0",
@@ -254,6 +255,8 @@
     "@emnapi/runtime": ["@emnapi/runtime@1.10.0", "https://npm.postfmly.com/@emnapi/runtime/-/runtime-1.10.0.tgz", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-ewvYlk86xUoGI0zQRNq/mC+16R1QeDlKQy21Ki3oSYXNgLb45GV1P6A0M+/s6nyCuNDqe5VpaY84BzXGwVbwFA=="],
 
     "@emnapi/wasi-threads": ["@emnapi/wasi-threads@1.2.1", "https://npm.postfmly.com/@emnapi/wasi-threads/-/wasi-threads-1.2.1.tgz", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-uTII7OYF+/Mes/MrcIOYp5yOtSMLBWSIoLPpcgwipoiKbli6k322tcoFsxoIIxPDqW01SQGAgko4EzZi2BNv2w=="],
+
+    "@faker-js/faker": ["@faker-js/faker@10.4.0", "https://npm.postfmly.com/@faker-js/faker/-/faker-10.4.0.tgz", {}, "sha512-sDBWI3yLy8EcDzgobvJTWq1MJYzAkQdpjXuPukga9wXonhpMRvd1Izuo2Qgwey2OiEoRIBr35RMU9HJRoOHzpw=="],
 
     "@floating-ui/core": ["@floating-ui/core@1.7.5", "https://npm.postfmly.com/@floating-ui/core/-/core-1.7.5.tgz", { "dependencies": { "@floating-ui/utils": "^0.2.11" } }, "sha512-1Ih4WTWyw0+lKyFMcBHGbb5U5FtuHJuujoyyr5zTaWS5EYMeT6Jb2AuDeftsCsEuchO+mM2ij5+q9crhydzLhQ=="],
 

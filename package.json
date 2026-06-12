@@ -34,11 +34,11 @@
     "lint:env": "dotenv-linter check .",
     "lint:html": "html-validate *.html",
     "lint:spell": "cspell --dot --verbose .",
-    "lint:spell:ci": "cspell --dot --verbose --stop-config-search-at ./node_modules/@postfmly/config/.vscode .",
+    "lint:spell:ci": "cspell --dot --verbose --config ./node_modules/@postfmly/config/.vscode/cspell.json .",
     "prepare": "husky",
     "prod": "bun run build && cd dist && bunx serve",
     "scan": "bunx cve-lite-cli",
-    "test": "bun test --coverage --isolate --coverage-reporter=text --coverage-reporter=lcov --preload ./src/dom-setup.ts --preload ./src/setup.ts --bail"
+    "test": "bun test --coverage --isolate --coverage-reporter=text --coverage-reporter=lcov --preload ./test/dom-setup.ts --preload ./test/setup.ts --bail"
   },
   "lint-staged": {
     "*": "cspell --no-must-find-files",
@@ -73,6 +73,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.4.0",
     "@happy-dom/global-registrator": "^20.10.2",
     "@postfmly/config": "^1.4.3",
     "@tailwindcss/vite": "^4.3.0",

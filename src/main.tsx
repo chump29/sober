@@ -22,21 +22,28 @@ if (v.success) {
   error("Could not parse UI version", summarize(v.issues))
 }
 
-version = await getVersion(version)
+version = getVersion(version)
 
 if (DEBUG) {
   info(`Got UI version: ${version}`)
 }
 
-;(await findElement("#version")).innerHTML =
-  `<span class="text-yellow">ᓚᘏᗢ</span> &nbsp; <span class="text-green">〃</span> &nbsp; <span class="text-red">&copy; 2026 postfmly</span> &nbsp; <span class="text-green">〃</span> &nbsp; <span class="text-blue">${version}</span>`
+const span: HTMLElement | null = findElement("#version")
+if (span) {
+  span.innerHTML = `<span class="text-yellow">ᓚᘏᗢ</span> &nbsp; <span class="text-green">〃</span> &nbsp; <span class="text-red">&copy; 2026 postfmly</span> &nbsp; <span class="text-green">〃</span> &nbsp; <span class="text-blue">${version}</span>`
+}
 
-createRoot(await findElement("#root")).render(
-  <StrictMode>
-    <MantineProvider defaultColorScheme="dark">
-      <ModalsProvider>
-        <Display />
-      </ModalsProvider>
-    </MantineProvider>
-  </StrictMode>
-)
+const div: HTMLElement | null = findElement("#root")
+if (div) {
+  createRoot(div).render(
+    <StrictMode>
+      <MantineProvider defaultColorScheme="dark">
+        <ModalsProvider>
+          <Display />
+        </ModalsProvider>
+      </MantineProvider>
+    </StrictMode>
+  )
+} else {
+  error("Could not find root element")
+}

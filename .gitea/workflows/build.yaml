@@ -32,6 +32,9 @@ jobs:
       - name: Install dotenv-linter
         run: curl -sSfL https://git.io/JLbXn | sh -s -- -b /usr/local/bin
 
+      - name: TEST
+        run: pwd
+
       - name: Linting
         run: bun run lint:ci
 
