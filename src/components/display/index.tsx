@@ -20,6 +20,7 @@ import {
 import { DatePickerInput } from "@mantine/dates"
 import { useDisclosure, useLocalStorage } from "@mantine/hooks"
 import { IconCalendar, IconCurrencyDollar, IconSettings } from "@tabler/icons-react"
+import { Big } from "big.js"
 import { default as dayjs } from "dayjs"
 import { default as advancedFormat } from "dayjs/plugin/advancedFormat"
 import { default as duration } from "dayjs/plugin/duration"
@@ -40,6 +41,7 @@ import {
   years
 } from "../shared/displayStore.ts"
 import { type ICoin } from "../shared/interfaces/ICoin.ts"
+import { type ICost } from "../shared/interfaces/ICost.ts"
 import { type ISoberDate, SoberDateSchema } from "../shared/interfaces/ISoberDate.ts"
 import { DateSchema, StringAsBooleanSchema } from "../shared/schemas.ts"
 
@@ -90,8 +92,8 @@ const Display = (): JSX.Element => {
     }
   })
 
-  const coin: RefObject<ICoin | null> = useRef<ICoin>(null)
-  const cost: RefObject<number> = useRef<number>(0)
+  const coin: RefObject<ICoin | null> = useRef<ICoin | null>(null)
+  const cost: RefObject<ICost | null> = useRef<ICost | null>(null)
 
   const [openedSettings, { open: openSettings, close: closeSettings }] = useDisclosure(false)
   const [openedCoin, { open: openCoin, close: closeCoin }] = useDisclosure(false)
@@ -119,23 +121,33 @@ const Display = (): JSX.Element => {
       resolve(null)
     })
       .then((): void => {
-        const weeks: number = displayStore.getState().w
+        const days: number = displayStore.getState().d
 
-        if (weeks > 0) {
-          cost.current = weeks * (soberDate?.cost ?? 0)
+        const soberDataCost: number = soberDate?.cost ?? 0
+
+        if (days > 0 && soberDataCost > 0) {
+          const DAYS_PER_WEEK: number = 7
+
+          const costPerDay: number = soberDataCost / DAYS_PER_WEEK
+
+          cost.current = {
+            cost: days * costPerDay,
+            costPerDay: `Cost per day: $${new Big(costPerDay).toFixed(2, 0)}`
+          } satisfies ICost
         }
       })
       .then((): void => {
-        const MAX_YEARS: number = 5 // ! TODO: more images
-        const EIGHTEEN_MONTHS: number = 18
-
         let txt: string = "No milestones to show yet"
         let img: string | undefined = undefined
 
         const months: number = displayStore.getState().m
-        const years: number = displayStore.getState().y
 
         if (months > 0) {
+          const EIGHTEEN_MONTHS: number = 18
+          const MAX_YEARS: number = 5 // ! TODO: more images
+
+          const years: number = displayStore.getState().y
+
           txt = years > 0 ? pluralize("year", years, true) : pluralize("month", months, true)
 
           img = "/coins/"
@@ -284,26 +296,13 @@ const Display = (): JSX.Element => {
           {soberDate?.showCost && cost.current ? (
             <Center mt={20}>
               <Text c="var(--color-red)" fw="bold" inline mr={10} size="xl">
-                Total Savings:
+                Savings:
               </Text>
-              <Text c="var(--color-green)" ff="var(--font-counter)" fw="bold" inline size="xl">
-                <NumberFormatter decimalScale={2} prefix="$" thousandSeparator="," value={cost.current} />
-              </Text>
-              <Text
-                c="var(--color-yellow)"
-                ml={5}
-                size="xs"
-                style={{
-                  fontVariantPosition: "super"
-                }}>
-                <NumberFormatter
-                  decimalScale={2}
-                  prefix="@ $"
-                  suffix="/week"
-                  thousandSeparator=","
-                  value={soberDate.cost}
-                />
-              </Text>
+              <Tooltip label={cost.current.costPerDay}>
+                <Text c="var(--color-green)" ff="var(--font-counter)" fw="bold" inline size="xl">
+                  <NumberFormatter decimalScale={2} prefix="$" thousandSeparator="," value={cost.current.cost} />
+                </Text>
+              </Tooltip>
             </Center>
           ) : null}
           {soberDate?.showCoin && coin.current ? (
@@ -337,8 +336,6 @@ const Display = (): JSX.Element => {
           ) : null}
         </Stack>
       </Center>
-      {/*{showCost ? <Cost cost={cost} days={parseInt(days)} showCost={showCost} /> : null}*/}
-      {/*{showCoin ? <Coin months={parseInt(months)} showCoin={showCoin} years={parseInt(years)} /> : null}*/}
     </>
   )
 }

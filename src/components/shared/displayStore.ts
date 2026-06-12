@@ -30,6 +30,7 @@ const displayStore = create<IDisplay>()(
             const years: number = yearsDuration > 1 ? +new Big(yearsDuration).toFixed(2, 0) : 0
 
             return {
+              d: days,
               days: days > 0 ? pluralize("day", days, true) : "",
               hours: hours > 0 ? pluralize("hour", hours, true) : "",
               m: Math.floor(months),
@@ -43,6 +44,7 @@ const displayStore = create<IDisplay>()(
             } as IDisplay
           })
       } satisfies IDisplayActions,
+      d: 0,
       days: "",
       hours: "",
       m: 0,

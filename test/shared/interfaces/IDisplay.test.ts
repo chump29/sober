@@ -6,6 +6,10 @@ import { type IDisplay } from "../../../src/components/shared/interfaces/IDispla
 
 describe("IDisplay", (): void => {
   test("IDisplay", (): void => {
+    const days: number = fake.number.int({
+      max: 31,
+      min: 1
+    })
     const months: number = fake.number.int({
       max: 12,
       min: 1
@@ -20,12 +24,8 @@ describe("IDisplay", (): void => {
     })
 
     expect({
-      days: fake.number
-        .int({
-          max: 31,
-          min: 1
-        })
-        .toString(),
+      d: days,
+      days: days.toString(),
       hours: fake.number
         .int({
           max: 23,
@@ -54,6 +54,7 @@ describe("IDisplay", (): void => {
         setDisplay: jest.fn()
       }
     } satisfies IDisplay).toMatchObject({
+      d: expect.any(Number),
       days: expect.any(String),
       hours: expect.any(String),
       m: expect.any(Number),

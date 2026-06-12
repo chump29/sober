@@ -4,6 +4,7 @@ interface IDisplayActions {
 
 interface IDisplay {
   actions: IDisplayActions
+  d: number
   days: string
   hours: string
   m: number

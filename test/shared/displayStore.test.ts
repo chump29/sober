@@ -41,6 +41,7 @@ describe("displayStore", (): void => {
 
     const diff: duration.Duration = dayjs.duration(dayjs().diff(dayjs(date)))
 
+    expect(displayStore.getState().d).toBe(Math.floor(diff.asDays()))
     expect(displayStore.getState().w).toBe(Math.floor(diff.asWeeks()))
     expect(displayStore.getState().m).toBe(Math.floor(diff.asMonths()))
     expect(displayStore.getState().y).toBe(Math.floor(diff.asYears()))
@@ -49,6 +50,7 @@ describe("displayStore", (): void => {
   test("setDisplay - fail", (): void => {
     displayStore.getState().actions.setDisplay(null)
 
+    expect(displayStore.getState().d).toBe(0)
     expect(displayStore.getState().w).toBe(0)
     expect(displayStore.getState().m).toBe(0)
     expect(displayStore.getState().y).toBe(0)
