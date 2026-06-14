@@ -27,7 +27,7 @@ import { default as duration } from "dayjs/plugin/duration"
 import { default as timezone } from "dayjs/plugin/timezone"
 import { default as utc } from "dayjs/plugin/utc"
 import { default as ms } from "ms"
-import { type SafeParseResult, safeParse } from "valibot"
+import { type SafeParseResult, safeParse, summarize } from "valibot"
 
 import {
   days,
@@ -87,9 +87,7 @@ const Display = (): JSX.Element => {
         return s.output
       }
 
-      error("Error parsing soberDate - setting to default")
-      setSoberDate(defaultSoberDate)
-      return defaultSoberDate
+      throw new Error(summarize(s.issues))
     }
   })
 
