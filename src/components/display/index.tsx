@@ -322,7 +322,15 @@ const Display = (): JSX.Element => {
                 Savings:
               </Text>
               <Tooltip label={cost.current.costPerDay} withArrow>
-                <Text c="var(--color-green)" ff="var(--font-counters)" fw="bold" inline size="xl">
+                <Text
+                  c="var(--color-green)"
+                  ff="var(--font-counters)"
+                  fw="bold"
+                  inline
+                  size="xl"
+                  style={{
+                    cursor: "pointer"
+                  }}>
                   <NumberFormatter decimalScale={2} prefix="$" thousandSeparator="," value={cost.current.cost} />
                 </Text>
               </Tooltip>

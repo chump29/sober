@@ -7,6 +7,7 @@
 ![Mantine](https://img.shields.io/badge/Mantine-$_mantine-informational?style=plastic&logo=mantine "Mantine") &nbsp;
 ![React](https://img.shields.io/badge/React-$_react-informational?style=plastic&logo=react "React") &nbsp;
 ![Tailwind](https://img.shields.io/badge/Tailwind-$_tailwind-informational?style=plastic&logo=tailwindcss "Tailwind") &nbsp;
+![TypeScript](https://img.shields.io/badge/TypeScript-$_typescript-informational?style=plastic&logo=typescript "TypeScript") &nbsp;
 ![Vite](https://img.shields.io/badge/Vite-$_vite-informational?style=plastic&logo=vite "Vite")
 
 ![Coverage](https://img.shields.io/badge/Coverage-$_coverage%25-success?style=plastic&logo=v8 "Coverage")
@@ -15,15 +16,6 @@
 ![License](https://img.shields.io/github/license/$_user/$_repo?style=plastic&color=blueviolet&label=License&logo=gplv3 "GPLv3")
 
 ---
-
-<!-- ! TODO
-### 📷 Screenshots
-
-![Screenshot 1](./images/screenshot1.png) &nbsp;
-![Screenshot 2](./images/screenshot2.png)
-
----
--->
 
 ### 🏗️ Architecture
 
