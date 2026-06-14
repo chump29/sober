@@ -87,7 +87,9 @@ const Display = (): JSX.Element => {
         return s.output
       }
 
-      error(s.issues)
+      error("Error parsing soberDate - setting to default")
+      setSoberDate(defaultSoberDate)
+      return defaultSoberDate
     }
   })
 
