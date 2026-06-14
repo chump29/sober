@@ -2,7 +2,7 @@ import { describe, expect, jest, test } from "bun:test"
 
 import { fakerEN_US as fake } from "@faker-js/faker"
 
-import { type IDisplay } from "../../../src/components/shared/interfaces/IDisplay.ts"
+import { type IDisplay } from "../../../../src/components/shared/interfaces/IDisplay.ts"
 
 describe("IDisplay", (): void => {
   test("IDisplay", (): void => {

@@ -1,12 +1,12 @@
 import { appendFile, readdir } from "node:fs/promises"
 
-import { default as tailwindCSS } from "@tailwindcss/vite"
+import { default as tailwindCss } from "@tailwindcss/vite"
 import { default as react } from "@vitejs/plugin-react"
 import { default as getDirSize } from "fdir-size"
 import { default as prettyBytes } from "pretty-bytes"
 import { default as removeAttributes } from "rollup-plugin-jsx-remove-attributes"
 import { defineConfig } from "vite"
-import { ViteMinifyPlugin as minifyHTML } from "vite-plugin-minify"
+import { ViteMinifyPlugin as minifyHtml } from "vite-plugin-minify"
 import { default as version } from "vite-plugin-package-version"
 import { ViteWebfontDownload as webFontDownload } from "vite-plugin-webfont-dl"
 
@@ -30,7 +30,7 @@ export default defineConfig({
     }
   },
   plugins: [
-    minifyHTML({
+    minifyHtml({
       keepClosingSlash: true,
       noNewlinesBeforeTagClose: true,
       removeComments: true
@@ -39,7 +39,7 @@ export default defineConfig({
     removeAttributes({
       usage: "vite"
     }),
-    tailwindCSS(),
+    tailwindCss(),
     version(),
     webFontDownload(
       [

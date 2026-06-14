@@ -6,10 +6,10 @@
 ![Bun](https://img.shields.io/badge/Bun-~1.3.14-informational?style=plastic&logo=bun "Bun") &nbsp;
 ![Mantine](https://img.shields.io/badge/Mantine-^9.3.1-informational?style=plastic&logo=mantine "Mantine") &nbsp;
 ![React](https://img.shields.io/badge/React-^19.2.7-informational?style=plastic&logo=react "React") &nbsp;
-![Tailwind](https://img.shields.io/badge/Tailwind-^4.3.0-informational?style=plastic&logo=tailwindcss "Tailwind") &nbsp;
+![Tailwind](https://img.shields.io/badge/Tailwind-^4.3.1-informational?style=plastic&logo=tailwindcss "Tailwind") &nbsp;
 ![Vite](https://img.shields.io/badge/Vite-^8.0.16-informational?style=plastic&logo=vite "Vite")
 
-![Coverage](https://img.shields.io/badge/Coverage-100%25-success?style=plastic&logo=v8 "Coverage")
+![Coverage](https://img.shields.io/badge/Coverage-94.54%25-success?style=plastic&logo=v8 "Coverage")
 
 ![CodeQL](https://github.com/chump29/sober/workflows/CodeQL/badge.svg "CodeQL") &nbsp;
 ![License](https://img.shields.io/github/license/chump29/sober?style=plastic&color=blueviolet&label=License&logo=gplv3 "GPLv3")

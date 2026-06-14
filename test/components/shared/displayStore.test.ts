@@ -17,8 +17,8 @@ import {
   seconds,
   weeks,
   years
-} from "../../src/components/shared/displayStore.ts"
-import { type IDisplay } from "../../src/components/shared/interfaces/IDisplay.ts"
+} from "../../../src/components/shared/displayStore.ts"
+import { type IDisplay } from "../../../src/components/shared/interfaces/IDisplay.ts"
 
 dayjs.extend(duration)
 
@@ -32,7 +32,7 @@ describe("displayStore", (): void => {
   test("setDisplay", (): void => {
     const date: string = fake.date
       .past({
-        refDate: new Date().setFullYear(new Date().getFullYear() - 2),
+        refDate: dayjs().subtract(2, "years").toDate(),
         years: 2
       })
       .toISOString()
@@ -59,7 +59,7 @@ describe("displayStore", (): void => {
   test("hooks", (): void => {
     const date: string = fake.date
       .past({
-        refDate: new Date().setFullYear(new Date().getFullYear() - 2),
+        refDate: dayjs().subtract(2, "years").toDate(),
         years: 2
       })
       .toISOString()
@@ -84,10 +84,10 @@ describe("displayStore", (): void => {
     expect(w.current).toBe(pluralize("week", Math.floor(diff.asWeeks()), true))
 
     const { result: mo } = renderHook((): string => months())
-    expect(mo.current).toBe(pluralize("month", +new Big(diff.asMonths()).toFixed(2, 0), true))
+    expect(mo.current).toBe(pluralize("month", Number(new Big(diff.asMonths()).toFixed(2, 0)), true))
 
     const { result: y } = renderHook((): string => years())
-    expect(y.current).toBe(pluralize("year", +new Big(diff.asYears()).toFixed(2, 0), true))
+    expect(y.current).toBe(pluralize("year", Number(new Big(diff.asYears()).toFixed(2, 0)), true))
   })
 
   test("displayStoreActions", (): void => {

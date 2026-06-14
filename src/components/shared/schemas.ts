@@ -28,7 +28,7 @@ const VersionSchema = pipe(
   nonEmpty(),
   transform((s: string): string => s.replaceAll('"', "")),
   check(
-    (s: string): boolean => (valid(s) ? true : false),
+    (s: string): boolean => valid(s) !== null,
     (e: CheckIssue<string>): string => `Invalid SemVer: ${e.input}`
   )
 )
@@ -54,6 +54,15 @@ const BooleanSchema = boolean()
 type BooleanSchema = typeof BooleanSchema
 
 /**
+ * Custom date format
+ * @constant
+ * @summary YYYY-MM-DD
+ * @type {string}
+ * @example 2026-06-13
+ */
+const DATE_FORMAT: string = "YYYY-MM-DD"
+
+/**
  * Validate date
  * @function
  * @summary undefined | null | non-empty string, valid {@link https://www.iso.org/iso-8601-date-and-time-format.html ISO 8601} date
@@ -64,7 +73,7 @@ const DateSchema = nullish(
     string(),
     trim(),
     isoDate("Not a valid ISO 8601 date format"),
-    check((s: string): boolean => dayjs(s, "YYYY-MM-DD", true).isValid(), "Not a valid date")
+    check((s: string): boolean => dayjs(s, DATE_FORMAT, true).isValid(), "Not a valid date")
   ),
   undefined
 )
@@ -81,4 +90,13 @@ const CostSchema = optional(pipe(number(), gtValue(0)))
 
 type CostSchema = typeof CostSchema
 
-export { BooleanSchema, CostSchema, DateSchema, StringAsBooleanSchema, VersionSchema }
+/**
+ * Validate title
+ * @function
+ * @summary non-empty string
+ */
+const TitleSchema = pipe(string(), nonEmpty())
+
+type TitleSchema = typeof TitleSchema
+
+export { BooleanSchema, CostSchema, DATE_FORMAT, DateSchema, StringAsBooleanSchema, TitleSchema, VersionSchema }

@@ -1,18 +1,16 @@
 import { describe, expect, test } from "bun:test"
 
 import { fakerEN_US as fake } from "@faker-js/faker"
+import { default as dayjs } from "dayjs"
 import { type SafeParseResult, safeParse } from "valibot"
 
-import { type ISoberDate, SoberDateSchema } from "../../../src/components/shared/interfaces/ISoberDate.ts"
+import { type ISoberDate, SoberDateSchema } from "../../../../src/components/shared/interfaces/ISoberDate.ts"
+import { DATE_FORMAT } from "../../../../src/components/shared/schemas.ts"
 
 describe("ISoberDate", (): void => {
   const soberDate: ISoberDate = {
-    cost: fake.number.float({
-      fractionDigits: 2,
-      max: 1000,
-      min: 1
-    }),
-    date: fake.date.soon().toISOString().split("T")[0],
+    cost: Number(fake.commerce.price()),
+    date: dayjs(fake.date.soon()).format(DATE_FORMAT),
     showCoin: fake.datatype.boolean(),
     showCost: fake.datatype.boolean()
   } satisfies ISoberDate

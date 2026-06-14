@@ -8,8 +8,9 @@ import {
   CostSchema,
   DateSchema,
   StringAsBooleanSchema,
+  TitleSchema,
   VersionSchema
-} from "../../src/components/shared/schemas.ts"
+} from "../../../src/components/shared/schemas.ts"
 
 describe("schemas", (): void => {
   test("VersionSchema", (): void => {
@@ -39,7 +40,7 @@ describe("schemas", (): void => {
   })
 
   test("BooleanSchema - fail", (): void => {
-    const b: SafeParseResult<BooleanSchema> = safeParse(BooleanSchema, NaN)
+    const b: SafeParseResult<BooleanSchema> = safeParse(BooleanSchema, Number.NaN)
 
     expect(b.success).toBeFalse()
     expect(b.issues?.[0].message).toStartWith("Invalid type: Expected boolean")
@@ -57,14 +58,7 @@ describe("schemas", (): void => {
   })
 
   test("CostSchema", (): void => {
-    expect(
-      safeParse(
-        CostSchema,
-        fake.number.float({
-          min: 1
-        })
-      ).success
-    ).toBeTrue()
+    expect(safeParse(CostSchema, Number(fake.commerce.price())).success).toBeTrue()
   })
 
   test("CostSchema - fail", (): void => {
@@ -72,5 +66,16 @@ describe("schemas", (): void => {
 
     expect(c.success).toBeFalse()
     expect(c.issues?.[0].message).toInclude(">0")
+  })
+
+  test("TitleSchema", (): void => {
+    expect(safeParse(TitleSchema, fake.word.sample()).success).toBeTrue()
+  })
+
+  test("TitleSchema - fail", (): void => {
+    const t: SafeParseResult<TitleSchema> = safeParse(TitleSchema, "")
+
+    expect(t.success).toBeFalse()
+    expect(t.issues?.[0].message).toInclude("!0")
   })
 })

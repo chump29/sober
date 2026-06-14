@@ -1,5 +1,5 @@
 interface IDisplayActions {
-  setDisplay(date: string | null | undefined): void
+  setDisplay: (date: string | null | undefined) => void
 }
 
 interface IDisplay {

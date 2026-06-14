@@ -18,16 +18,16 @@ const displayStore = create<IDisplay>()(
               return {} as IDisplay
             }
 
-            const duration: duration.Duration = dayjs.duration(dayjs().diff(dayjs(date)))
-            const seconds: number = Math.floor(duration.asSeconds())
-            const minutes: number = Math.floor(duration.asMinutes())
-            const hours: number = Math.floor(duration.asHours())
-            const days: number = Math.floor(duration.asDays())
-            const weeks: number = Math.floor(duration.asWeeks())
-            const monthsDuration: number = duration.asMonths()
-            const months: number = monthsDuration > 1 ? +new Big(monthsDuration).toFixed(2, 0) : 0
-            const yearsDuration: number = duration.asYears()
-            const years: number = yearsDuration > 1 ? +new Big(yearsDuration).toFixed(2, 0) : 0
+            const diff: duration.Duration = dayjs.duration(dayjs().diff(dayjs(date)))
+            const seconds: number = Math.floor(diff.asSeconds())
+            const minutes: number = Math.floor(diff.asMinutes())
+            const hours: number = Math.floor(diff.asHours())
+            const days: number = Math.floor(diff.asDays())
+            const weeks: number = Math.floor(diff.asWeeks())
+            const monthsDuration: number = diff.asMonths()
+            const months: number = monthsDuration > 1 ? Number(new Big(monthsDuration).toFixed(2, 0)) : 0
+            const yearsDuration: number = diff.asYears()
+            const years: number = yearsDuration > 1 ? Number(new Big(yearsDuration).toFixed(2, 0)) : 0
 
             return {
               d: days,

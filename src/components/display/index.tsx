@@ -42,8 +42,9 @@ import {
 } from "../shared/displayStore.ts"
 import { type ICoin } from "../shared/interfaces/ICoin.ts"
 import { type ICost } from "../shared/interfaces/ICost.ts"
+import { type ICustomCloseButtonProps } from "../shared/interfaces/ICustomCloseButtonProps.ts"
 import { type ISoberDate, SoberDateSchema } from "../shared/interfaces/ISoberDate.ts"
-import { DateSchema, StringAsBooleanSchema } from "../shared/schemas.ts"
+import { DATE_FORMAT, DateSchema, StringAsBooleanSchema } from "../shared/schemas.ts"
 
 import "./index.css"
 
@@ -52,8 +53,8 @@ dayjs.extend(timezone)
 dayjs.extend(duration)
 dayjs.extend(advancedFormat)
 
-const d: SafeParseResult<StringAsBooleanSchema> = safeParse(StringAsBooleanSchema, import.meta.env.VITE_DEBUG)
-const DEBUG: boolean = d.success ? d.output : false
+const debug: SafeParseResult<StringAsBooleanSchema> = safeParse(StringAsBooleanSchema, import.meta.env.VITE_DEBUG)
+const DEBUG: boolean = debug.success ? debug.output : false
 if (DEBUG) {
   info("Debug is ON")
 }
@@ -65,7 +66,7 @@ if (DEBUG) {
 
 const defaultSoberDate: ISoberDate = {
   cost: undefined,
-  date: dayjs().format("YYYY-MM-DD"),
+  date: dayjs().format(DATE_FORMAT),
   showCoin: true,
   showCost: true
 } satisfies ISoberDate
@@ -76,19 +77,17 @@ const Display = (): JSX.Element => {
   const [soberDate, setSoberDate] = useLocalStorage<ISoberDate | undefined>({
     defaultValue: defaultSoberDate,
     key: "soberDate",
-    deserialize: (soberDate: string | undefined): ISoberDate | undefined => {
-      if (!soberDate) {
-        return undefined
+    deserialize: (strSoberDate: string | undefined): ISoberDate | undefined => {
+      if (!strSoberDate) {
+        return
       }
 
-      const s: SafeParseResult<SoberDateSchema> = safeParse(SoberDateSchema, JSON.parse(soberDate))
+      const s: SafeParseResult<SoberDateSchema> = safeParse(SoberDateSchema, JSON.parse(strSoberDate))
       if (s.success) {
         return s.output
       }
 
       error(s.issues)
-
-      return undefined
     }
   })
 
@@ -114,6 +113,24 @@ const Display = (): JSX.Element => {
     }
   }
 
+  const handleShowCoin = (event: ChangeEvent<HTMLInputElement>): void =>
+    setSoberDate({
+      ...soberDate,
+      showCoin: event.currentTarget.checked
+    } as ISoberDate)
+
+  const handleShowCost = (event: ChangeEvent<HTMLInputElement>): void =>
+    setSoberDate({
+      ...soberDate,
+      showCost: event.currentTarget.checked
+    } as ISoberDate)
+
+  const handleSoberDate = (value: number | string): void =>
+    setSoberDate({
+      ...soberDate,
+      cost: Number(value)
+    } as ISoberDate)
+
   const init = async (): Promise<void> => {
     await new Promise((resolve): void => {
       setDisplay(soberDate?.date)
@@ -121,46 +138,46 @@ const Display = (): JSX.Element => {
       resolve(null)
     })
       .then((): void => {
-        const days: number = displayStore.getState().d
+        const d: number = displayStore.getState().d
 
         const soberDataCost: number = soberDate?.cost ?? 0
 
-        if (days > 0 && soberDataCost > 0) {
-          const DAYS_PER_WEEK: number = 7
+        if (d > 0 && soberDataCost > 0) {
+          const DaysPerWeek: number = 7
 
-          const costPerDay: number = soberDataCost / DAYS_PER_WEEK
+          const costPerDay: number = soberDataCost / DaysPerWeek
 
           cost.current = {
-            cost: days * costPerDay,
+            cost: d * costPerDay,
             costPerDay: `Cost per day: $${new Big(costPerDay).toFixed(2, 0)}`
           } satisfies ICost
         }
       })
       .then((): void => {
         let txt: string = "No milestones to show yet"
-        let img: string | undefined = undefined
+        let img: string | undefined
 
-        const months: number = displayStore.getState().m
+        const m: number = displayStore.getState().m
 
-        if (months > 0) {
-          const EIGHTEEN_MONTHS: number = 18
-          const MAX_YEARS: number = 5 // ! TODO: more images
+        if (m > 0) {
+          const EighteenMonths: number = 18
+          const MaxYears: number = 5 // ! TODO: more images
 
-          const years: number = displayStore.getState().y
+          const y: number = displayStore.getState().y
 
-          txt = years > 0 ? pluralize("year", years, true) : pluralize("month", months, true)
+          txt = y > 0 ? pluralize("year", y, true) : pluralize("month", m, true)
 
           img = "/coins/"
 
-          if (months === EIGHTEEN_MONTHS) {
+          if (m === EighteenMonths) {
             img = `${img}18m.png`
-          } else if (years > 0) {
-            img = `${img}${years}y.png`
+          } else if (y > 0) {
+            img = `${img}${y}y.png`
           } else {
-            img = `${img}${months}m.png`
+            img = `${img}${m}m.png`
           }
 
-          if (years > MAX_YEARS) {
+          if (y > MaxYears) {
             img = undefined
             txt = `${txt} (No image)`
           }
@@ -189,40 +206,45 @@ const Display = (): JSX.Element => {
 
   return (
     <>
-      <Modal centered id="settings" onClose={closeSettings} opened={openedSettings} size="auto" title="Settings">
+      {/** biome-ignore lint/correctness/useUniqueElementIds: needed for CSS */}
+      <Modal
+        centered
+        closeButtonProps={
+          {
+            "data-testid": "testCloseSettings"
+          } as ICustomCloseButtonProps
+        }
+        data-testid="testSettingsModal"
+        id="settings"
+        onClose={closeSettings}
+        opened={openedSettings}
+        size="auto"
+        title="Settings">
         <Stack>
           <Switch
             checked={soberDate?.showCoin ?? false}
             color="var(--color-blue)"
+            data-testid="testShowCoin"
             description="Display AA coin"
             label="Show Coin"
             offLabel="OFF"
-            onChange={(event: ChangeEvent<HTMLInputElement>): void =>
-              setSoberDate({
-                ...soberDate,
-                showCoin: event.currentTarget.checked
-              } as ISoberDate)
-            }
+            onChange={handleShowCoin}
             onLabel="ON"
             size="md"
           />
           <Switch
             checked={soberDate?.showCost ?? false}
             color="var(--color-blue)"
+            data-testid="testShowCost"
             description="Display weekly cost"
             label="Show Cost"
             offLabel="OFF"
-            onChange={(event: ChangeEvent<HTMLInputElement>): void =>
-              setSoberDate({
-                ...soberDate,
-                showCost: event.currentTarget.checked
-              } as ISoberDate)
-            }
+            onChange={handleShowCost}
             onLabel="ON"
             size="md"
           />
           <NumberInput
-            allowDecimal={true}
+            allowDecimal
             allowNegative={false}
             decimalScale={2}
             disabled={!(soberDate?.showCost ?? false)}
@@ -232,12 +254,7 @@ const Display = (): JSX.Element => {
             label="Cost Per Week"
             leftSection={<IconCurrencyDollar color="var(--color-red)" size={16} />}
             min={0}
-            onChange={(value: number | string): void =>
-              setSoberDate({
-                ...soberDate,
-                cost: +value
-              } as ISoberDate)
-            }
+            onChange={handleSoberDate}
             placeholder="Enter cost..."
             value={soberDate?.cost ?? 0}
             withAsterisk
@@ -246,6 +263,7 @@ const Display = (): JSX.Element => {
       </Modal>
       <Tooltip label="Settings" withArrow>
         <ActionIcon
+          data-testid="testSettings"
           onClick={openSettings}
           pos="absolute"
           right={10}
@@ -265,6 +283,7 @@ const Display = (): JSX.Element => {
                 <DatePickerInput
                   c="var(--color-blue)"
                   className="sober-date"
+                  data-testid="testSoberDate"
                   label="Sober Since:"
                   leftSection={<IconCalendar color="var(--color-red)" size={16} />}
                   maxDate={dayjs().toDate()}
@@ -274,9 +293,6 @@ const Display = (): JSX.Element => {
                   popoverProps={{
                     withinPortal: true
                   }}
-                  style={{
-                    cursor: "pointer"
-                  }}
                   value={soberDate?.date}
                   valueFormat="dddd, MMMM Do, YYYY"
                   w={250}
@@ -284,7 +300,14 @@ const Display = (): JSX.Element => {
               </Tooltip>
             </Box>
           </Center>
-          <Stack align="center" c="var(--color-blue)" ff="var(--font-counter)" fw="bold" fz="h1" gap="xs">
+          <Stack
+            align="center"
+            c="var(--color-blue)"
+            data-testid="testCounters"
+            ff="var(--font-counters)"
+            fw="bold"
+            fz="h1"
+            gap="xs">
             <Box>{seconds()}</Box>
             <Box>{minutes()}</Box>
             <Box>{hours()}</Box>
@@ -294,12 +317,12 @@ const Display = (): JSX.Element => {
             <Box>{years()}</Box>
           </Stack>
           {soberDate?.showCost && cost.current ? (
-            <Center mt={20}>
+            <Center data-testid="testCost" mt={20}>
               <Text c="var(--color-red)" fw="bold" inline mr={10} size="xl">
                 Savings:
               </Text>
-              <Tooltip label={cost.current.costPerDay}>
-                <Text c="var(--color-green)" ff="var(--font-counter)" fw="bold" inline size="xl">
+              <Tooltip label={cost.current.costPerDay} withArrow>
+                <Text c="var(--color-green)" ff="var(--font-counters)" fw="bold" inline size="xl">
                   <NumberFormatter decimalScale={2} prefix="$" thousandSeparator="," value={cost.current.cost} />
                 </Text>
               </Tooltip>
@@ -307,6 +330,7 @@ const Display = (): JSX.Element => {
           ) : null}
           {soberDate?.showCoin && coin.current ? (
             <>
+              {/** biome-ignore lint/correctness/useUniqueElementIds: needed for CSS */}
               <Modal centered id="coin" onClose={closeCoin} opened={openedCoin} size="auto" title="AA Coin">
                 <Stack ta="center">
                   <Text c="var(--color-blue)" fw="bold" size="xl">
@@ -318,6 +342,7 @@ const Display = (): JSX.Element => {
               <Tooltip label="Show Coin" withArrow>
                 <Button
                   c="var(--color-black)"
+                  data-testid="testCoin"
                   fw="bold"
                   gradient={{
                     deg: 90,

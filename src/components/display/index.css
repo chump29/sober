@@ -8,7 +8,7 @@
 @import "@mantine/core/styles/global.css";
 
 /* shared */
-@import "@mantine/core/styles/UnstyledButton.css";
+
 @import "@mantine/core/styles/Paper.css";
 @import "@mantine/core/styles/Popover.css";
 @import "@mantine/core/styles/CloseButton.css";
@@ -31,6 +31,11 @@
 
 /* extra */
 @import "@mantine/dates/styles.layer.css";
+
+/* stylelint-disable-next-line selector-class-pattern */
+.mantine-DatePickerInput-input {
+  cursor: pointer;
+}
 
 .sober-date {
   /* stylelint-disable-next-line selector-class-pattern */

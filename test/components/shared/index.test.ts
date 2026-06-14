@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 
 import { fakerEN_US as fake } from "@faker-js/faker"
 
-import { findElement, getVersion } from "../../src/components/shared/index.tsx"
+import { findElement, getVersion } from "../../../src/components/shared/index.tsx"
 
 describe("index", (): void => {
   test("findElement", (): void => {

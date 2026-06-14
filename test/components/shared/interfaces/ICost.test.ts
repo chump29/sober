@@ -3,7 +3,7 @@ import { describe, expect, test } from "bun:test"
 import { fakerEN_US as fake } from "@faker-js/faker"
 import { Big } from "big.js"
 
-import { type ICost } from "../../../src/components/shared/interfaces/ICost.ts"
+import { type ICost } from "../../../../src/components/shared/interfaces/ICost.ts"
 
 describe("ICost", (): void => {
   test("ICost", (): void => {
@@ -13,12 +13,12 @@ describe("ICost", (): void => {
       min: 1
     })
 
-    const DAYS_PER_WEEK: number = 7
+    const DaysPerWeek: number = 7
 
-    const costPerDay: number = cost / DAYS_PER_WEEK
+    const costPerDay: number = cost / DaysPerWeek
 
     expect({
-      cost: cost,
+      cost,
       costPerDay: new Big(costPerDay).toFixed(2, 0)
     } satisfies ICost).toMatchObject({
       cost: expect.any(Number),
