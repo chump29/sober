@@ -17,15 +17,6 @@
 
 ---
 
-<!-- ! TODO
-### 📷 Screenshots
-
-![Screenshot 1](./images/screenshot1.png) &nbsp;
-![Screenshot 2](./images/screenshot2.png)
-
----
--->
-
 ### 🏗️ Architecture
 
 #### Docker Compose Flow:
