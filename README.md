@@ -10,7 +10,7 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-^6.0.3-informational?style=plastic&logo=typescript "TypeScript") &nbsp;
 ![Vite](https://img.shields.io/badge/Vite-^8.0.16-informational?style=plastic&logo=vite "Vite")
 
-![Coverage](https://img.shields.io/badge/Coverage-94.54%25-success?style=plastic&logo=v8 "Coverage")
+![Coverage](https://img.shields.io/badge/Coverage-94.66%25-success?style=plastic&logo=v8 "Coverage")
 
 ![CodeQL](https://github.com/chump29/sober/workflows/CodeQL/badge.svg "CodeQL") &nbsp;
 ![License](https://img.shields.io/github/license/chump29/sober?style=plastic&color=blueviolet&label=License&logo=gplv3 "GPLv3")

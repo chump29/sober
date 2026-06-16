@@ -1,6 +1,7 @@
+import { default as dayjs } from "dayjs"
 import { type InferInput, object } from "valibot"
 
-import { BooleanSchema, CostSchema, DateSchema } from "../schemas.ts"
+import { BooleanSchema, CostSchema, DATE_FORMAT, DateSchema } from "../schemas.ts"
 
 /**
  * Validate an {@link ISoberDate} object
@@ -29,4 +30,11 @@ type SoberDateSchema = typeof SoberDateSchema
  */
 type ISoberDate = InferInput<SoberDateSchema>
 
-export { type ISoberDate, SoberDateSchema }
+const defaultSoberDate: ISoberDate = {
+  cost: undefined,
+  date: dayjs().format(DATE_FORMAT),
+  showCoin: true,
+  showCost: true
+} satisfies ISoberDate
+
+export { defaultSoberDate, type ISoberDate, SoberDateSchema }

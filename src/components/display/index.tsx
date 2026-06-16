@@ -43,8 +43,8 @@ import {
 import { type ICoin } from "../shared/interfaces/ICoin.ts"
 import { type ICost } from "../shared/interfaces/ICost.ts"
 import { type ICustomCloseButtonProps } from "../shared/interfaces/ICustomCloseButtonProps.ts"
-import { type ISoberDate, SoberDateSchema } from "../shared/interfaces/ISoberDate.ts"
-import { DATE_FORMAT, DateSchema, StringAsBooleanSchema } from "../shared/schemas.ts"
+import { defaultSoberDate, type ISoberDate, SoberDateSchema } from "../shared/interfaces/ISoberDate.ts"
+import { DateSchema, StringAsBooleanSchema } from "../shared/schemas.ts"
 
 import "./index.css"
 
@@ -63,13 +63,6 @@ dayjs.tz.setDefault(dayjs.tz.guess())
 if (DEBUG) {
   info(`Timezone set to: ${dayjs.tz.guess()}`)
 }
-
-const defaultSoberDate: ISoberDate = {
-  cost: undefined,
-  date: dayjs().format(DATE_FORMAT),
-  showCoin: true,
-  showCost: true
-} satisfies ISoberDate
 
 const Display = (): JSX.Element => {
   const { setDisplay } = displayStoreActions()

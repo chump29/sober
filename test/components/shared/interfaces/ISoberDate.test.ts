@@ -4,7 +4,11 @@ import { fakerEN_US as fake } from "@faker-js/faker"
 import { default as dayjs } from "dayjs"
 import { type SafeParseResult, safeParse } from "valibot"
 
-import { type ISoberDate, SoberDateSchema } from "../../../../src/components/shared/interfaces/ISoberDate.ts"
+import {
+  defaultSoberDate,
+  type ISoberDate,
+  SoberDateSchema
+} from "../../../../src/components/shared/interfaces/ISoberDate.ts"
 import { DATE_FORMAT } from "../../../../src/components/shared/schemas.ts"
 
 describe("ISoberDate", (): void => {
@@ -39,5 +43,14 @@ describe("ISoberDate", (): void => {
       showCoin: expect.any(Boolean),
       showCost: expect.any(Boolean)
     } satisfies ISoberDate)
+  })
+
+  test("defaultSoberDate", (): void => {
+    const d: ISoberDate = defaultSoberDate
+
+    expect(d.cost).toBeUndefined()
+    expect(d.date).toBe(dayjs().format(DATE_FORMAT))
+    expect(d.showCoin).toBeTrue()
+    expect(d.showCost).toBeTrue()
   })
 })
