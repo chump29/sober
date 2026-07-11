@@ -1,0 +1,18 @@
+{
+  "extends": [
+    "stylelint-config-standard"
+  ],
+  "ignoreFiles": [
+    "dist/**/*"
+  ],
+  "rules": {
+    "at-rule-no-unknown": null,
+    "import-notation": null,
+    "selector-class-pattern": [
+      "^([a-z][a-z0-9]*)(-[a-z0-9]+)*$|^mantine-[A-Z][a-zA-Z0-9]+-[a-z0-9A-Z_-]+$",
+      {
+        "message": "Expected class selector to be kebab-case or a valid Mantine static class"
+      }
+    ]
+  }
+}

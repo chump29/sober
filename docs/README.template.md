@@ -1,115 +1,38 @@
-# ![Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ](./public/sober.webp "Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ") Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
+# ![Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ](../frontend/public/sober.webp) Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
 
-### Enter the day your sobriety began to see your total sober time <!-- markdownlint-disable-line MD001 -->
-
----
-![Bun](https://img.shields.io/badge/Bun-$_bun-informational?style=plastic&logo=bun "Bun") &nbsp;
-![Mantine](https://img.shields.io/badge/Mantine-$_mantine-informational?style=plastic&logo=mantine "Mantine") &nbsp;
-![React](https://img.shields.io/badge/React-$_react-informational?style=plastic&logo=react "React") &nbsp;
-![Tailwind](https://img.shields.io/badge/Tailwind-$_tailwind-informational?style=plastic&logo=tailwindcss "Tailwind") &nbsp;
-![TypeScript](https://img.shields.io/badge/TypeScript-$_typescript-informational?style=plastic&logo=typescript "TypeScript") &nbsp;
-![Vite](https://img.shields.io/badge/Vite-$_vite-informational?style=plastic&logo=vite "Vite")
-
-![Coverage](https://img.shields.io/badge/Coverage-$_coverage%25-success?style=plastic&logo=v8 "Coverage")
-
-![CodeQL](https://github.com/$_user/$_repo/workflows/CodeQL/badge.svg "CodeQL") &nbsp;
-![License](https://img.shields.io/github/license/$_user/$_repo?style=plastic&color=blueviolet&label=License&logo=gplv3 "GPLv3")
+### Sobriety counter <!-- markdownlint-disable-line MD001 -->
 
 ---
 
-### 🏗️ Architecture
+<!-- cspell:disable -->
+![CodeQL](https://github.com/$_user/$_repo/workflows/CodeQL/badge.svg "CodeQL")
 
-#### Docker Compose Flow:
+![NO AI](https://img.shields.io/badge/NO-AI-orange?style=plastic "NO AI") &nbsp;
+![License](https://img.shields.io/github/license/$_user/$_repo?style=plastic&color=blueviolet&label=License&logo=gplv3 "GPLv3") &nbsp; <!-- markdownlint-disable-line MD013 -->
+![CVE Scan](https://img.shields.io/badge/CVE%20Scan-Pass-success?style=plastic&logo=owasp "CVE Scan")
+<!-- cspell:enable -->
+
+---
+
+### 🐳 Docker
+
+#### Compose Flow:
 
 ```mermaid
 flowchart LR
-ui@{shape: rounded, label: "UI"}
-uiPort@{shape: rounded, label: "$_uiPort"}
-ui-->uiPort
+frontend@{shape: rounded, label: "sober-frontend:80"}
+frontendPort@{shape: rounded, label: "http://localhost:$_frontendPort"}
+backend@{shape: rounded, label: "sober-backend:$_backendPort"}
+backendPort@{shape: rounded, label: "http://localhost:$_backendPort"}
+frontend-->frontendPort
+backend-->backendPort
 ```
 
----
+#### Building Images:
 
-#### React Component Hierarchy:
-
-```mermaid
-flowchart TD
-index(index.html)
-main(src/main.tsx)
-display(src/components/display/index.tsx)
-settings(src/components/settings/index.tsx)
-coin(src/components/coin/index.tsx)
-cost(src/components/cost/index.tsx)
-index-->main-->display
-display-->settings
-display-->coin
-display-->cost
-port@{shape: comment, label: "&nbsp; Nginx exposes port 80"}
+```bash
+./build.sh
 ```
-
----
-
-### 🛠️ Environment Management
-
-#### Node.js ([Bun](https://github.com/oven-sh/bun "Bun") manager):
-
-| 📋 Task |  🔧 Command   |
-|:-------:|:-------------:|
-| Upgrade | `bun upgrade` |
-
-### 📦 Dependency Management
-
-#### Installation & Removal:
-
-|        📋 Task         |            🔧 Command (Full)             |           🔧 Command (Short)           |
-|:----------------------:|:----------------------------------------:|:--------------------------------------:|
-|      Install DEV       |              `bun install`               |                `bun i`                 |
-|      Install PROD      |        `bun install --production`        |               `bun i -p`               |
-|     Add dependency     |      `bun add [package][@version]`       |      `bun a [package][@version]`       |
-|   Add devDependency    | `bun add --save-dev [package][@version]` |     `bun a -d [package][@version]`     |
-| Add optionalDependency | `bun add --optional [package][@version]` | `bun a --optional [package][@version]` |
-|   Add peerDependency   |   `bun add --peer [package][@version]`   |   `bun a --peer [package][version]`    |
-|       Add Global       |  `bun add --global [package][@version]`  |     `bun a -g [package][@version]`     |
-|   Remove Dependency    |          `bun remove [package]`          |           `bun r [package]`            |
-
-#### Maintenance & Quality:
-
-|     📋 Task     |   🔧 Command (Full)    | 🔧 Command (Short)  |
-|:---------------:|:----------------------:|:-------------------:|
-|  Check Updates  |     `bun outdated`     |       &mdash;       |
-|   Update All    |      `bun update`      |       &mdash;       |
-| Update Specific | `bun update [package]` |       &mdash;       |
-| Security Audit  |      `bun audit`       |       &mdash;       |
-|  Package Info   |  `bun info [package]`  |       &mdash;       |
-|   Run Script    |   `bun run [script]`   |   `bun [script]`    |
-|      List       |       `bun list`       |       &mdash;       |
-|   List Extra    |    `bun list --all`    |       &mdash;       |
-|    Hierarchy    | `bun pm why [package]` | `bun why [package]` |
-
-### 🧪 Development
-
-#### Scripts:
-
-|    📋 Task     |  🔧 Command (Full)   | 🔧 Command (Short) |
-|:--------------:|:--------------------:|:------------------:|
-| Lint All (DEV) |    `bun run lint`    |     `bun lint`     |
-| Lint All (CI)  |  `bun run lint:ci`   |   `bun lint:ci`    |
-|   Lint Biome   | `bun run lint:biome` |  `bun lint:biome`  |
-|    Lint CSS    |  `bun run lint:css`  |   `bun lint:css`   |
-|    Lint ENV    |  `bun run lint:env`  |   `bun lint:env`   |
-|   Lint HTML    | `bun run lint:html`  |  `bun lint:html`   |
-| Lint Spelling  | `bun run lint:spell` |  `bun lint:spell`  |
-|    Run DEV     |    `bun run dev`     |     `bun dev`      |
-| Build/Run PROD |    `bun run prod`    |     `bun prod`     |
-|   Build PROD   |   `bun run build`    |      &mdash;       |
-|      Test      |    `bun run test`    |      &mdash;       |
-
-#### Docker Deployment:
-
-| 📜 Script  |   🔧 Command   |
-|:----------:|:--------------:|
-|    Full    |  `./build.sh`  |
-| Image Only | `./Dockerfile` |
 
 ---
 
@@ -121,12 +44,7 @@ port@{shape: comment, label: "&nbsp; Nginx exposes port 80"}
 ./docs.sh
 ```
 
----
+#### Links:
 
-### 🛰️ Git & CI/CD
-
-- **Pre-Commit:** Staged files are automatically linted and tested
-- **Github Actions:** Lints, tests, builds, and pushes multi-architecture images to repository
-  - latest
-    - amd64
-    - arm64
+- [Frontend](./frontend/README.md "Frontend")
+- [Backend](./backend/README.md "Backend")

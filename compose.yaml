@@ -1,19 +1,38 @@
 services:
-  sober:
-    container_name: sober
-    image: git.postfmly.com/admin/sober:arm64
+  sober-frontend:
+    container_name: sober-frontend
+    image: git.postfmly.com/admin/sober-frontend:arm64
     restart: unless-stopped
+    depends_on:
+      - sober-backend
     ports:
       - "89:80"
     environment:
       - TZ=America/Chicago
     labels:
-      - wud.display.name=Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
+      - wud.display.name=Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ (Frontend)
       - homepage.group=Personal
       - homepage.name=Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
       - homepage.icon=https://sober.postfmly.com/sober.webp
       - homepage.href=https://sober.postfmly.com/
       - homepage.description=sober.postfmly.com
+
+  sober-backend:
+    container_name: sober-backend
+    image: git.postfmly.com/admin/sober-backend:arm64
+    restart: unless-stopped
+    ports:
+      - "89:80"
+    volumes:
+      - db:/backend/db
+    environment:
+      - TZ=America/Chicago
+    labels:
+      - wud.display.name=Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ (Backend)
+    stop_signal: SIGINT
+
+volumes:
+  db:
 
 networks: {}
 

@@ -1,0 +1,69 @@
+/*
+** https://mantine.dev/styles/css-files-list/
+*/
+
+/* Global */
+@import "@mantine/core/styles/baseline.css";
+@import "@mantine/core/styles/default-css-variables.css";
+@import "@mantine/core/styles/global.css";
+
+/* Shared */
+@import "@mantine/core/styles/Paper.css";
+@import "@mantine/core/styles/Popover.css";
+@import "@mantine/core/styles/CloseButton.css";
+@import "@mantine/core/styles/Group.css";
+@import "@mantine/core/styles/Overlay.css";
+@import "@mantine/core/styles/ModalBase.css";
+@import "@mantine/core/styles/Input.css";
+@import "@mantine/core/styles/InlineInput.css"; /* ! TODO */
+@import "@mantine/core/styles/ActionIcon.css";
+
+/* Components */
+@import "@mantine/core/styles/Anchor.css";
+@import "@mantine/core/styles/Button.css";
+@import "@mantine/core/styles/Center.css";
+@import "@mantine/core/styles/EmptyState.css";
+@import "@mantine/core/styles/Image.css";
+@import "@mantine/core/styles/Modal.css";
+@import "@mantine/core/styles/NumberInput.css";
+@import "@mantine/core/styles/Stack.css";
+@import "@mantine/core/styles/Switch.css";
+@import "@mantine/core/styles/Text.css";
+@import "@mantine/core/styles/Tooltip.css";
+
+/* DatePickerInput */
+@import "@mantine/dates/styles.layer.css";
+
+/* Substances */
+@import "@mantine/core/styles/FloatingIndicator.css";
+@import "@mantine/core/styles/SegmentedControl.css";
+
+.mantine-DatePickerInput-input {
+  cursor: pointer;
+}
+
+.sober-date {
+  & .mantine-DatePickerInput-input {
+    color: var(--color-yellow);
+  }
+}
+
+#settings-title,
+#coin-title {
+  font-size: x-large;
+  font-weight: bold;
+  color: var(--color-green);
+}
+
+.mantine-EmptyState-title {
+  font-style: italic;
+  color: var(--color-yellow);
+}
+
+.mantine-EmptyState-description {
+  color: var(--color-green);
+}
+
+.mantine-Switch-track {
+  cursor: pointer;
+}

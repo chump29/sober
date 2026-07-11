@@ -1,0 +1,11 @@
+#!/usr/bin/env -S bash -e
+
+cd frontend
+
+bun run lint-staged
+
+cd ../backend
+
+uv run pre-commit run
+
+#exit 1
