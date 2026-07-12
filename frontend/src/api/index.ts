@@ -1,4 +1,3 @@
-import { default as httpMethods } from "http-methods-constants"
 import { default as ms } from "ms"
 
 import { FetchError, handleError, validate } from "../utils/index.ts"
@@ -34,10 +33,6 @@ const fetchClient = async <R>(settings: IFetchClient): Promise<R | null> => {
     .then(async (response: Response): Promise<R | null> => {
       if (!response.ok) {
         throw new FetchError(response)
-      }
-
-      if (s.method === httpMethods.HEAD) {
-        return false as R // apiUnavailable
       }
 
       return await response.json()

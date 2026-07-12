@@ -27,7 +27,6 @@ describe("IDisplay", (): void => {
 
     expect({
       actions: {
-        setApiUnavailable: jest.fn(),
         setCoin: jest.fn(),
         setCost: jest.fn(),
         setCostValue: jest.fn(),
@@ -36,7 +35,6 @@ describe("IDisplay", (): void => {
         setUserData: jest.fn(),
         setUserValue: jest.fn()
       } satisfies IDisplayActions,
-      apiUnavailable: fake.datatype.boolean(),
       coin: getCoin(),
       cost: getCost(),
       costValue: Number(fake.commerce.price()),
@@ -70,7 +68,6 @@ describe("IDisplay", (): void => {
       y: years,
       years: years.toString()
     } satisfies IDisplay).toMatchObject({
-      apiUnavailable: expect.any(Boolean),
       coin: ICoinMatcher,
       cost: ICostMatcher,
       costValue: expect.any(Number),
@@ -89,7 +86,6 @@ describe("IDisplay", (): void => {
       y: expect.any(Number),
       years: expect.any(String),
       actions: {
-        setApiUnavailable: expect.any(Function),
         setCoin: expect.any(Function),
         setCost: expect.any(Function),
         setCostValue: expect.any(Function),

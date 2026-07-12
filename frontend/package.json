@@ -24,7 +24,7 @@
   "scripts": {
     "build": "bun run --bun vite build",
     "check": "bun run check:deps && bun run check:outdated",
-    "check:deps": "bunx --bun depcheck --ignores=\"@types/*,bun:*,html-validate,lcov-total,rimraf,stylelint-config-standard,tailwindcss\" || :",
+    "check:deps": "bunx --bun depcheck --ignores=\"@types/*,bun:*,html-validate,lcov-total,rimraf,stylelint-config-standard\" || :",
     "check:outdated": "bunx --bun npm-check-updates --install never --dep dev,prod,overrides",
     "clean": "bun run --bun rimraf bun.lock dist tests/coverage",
     "dev": "bun run --bun vite",
@@ -42,7 +42,9 @@
     "prepare": "cd .. && bun run --bun husky frontend/.husky",
     "prod": "bun run build && cd dist && bunx --bun serve",
     "scan": "bun run --bun cve-lite --check-overrides",
-    "test": "bun test --isolate --coverage --coverage-dir ./tests/coverage --coverage-reporter=text --coverage-reporter=lcov --preload ./tests/dom-setup.ts --preload ./tests/setup.ts --bail"
+    "test": "bun test --isolate --preload ./tests/dom-setup.ts --preload ./tests/setup.ts --bail",
+    "test:coverage": "bun test --isolate --dots --coverage --coverage-dir ./tests/coverage --coverage-reporter=text --coverage-reporter=lcov --preload ./tests/dom-setup.ts --preload ./tests/setup.ts --bail",
+    "test:coverage:full": "bun test --isolate --coverage --coverage-dir ./tests/coverage --coverage-reporter=text --coverage-reporter=lcov --preload ./tests/dom-setup.ts --preload ./tests/setup.ts --bail"
   },
   "lint-staged": {
     "*": "bun run --bun cspell --no-must-find-files",
@@ -89,7 +91,6 @@
     "@faker-js/faker": "^10.5.0",
     "@happy-dom/global-registrator": "^20.10.6",
     "@postfmly/config": "^1.4.32",
-    "@tailwindcss/vite": "^4.3.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
@@ -101,8 +102,10 @@
     "@vitejs/plugin-react": "^6.0.3",
     "expect-type": "^1.4.0",
     "fdir-size": "^1.0.3",
-    "html-validate": "^11.5.5",
+    "html-validate": "^11.5.6",
+    "http-status-codes": "^2.3.0",
     "husky": "^9.1.7",
+    "jest-fetch-mock": "^4.2.0",
     "lcov-total": "^2.1.1",
     "lint-staged": "^17.0.8",
     "pretty-bytes": "^7.1.0",
@@ -110,7 +113,6 @@
     "rollup-plugin-jsx-remove-attributes": "^3.1.2",
     "stylelint": "^17.14.0",
     "stylelint-config-standard": "^40.0.0",
-    "tailwindcss": "^4.3.2",
     "vite": "^8.1.4",
     "vite-plugin-minify": "^3.0.0",
     "vite-plugin-package-version": "^1.1.0",

@@ -8,7 +8,6 @@
 ![Bun](https://img.shields.io/badge/Bun-$_bun-informational?style=plastic&logo=bun "Bun") &nbsp;
 ![Mantine](https://img.shields.io/badge/Mantine-$_mantine-informational?style=plastic&logo=mantine "Mantine") &nbsp;
 ![React](https://img.shields.io/badge/React-$_react-informational?style=plastic&logo=react "React") &nbsp;
-![Tailwind](https://img.shields.io/badge/Tailwind-$_tailwind-informational?style=plastic&logo=tailwindcss "Tailwind") &nbsp;
 ![TypeScript](https://img.shields.io/badge/TypeScript-$_typescript-informational?style=plastic&logo=typescript "TypeScript") &nbsp; <!-- markdownlint-disable-line MD013 -->
 ![Valibot](https://img.shields.io/badge/Valibot-$_valibot-informational?style=plastic&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iYSIgeDE9IjAuNDE0IiB5MT0iMC4yNTUiIHgyPSIwIiB5Mj0iMC45MzIiIGdyYWRpZW50VW5pdHM9Im9iamVjdEJvdW5kaW5nQm94Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNlYWIzMDgiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNjYThhMDQiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iYiIgeDE9IjAuMzM4IiB5MT0iMC4wMiIgeDI9IjAuNjY0IiB5Mj0iMC45NjYiIGdyYWRpZW50VW5pdHM9Im9iamVjdEJvdW5kaW5nQm94Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZGU2OGEiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmYmJmMjQiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iYyIgeTE9IjAuNSIgeDI9IjEiIHkyPSIwLjUiIGdyYWRpZW50VW5pdHM9Im9iamVjdEJvdW5kaW5nQm94Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM3ZGQzZmMiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwZWE1ZTkiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMjA1NiAtMTg5OSkiPjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMDU2IDE4OTkpIiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTc0Mi4yNzEsOTg3LjAyNGMtNjYuNzA2LDAtMTE5LjEyMSw1NC42NzMtMTIxLjg3NCwxMjYuNDA4bC0yLjU1MSw5NS40NzFjLTMuOTY3LDc4LjY1Myw3MS45NjEsMTA1LjUyLDEyNi45MzYsMTA1LjUyWiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTQ2My40NTggMTAwNC4yNzcpIiBmaWxsPSJ1cmwoI2EpIi8+PHBhdGggZD0iTTkyLjYxNi4wMUgzMTkuODk0YzU0LjUzLS44LDk1LjYyNCw0MC4xLDk4LjM4MSw5My4zMzVsNi4xNDQsMTM1Ljc2Yy43MzIsNjcuMzY4LTQ4LjExNiw5NC45NS0xMDQuNTI1LDk1LjMzNUw5Mi42MTYsMzI3LjM3NEMzNC4wNjEsMzI3LjgtMS4wNjMsMjgzLjY2My4wMjIsMjI5LjEwNWwzLjgtMTM1Ljc2QzcuNDEsMzMuNTQsMzMuMywxLjA5Myw5Mi42MTYuMDFaIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMTE4LjQyIDE5OTEuMzAyKSIgZmlsbD0idXJsKCNiKSIvPjxwYXRoIGQ9Ik04Ni44NDQuMDA5SDI5OS45NThjNTEuMTMyLS43NDYsODkuNjY1LDM3LjMwNyw5Mi4yNSw4Ni44MjRsNS43NjEsMTI2LjI5Yy42ODYsNjIuNjY5LTQ1LjExNyw4OC4zMjYtOTguMDExLDg4LjY4NUw4Ni44NDQsMzA0LjUzN0MzMS45MzgsMzA0LjkzMy0xLDI2My44NzUuMDIsMjEzLjEyM0wzLjU4LDg2LjgzNEM2Ljk0OCwzMS4yLDMxLjIyMiwxLjAxNiw4Ni44NDQuMDA5WiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjEzNi45NzcgMjAwMS43MzcpIiBmaWxsPSIjMTExODI3Ii8+PHBhdGggZD0iTTI3LjYyNiwwQTI3LjYyNiwyNy42MjYsMCwxLDEsMCwyNy42MjYsMjcuNjI2LDI3LjYyNiwwLDAsMSwyNy42MjYsMFoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDI0MjEuMTQ4IDIxMDQuMzU3KSIgZmlsbD0idXJsKCNjKSIvPjxwYXRoIGQ9Ik0yNy42MjYsMEEyNy42MjYsMjcuNjI2LDAsMSwxLDAsMjcuNjI2LDI3LjYyNiwyNy42MjYsMCwwLDEsMjcuNjI2LDBaIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMjA4LjAzNCAyMTA0LjM1NykiIGZpbGw9InVybCgjYykiLz48L2c+PC9zdmc+ "Valibot") &nbsp; <!-- markdownlint-disable-line MD013 -->
 ![Vite](https://img.shields.io/badge/Vite-$_vite-informational?style=plastic&logo=vite "Vite")
@@ -94,19 +93,20 @@ port@{shape: comment, label: "&nbsp; Nginx exposes port 80"}
 
 #### Scripts:
 
-|    📋 Task     |  🔧 Command (Full)   | 🔧 Command (Short) |
-|:--------------:|:--------------------:|:------------------:|
-| Lint All (DEV) |    `bun run lint`    |     `bun lint`     |
-| Lint All (CI)  |  `bun run lint:ci`   |   `bun lint:ci`    |
-|   Lint Biome   | `bun run lint:biome` |  `bun lint:biome`  |
-|    Lint CSS    |  `bun run lint:css`  |   `bun lint:css`   |
-|    Lint ENV    |  `bun run lint:env`  |   `bun lint:env`   |
-|   Lint HTML    | `bun run lint:html`  |  `bun lint:html`   |
-| Lint Spelling  | `bun run lint:spell` |  `bun lint:spell`  |
-|    Run DEV     |    `bun run dev`     |     `bun dev`      |
-| Build/Run PROD |    `bun run prod`    |     `bun prod`     |
-|   Build PROD   |   `bun run build`    |      &mdash;       |
-|      Test      |    `bun run test`    |      &mdash;       |
+|     📋 Task     |    🔧 Command (Full)    | 🔧 Command (Short) |
+|:---------------:|:-----------------------:|:------------------:|
+| Lint All (DEV)  |     `bun run lint`      |     `bun lint`     |
+|  Lint All (CI)  |    `bun run lint:ci`    |   `bun lint:ci`    |
+|   Lint Biome    |  `bun run lint:biome`   |  `bun lint:biome`  |
+|    Lint CSS     |   `bun run lint:css`    |   `bun lint:css`   |
+|    Lint ENV     |   `bun run lint:env`    |   `bun lint:env`   |
+|    Lint HTML    |   `bun run lint:html`   |  `bun lint:html`   |
+|  Lint Spelling  |  `bun run lint:spell`   |  `bun lint:spell`  |
+|     Run DEV     |      `bun run dev`      |     `bun dev`      |
+| Build/Run PROD  |     `bun run prod`      |     `bun prod`     |
+|   Build PROD    |     `bun run build`     |      &mdash;       |
+|      Test       |     `bun run test`      |      &mdash;       |
+| Test w/Coverage | `bun run test:coverage` |      &mdash;       |
 
 #### Docker Deployment:
 

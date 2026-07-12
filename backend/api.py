@@ -326,13 +326,6 @@ def get_version() -> str | None:
         return None
 
 
-@ROUTER.head("/version")
-@cached(cache=LRUCache(maxsize=1))
-def get_version_head() -> None:
-    """Get HEAD version"""
-    return
-
-
 def verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())]) -> str | None:
     """Verify unsecured JWT"""
 

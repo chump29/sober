@@ -1,6 +1,5 @@
 import { appendFile, readdir } from "node:fs/promises"
 
-import { default as tailwindCSS } from "@tailwindcss/vite"
 import { default as react } from "@vitejs/plugin-react"
 import { default as getDirSize } from "fdir-size"
 import { default as prettyBytes } from "pretty-bytes"
@@ -15,6 +14,7 @@ import { TitleSchema } from "./src/utils/schemas.ts"
 
 export default defineConfig({
   build: {
+    cssMinify: "lightningcss",
     rolldownOptions: {
       output: {
         postFooter: "/* ♡ ᓚᘏᗢ ♡ */",
@@ -23,6 +23,10 @@ export default defineConfig({
             {
               name: "mantine",
               test: "@mantine"
+            },
+            {
+              name: "postfmly",
+              test: "@postfmly"
             },
             {
               name: "icons",
@@ -37,6 +41,9 @@ export default defineConfig({
       }
     }
   },
+  css: {
+    transformer: "lightningcss"
+  },
   plugins: [
     minifyHtml({
       keepClosingSlash: true,
@@ -47,7 +54,6 @@ export default defineConfig({
     removeAttributes({
       usage: "vite"
     }),
-    tailwindCSS(),
     version(),
     webFontDownload(
       [

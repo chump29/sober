@@ -4,7 +4,6 @@ import { type ISubstance } from "./ISubstance.ts"
 import { type IUser } from "./IUser.ts"
 
 interface IDisplayActions {
-  setApiUnavailable: (data: boolean) => void
   setCoin: (data: ICoin | null) => void
   setCost: (data: ICost | null) => void
   setCostValue: (data: number | undefined) => void
@@ -16,7 +15,6 @@ interface IDisplayActions {
 
 interface IDisplay {
   actions: IDisplayActions
-  apiUnavailable: boolean
   coin: ICoin | null
   cost: ICost | null
   costValue: number | undefined

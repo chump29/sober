@@ -19,7 +19,6 @@ import { MAX_LEN_STR, NameSchema } from "../../utils/schemas.ts"
 
 const Substances = ({
   allSubstances,
-  apiUnavailable,
   refreshSubstances,
   selectedSubstance,
   setSelectedSubstance,
@@ -27,7 +26,6 @@ const Substances = ({
   user
 }: {
   allSubstances: ISubstance[] | undefined
-  apiUnavailable: boolean
   refreshSubstances: KeyedMutator<ISubstance[]>
   selectedSubstance: ISubstance
   setSelectedSubstance: (data: ISubstance) => void
@@ -166,7 +164,6 @@ const Substances = ({
         <Tooltip label="Substance" withArrow={true}>
           <TextInput
             {...substanceField.getInputProps()}
-            data-testid="testSubstance"
             label="Substance"
             maxLength={MAX_LEN_STR}
             onChange={handleSubstanceChange}
@@ -204,38 +201,36 @@ const Substances = ({
           />
         </Tooltip>
       </Modal>
-      {apiUnavailable ? null : (
-        <Center mt={50}>
-          <Stack>
+      <Center mt={50}>
+        <Stack>
+          {substances.length > 0 ? (
+            <Text c="var(--color-blue)" fw="bold" size="sm" ta="center">
+              Selected substance:
+            </Text>
+          ) : null}
+          <Box ta="center">
+            <Tooltip label="Add Substance">
+              <ActionIcon onClick={handleOpenSubstance} variant="transparent">
+                <IconPlus color="var(--color-green)" size={16} />
+              </ActionIcon>
+            </Tooltip>
             {substances.length > 0 ? (
-              <Text c="var(--color-blue)" fw="bold" size="sm" ta="center">
-                Selected substance:
+              <>
+                <SegmentedControl color="var(--color-blue)" data={substances} onChange={handleChange} size="sm" />
+                <Tooltip label="Delete Substance">
+                  <ActionIcon onClick={handleDelete} variant="transparent">
+                    <IconMinus color="var(--color-red)" size={16} />
+                  </ActionIcon>
+                </Tooltip>
+              </>
+            ) : (
+              <Text c="var(--color-red)" fs="italic" fw="bold">
+                « No substances found. Please add one. »
               </Text>
-            ) : null}
-            <Box ta="center">
-              <Tooltip label="Add Substance">
-                <ActionIcon onClick={handleOpenSubstance} variant="transparent">
-                  <IconPlus color="var(--color-green)" size={16} />
-                </ActionIcon>
-              </Tooltip>
-              {substances.length > 0 ? (
-                <>
-                  <SegmentedControl color="var(--color-blue)" data={substances} onChange={handleChange} size="sm" />
-                  <Tooltip label="Delete Substance">
-                    <ActionIcon onClick={handleDelete} variant="transparent">
-                      <IconMinus color="var(--color-red)" size={16} />
-                    </ActionIcon>
-                  </Tooltip>
-                </>
-              ) : (
-                <Text c="var(--color-red)" fs="italic" fw="bold">
-                  « No substances found. Please add one. »
-                </Text>
-              )}
-            </Box>
-          </Stack>
-        </Center>
-      )}
+            )}
+          </Box>
+        </Stack>
+      </Center>
     </>
   )
 }

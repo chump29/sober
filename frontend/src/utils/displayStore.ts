@@ -16,10 +16,6 @@ const displayStore = create<IDisplay>()(
   (set) =>
     ({
       actions: {
-        setApiUnavailable: (data: boolean): void =>
-          set({
-            apiUnavailable: data
-          }),
         setCoin: (data: ICoin | null): void =>
           set({
             coin: data
@@ -76,7 +72,6 @@ const displayStore = create<IDisplay>()(
             userValue: data
           })
       } satisfies IDisplayActions,
-      apiUnavailable: false,
       coin: null,
       cost: null,
       costValue: undefined,
@@ -97,7 +92,6 @@ const displayStore = create<IDisplay>()(
     }) satisfies IDisplay
 )
 
-export const getApiUnavailable = (): boolean => displayStore((state: IDisplay): boolean => state.apiUnavailable)
 export const getCoin = (): ICoin | null => displayStore((state: IDisplay): ICoin | null => state.coin)
 export const getCost = (): ICost | null => displayStore((state: IDisplay): ICost | null => state.cost)
 export const getCostValue = (): number | undefined =>

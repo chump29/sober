@@ -45,7 +45,6 @@ import { fetchClient } from "../../api/index.ts"
 import {
   displayStore,
   displayStoreActions,
-  getApiUnavailable,
   getCoin,
   getCost,
   getCostValue,
@@ -132,8 +131,6 @@ const Display = (): JSX.Element => {
   const cost: ICost | null = getCost()
   const coin: ICoin | null = getCoin()
 
-  const apiUnavailable: boolean = getApiUnavailable()
-
   const nameField = useField<string>({
     initialValue: "",
     validateOnChange: true,
@@ -158,26 +155,19 @@ const Display = (): JSX.Element => {
   const weeks: string = getWeeks()
   const years: string = getYears()
 
-  const {
-    setDisplay,
-    setUserData,
-    setSelectedSubstance,
-    setUserValue,
-    setCostValue,
-    setApiUnavailable,
-    setCost,
-    setCoin
-  } = displayStoreActions()
+  const { setDisplay, setUserData, setSelectedSubstance, setUserValue, setCostValue, setCost, setCoin } =
+    displayStoreActions()
 
   const fetchUser = async (): Promise<void> => {
-    if (!userValue) {
+    const user: string | null = displayStore.getState().userValue
+    if (!user) {
       return
     }
 
     await fetchClient<IUser>({
       endpoint: "user",
       method: httpMethods.GET,
-      user: userValue
+      user
     } satisfies IFetchClient).then((data: IUser | null): void => {
       const u: IUser | null = validate<IUser, UserSchema>(data, UserSchema)
       if (!u) {
@@ -187,7 +177,7 @@ const Display = (): JSX.Element => {
       setUserData(u)
 
       if (DEBUG) {
-        info(`Got user data for ${userValue}`)
+        info(`Got user data for ${user}`)
       }
     })
   }
@@ -491,7 +481,6 @@ const Display = (): JSX.Element => {
       <Button
         c="var(--mantine-color-dark-0)"
         color="var(--color-og107)"
-        data-testid="testLogin"
         leftSection={<IconKey color="yellow" size={16} />}
         onClick={handleLogin}
         size="xs"
@@ -501,26 +490,9 @@ const Display = (): JSX.Element => {
     </Tooltip>
   )
 
-  const testAPI = async (): Promise<boolean> => {
-    if (!userValue) {
-      return true
-    }
-
-    return await fetchClient<boolean>({
-      endpoint: "version",
-      method: httpMethods.HEAD,
-      user: userValue
-    } satisfies IFetchClient).then((data: boolean | null): boolean => data === null)
-  }
-
   const init = async (): Promise<void> => {
-    setApiUnavailable(await testAPI())
-    if (apiUnavailable) {
-      return
-    }
-
     setUserValueFromSoberUser()
-    if (!userValue) {
+    if (!displayStore.getState().userValue) {
       return
     }
 
@@ -557,7 +529,7 @@ const Display = (): JSX.Element => {
 
         if (m > 0) {
           const EighteenMonths: number = 18
-          const MaxYears: number = 5 // ! TODO: more images
+          const MaxYears: number = 5 // TODO: more images
 
           const y: number = displayStore.getState().y
 
@@ -586,7 +558,6 @@ const Display = (): JSX.Element => {
       })
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies(apiUnavailable): render on API status change
   // biome-ignore lint/correctness/useExhaustiveDependencies(init): not a dependency
   // biome-ignore lint/correctness/useExhaustiveDependencies(setDisplay): not a dependency
   useEffect((): ReturnType<EffectCallback> => {
@@ -598,7 +569,6 @@ const Display = (): JSX.Element => {
 
     return (): void => clearInterval(interval)
   }, [
-    apiUnavailable,
     selectedSubstance.date
   ])
 
@@ -608,7 +578,6 @@ const Display = (): JSX.Element => {
         <Tooltip label="Name" withArrow={true}>
           <TextInput
             {...nameField.getInputProps()}
-            data-testid="testName"
             label="Name"
             maxLength={MAX_LEN_STR}
             onChange={handleNameChange}
@@ -653,7 +622,7 @@ const Display = (): JSX.Element => {
           top: "10px"
         }}>
         {soberUser ? (
-          <Text c="dimmed" fs="italic" size="xs">
+          <Text c="dimmed" data-testid="loggedIn" fs="italic" size="xs">
             Logged in as:{" "}
             <Tooltip label="Log Out" withArrow={true}>
               <Anchor c="blue" onClick={handleLogout} underline="never">
@@ -666,19 +635,13 @@ const Display = (): JSX.Element => {
         )}
       </Group>
       {/* biome-ignore lint/correctness/useUniqueElementIds: needed for CSS */}
-      <Modal.Root
-        centered
-        data-testid="testSettingsModal"
-        id="settings"
-        onClose={closeSettings}
-        opened={openedSettings}
-        size="auto">
+      <Modal.Root centered id="settings" onClose={closeSettings} opened={openedSettings} size="auto">
         <Modal.Overlay />
         <Modal.Content>
           <Modal.Header>
             <Modal.Title>Settings</Modal.Title>
             <Tooltip label="Close" withArrow>
-              <Modal.CloseButton data-testid="data-testid" />
+              <Modal.CloseButton />
             </Tooltip>
           </Modal.Header>
           <Modal.Body>
@@ -686,7 +649,6 @@ const Display = (): JSX.Element => {
               <Switch
                 checked={userData?.showCoin ?? true}
                 color="var(--color-blue)"
-                data-testid="testShowCoin"
                 description="Display AA coin"
                 label="Show Coin"
                 offLabel="OFF"
@@ -697,7 +659,6 @@ const Display = (): JSX.Element => {
               <Switch
                 checked={userData?.showCost ?? true}
                 color="var(--color-blue)"
-                data-testid="testShowCost"
                 description="Display weekly cost"
                 label="Show Cost"
                 offLabel="OFF"
@@ -756,22 +717,14 @@ const Display = (): JSX.Element => {
       {soberUser ? (
         <>
           <Tooltip label="Settings" withArrow>
-            {!apiUnavailable}
             <ActionIcon
-              data-testid="testSettings"
-              disabled={apiUnavailable}
+              data-testid="settings"
               onClick={handleOpenSettings}
               pos="absolute"
               right={10}
-              style={[
-                apiUnavailable
-                  ? {
-                      cursor: "not-allowed"
-                    }
-                  : {
-                      cursor: "pointer"
-                    }
-              ]}
+              style={{
+                cursor: "pointer"
+              }}
               top={10}
               variant="subtle">
               <IconSettings color="white" size={64} />
@@ -779,7 +732,6 @@ const Display = (): JSX.Element => {
           </Tooltip>
           <Substances
             allSubstances={substances}
-            apiUnavailable={apiUnavailable}
             refreshSubstances={refreshSubstances}
             selectedSubstance={selectedSubstance}
             setSelectedSubstance={setSelectedSubstance}
@@ -794,8 +746,8 @@ const Display = (): JSX.Element => {
                     <DatePickerInput
                       c="var(--color-blue)"
                       className="sober-date"
-                      data-testid="testSoberDate"
-                      disabled={apiUnavailable || substances?.length === 0}
+                      data-testid="datepicker"
+                      disabled={substances?.length === 0}
                       label="Sober since:"
                       leftSection={<IconCalendar color="var(--color-red)" size={16} />}
                       maxDate={dayjs().toDate()}
@@ -813,14 +765,7 @@ const Display = (): JSX.Element => {
                   </Tooltip>
                 </Box>
               </Center>
-              <Stack
-                align="center"
-                c="var(--color-blue)"
-                data-testid="testCounters"
-                ff="var(--font-counters)"
-                fw="bold"
-                fz="h1"
-                gap="xs">
+              <Stack align="center" c="var(--color-blue)" ff="var(--font-counters)" fw="bold" fz="h1" gap="xs">
                 <Box>{seconds}</Box>
                 <Box>{minutes}</Box>
                 <Box>{hours}</Box>
@@ -829,8 +774,8 @@ const Display = (): JSX.Element => {
                 <Box>{months}</Box>
                 <Box>{years}</Box>
               </Stack>
-              {!apiUnavailable && userData?.showCost && cost ? (
-                <Center data-testid="testCost" mt={20}>
+              {userData?.showCost && cost ? (
+                <Center mt={20}>
                   <Text c="var(--color-red)" fw="bold" inline mr={10} size="xl">
                     Savings:
                   </Text>
@@ -855,7 +800,7 @@ const Display = (): JSX.Element => {
                   </Tooltip>
                 </Center>
               ) : null}
-              {!apiUnavailable && userData?.showCoin && coin ? (
+              {userData?.showCoin && coin ? (
                 <>
                   {/* biome-ignore lint/correctness/useUniqueElementIds: needed for CSS */}
                   <Modal
@@ -881,7 +826,6 @@ const Display = (): JSX.Element => {
                   <Tooltip label="Show Coin" withArrow>
                     <Button
                       c="var(--color-black)"
-                      data-testid="testCoin"
                       fw="bold"
                       gradient={{
                         deg: 90,

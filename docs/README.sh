@@ -42,10 +42,6 @@ for _env in frontend backend; do
     export _react
     echo -e " • react: $_react"
 
-    _tailwind=$(jq -r '.devDependencies.tailwindcss // "❓"' package.json)
-    export _tailwind
-    echo -e " • tailwindcss: $_tailwind"
-
     _typescript=$(jq -r '.overrides.typescript // "❓"' package.json)
     export _typescript
     echo -e " • typescript: $_typescript"
@@ -57,6 +53,9 @@ for _env in frontend backend; do
     _vite=$(jq -r '.devDependencies.vite // "❓"' package.json)
     export _vite
     echo -e " • vite: $_vite"
+
+    echo -e "\n🧪 Running $_env tests..."
+    bun run --bun test:coverage
 
     _coverage=0
     if [ -f "tests/coverage/lcov.info" ]; then
@@ -120,7 +119,10 @@ for _env in frontend backend; do
     export _uv
     echo -e " • uv: $_uv"
 
-    _coverage=-1
+    echo -e "\n🧪 Running $_env tests..."
+    ./test.sh
+
+    _coverage=0
     if [ -f "coverage/coverage.json" ]; then
       _coverage=$(jq -r .totals.percent_statements_covered_display coverage/coverage.json)
     fi
