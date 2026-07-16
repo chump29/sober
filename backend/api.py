@@ -18,6 +18,7 @@ from box import Box
 from cachetools import LRUCache, _CacheInfo, cached
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt import InvalidTokenError, decode
 from nh3 import clean  # pylint: disable=no-name-in-module
@@ -182,7 +183,7 @@ type DecimalToFloat = Annotated[Decimal, PlainSerializer(float, return_type=floa
 class UserDTO(BaseValidation):
     """User domain model"""
 
-    cost: DecimalToFloat | None = Field(decimal_places=2, default=None)
+    cost: DecimalToFloat | None = Field(decimal_places=2, default=None, gt=0)
     show_coin: bool = Field(alias="showCoin")
     show_cost: bool = Field(alias="showCost")
     user: StrictStr | None = Field(max_length=MAX_LEN, default=None)
@@ -250,7 +251,9 @@ elif DEBUG:
 
 
 ROUTER: Final[FastAPI] = FastAPI(docs_url="/docs", openapi_url="/openapi.json", redoc_url="/redoc")
-
+ROUTER.add_middleware(
+    CORSMiddleware, allow_credentials=True, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]
+)
 
 API: Final[APIRouter] = APIRouter(prefix="/api")
 

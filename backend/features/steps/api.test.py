@@ -4,222 +4,374 @@
 
 """CRUD tests"""
 
-# ruff: noqa: ERA001
+from decimal import Decimal
+from pathlib import Path
+from tomllib import load
+from typing import TYPE_CHECKING, Final
 
-# from datetime import UTC
-# from pathlib import Path
-# from tomllib import load
-# from typing import TYPE_CHECKING, Final
+# pylint: disable-next=import-error
+from api import (
+    PORT,
+    SubstanceDTO,
+    UserDTO,
+    add_substance,
+    clear_cache_stats,
+    delete_substance,
+    get_cache_stats,
+    get_substance,
+    get_substances,
+    get_user,
+    get_version,
+    update_substance,
+    update_user,
+)
+from behave import given, then, when
+from box import Box
+from environment import get_new_substance
+from faker import Faker
 
-# # pylint: disable-next=import-error
-# from api import (
-#     PORT,
-#     ReminderDTO,
-#     add_reminder,
-#     delete_reminder,
-#     get_all_reminders,
-#     get_cache_stats,
-#     get_one_reminder,
-#     get_version,
-#     update_reminder,
-# )
-# from behave import given, then, when
-# from box import Box
-# from faker import Faker
-# from features.environment import generate_description, generate_event, get_new_reminder
+if TYPE_CHECKING:
+    from behave.runner import Context
+    from cachetools import _CacheInfo
+else:
+    Context = object
+    _CacheInfo = object
 
-# if TYPE_CHECKING:
-#     from behave.runner import Context
-#     from cachetools import _CacheInfo
-# else:
-#     Context = object
-#     _CacheInfo = object
-
-
-# fake: Final[Faker] = Faker()
-
-
-# @given("that a user wants a reminder by ID")
-# def get_reminder_by_id(_: Context) -> None:
-#     """Get reminder by ID"""
+fake: Final[Faker] = Faker()
 
 
-# @when("/get API endpoint is called with an ID")
-# def call_get_one_reminder(context: Context) -> None:
-#     """Call /get API with ID"""
-#     context.reminder = get_one_reminder(context.reminder.id)
-#     assert not context.failed, "/get with ID call failed"
+# region Get user
 
 
-# @then("reminder data is returned")
-# def return_data(context: Context) -> None:
-#     """Return reminder data"""
-#     assert context.reminder, "Invalid get_one_reminder results"
-#     assert context.reminder.id == 1, "Incorrect get_one_reminder ID"
+@given("that a user wants a user record")
+def get_user_record(_: Context) -> None:
+    """Get user"""
 
 
-# @given("that a user wants to update a reminder")
-# def update_reminder_by_id(context: Context) -> None:
-#     """Update reminder by ID"""
-#     context.description = generate_description()
+@when("/user API endpoint is called")
+def call_user(context: Context) -> None:
+    """Call /user API"""
+    context.user = get_user(context.user_name)
+    assert not context.failed, "/user call failed"
 
 
-# @when("/update API endpoint is called with an ID")
-# def call_update_reminder(context: Context) -> None:
-#     """Call /update API with ID"""
-#     context.reminder.description = context.description
-#     context.reminder.user = context.user
-#     context.reminder = update_reminder(pk=context.reminder.id, reminder=context.reminder, user=context.user)
-#     assert not context.failed, "/update with ID call failed"
+@then("user data is returned")
+def return_user_data(context: Context) -> None:
+    """Return user data"""
+    assert context.user, "Invalid get_user results"
+    user: Final[UserDTO] = context.user
+    assert isinstance(user.show_coin, bool), "showCoin not set"
+    assert isinstance(user.show_cost, bool), "showCost not set"
 
 
-# @then("reminder data is updated")
-# def return_updated_data(context: Context) -> None:
-#     """Return updated reminder data"""
-#     assert context.reminder, "Invalid update_reminder results"
-#     assert context.reminder.description == context.description, "Could not update reminder description"
+# endregion
 
 
-# @given("that a user wants all reminders")
-# def get_reminders(context: Context) -> None:
-#     """Get all reminders"""
-#     add_reminder(
-#         ReminderDTO(date=fake.past_datetime(tzinfo=UTC), event=generate_event()), user=context.user
-#     )  # expired
+# region Update user
 
 
-# @when("/get API endpoint is called")
-# def call_get(context: Context) -> None:
-#     """Call /get API"""
-#     context.reminders = get_all_reminders(context.user)
-#     assert not context.failed, "/get call failed"
+@given("that a user wants to update a user record")
+def update_user_record(_: Context) -> None:
+    """Update user"""
 
 
-# @then("all reminders are returned")
-# def return_all_reminders(context: Context) -> None:
-#     """Return all reminders"""
-#     assert context.reminders, "Invalid get_all_reminders results"
-#     assert len(context.reminders) == 1, "Incorrect get_all_reminders length"
+@when("/user/update API endpoint is called with data")  # type: ignore[reportArgumentType]
+async def call_update_user(context: Context) -> None:
+    """Call /user/update API with data"""
+    user: Final[UserDTO | None] = get_user(context.user_name)
+    assert user, "get_user failed for update"
+    user.show_cost = True
+    user.cost = fake.pydecimal(left_digits=3, right_digits=2, positive=True, min_value=1)
+    context.user = await update_user(user, context.user_name)
+    assert not context.failed, "/user/update call failed"
 
 
-# @given("that a user wants to delete a reminder")
-# def delete_reminder_by_id(_: Context) -> None:
-#     """Delete a reminder"""
+@then("user data is updated")
+def return_updated_user_data(context: Context) -> None:
+    """Return updated user data"""
+    assert context.user, "Could not update user"
+    user: Final[UserDTO] = context.user
+    assert isinstance(user.show_cost, bool), "show_cost not a boolean"
+    assert user.show_cost, "Could not set show_cost"
+    assert isinstance(user.cost, Decimal), "cost not a Decimal"
+    assert user.cost > Decimal(), "Could not set cost"
 
 
-# @when("/delete API endpoint is called with an ID")
-# def call_delete(context: Context) -> None:
-#     """Call /delete API"""
-#     context.isDeleted = delete_reminder(pk=context.reminder.id, user=context.user)
-#     assert not context.failed, "/delete call failed"
+# endregion
 
 
-# @then("reminder data is deleted")
-# def data_deleted(context: Context) -> None:
-#     """Reminder data is deleted"""
-#     assert context.isDeleted, "Could not delete reminder"
+# region Add substance
 
 
-# @given("that a user wants cache stats")
-# def get_cache(_: Context) -> None:
-#     """Get cache stats"""
+@given("that a user wants to add a substance record")
+def add_substance_record(_: Context) -> None:
+    """Add substance"""
 
 
-# @when("/stats API endpoint is called")
-# def call_stats(context: Context) -> None:
-#     """Call /stats API"""
-#     context.stats = get_cache_stats()
-#     assert not context.failed, "/stats call failed"
+@when("/substances/add API endpoint is called")  # type: ignore[reportArgumentType]
+async def call_substance_add(context: Context) -> None:
+    """Call /substances/add API"""
+    substance: Final[SubstanceDTO] = get_new_substance()
+    context.substance = await add_substance(substance, context.user_name)
+    assert not context.failed, "/substance/add call failed"
 
 
-# @then("cache stats are returned")
-# def return_cache_stats(context: Context) -> None:
-#     """Return cache stats"""
-#     assert context.stats, "Invalid get_cache_stats results"
+@then("new substance is returned")
+def return_new_substance(context: Context) -> None:
+    """Return new substance"""
+    assert context.substance, "Invalid add_substance results"
 
 
-# @given("a request for the version")
-# def request_version(context: Context) -> None:
-#     """Request version"""
-#     with Path("pyproject.toml").open("rb") as pyproject:
-#         context.real_version = str(Box(load(pyproject), frozen_box=True).project.version)
+# endregion
 
 
-# @when("/version API endpoint is called")
-# def call_get_version(context: Context) -> None:
-#     """Call /version API"""
-#     context.version = get_version()
-#     assert not context.failed, "/version call failed"
+# region Get all substances
 
 
-# @then("port {port} is used")
-# def verify_port(_: Context, port: str) -> None:
-#     """Verify port"""
-#     assert int(port.replace('"', "")) == PORT, f"Invalid port: {port}"
+@given("that a user wants all substance records")
+def get_all_substances(_: Context) -> None:
+    """Get all substances"""
 
 
-# @then("version is returned")
-# def version_returned(context: Context) -> None:
-#     """Return version"""
-#     assert context.real_version == context.version, "Invalid get_version results"
+@when("/substances API endpoint is called")
+def call_substances(context: Context) -> None:
+    """Call /substances API"""
+    context.substances = get_substances(context.user_name)
+    assert not context.failed, "/substances call failed"
 
 
-# @then("version is cached")
-# def verify_cache(_: Context) -> None:
-#     """Verify cache"""
-#     get_version()
-#     cache: Final[_CacheInfo] = get_version.cache_info()
-#     assert cache.hits == 1, "Version not cached (hits)"
-#     assert cache.misses == 1, "Version not cached (misses)"
+@then("all substances are returned")
+def return_all_substances(context: Context) -> None:
+    """Return all substances"""
+    assert context.substances, "Invalid get_all_substances results"
+    assert len(context.substances) == 1, "Incorrect get_all_substances length"
 
 
-# @given("bad requests")
-# def bad_requests(_: Context) -> None:
-#     """Bad requests"""
+# endregion
 
 
-# @when("provided bad input")
-# def bad_input(context: Context) -> None:
-#     """Bad input"""
-#     bad_reminder: Final[ReminderDTO] = ReminderDTO(date=fake.future_datetime(tzinfo=UTC), event="")
-#     context.bad_add = add_reminder(reminder=bad_reminder, user=context.user)
-#     context.bad_update = update_reminder(pk=1, reminder=bad_reminder, user=context.user)
-#     context.bad_delete = delete_reminder(pk=fake.random_int(min=10), user=context.user)
-#     assert not context.failed, "Bad API calls failed"
+# region Get substance by ID
 
 
-# @then("/add should fail")
-# def add_fail(context: Context) -> None:
-#     """/add should fail"""
-#     assert context.bad_add is None, "/add should fail"
+@given("that a user wants a substance by ID")  # type: ignore[reportArgumentType]
+async def get_substance_by_id(context: Context) -> None:
+    """Get substance by ID"""
+    substance: Final[SubstanceDTO] = get_new_substance()
+    context.substance = await add_substance(substance, context.user_name)
 
 
-# @then("/update should fail")
-# def update_fail(context: Context) -> None:
-#     """/update should fail"""
-#     assert context.bad_update is None, "/update should fail"
+@when("/substances/get API endpoint is called with an ID")  # type: ignore[reportArgumentType]
+async def call_get_substance(context: Context) -> None:
+    """Call /substances/get API"""
+    context.substance = await get_substance(context.substance.id, context.user_name)
+    assert not context.failed, "/substances/get call failed"
 
 
-# @then("/delete should fail")
-# def delete_fail(context: Context) -> None:
-#     """/delete should fail"""
-#     assert not context.bad_delete, "/delete should fail"
+@then("substance is returned")
+def return_substance(context: Context) -> None:
+    """Return substance"""
+    assert context.substance, "Invalid get_substance results"
 
 
-# @given("that a ReminderDTO should stringify")
-# def stringify_reminder_dto(_: Context) -> None:
-#     """Stringify a ReminderDTO"""
+# endregion
 
 
-# @when("a ReminderDTO is output")
-# def output_reminder_dto(context: Context) -> None:
-#     """Output a ReminderDTO"""
-#     context.reminder_dto = str(get_new_reminder())
-#     assert not context.failed, "Unable to stringify ReminderDTO"
+# region Delete substance by ID
 
 
-# @then("ReminderDTO should be a string")
-# def reminder_dto_string(context: Context) -> None:
-#     """ReminderDTO should be a string"""
-#     assert context.reminder_dto, "Invalid ReminderDTO string"
-#     assert isinstance(context.reminder_dto, str), "Invalid ReminderDTO type"
+@given("that a user wants to delete a substance by ID")  # type: ignore[reportArgumentType]
+async def delete_substance_by_id(context: Context) -> None:
+    """Delete substance"""
+    substance: Final[SubstanceDTO] = get_new_substance()
+    context.substance = await add_substance(substance, context.user_name)
+
+
+@when("/substance/delete API endpoint is called with an ID")  # type: ignore[reportArgumentType]
+async def call_delete_substance(context: Context) -> None:
+    """Call /substance/delete API"""
+    context.isDeleted = await delete_substance(pk=context.substance.id, user=context.user_name)
+    assert not context.failed, "/substance/delete call failed"
+
+
+@then("substance is deleted")
+def is_deleted(context: Context) -> None:
+    """Is deleted"""
+    assert context.isDeleted, "Could not delete substance"
+
+
+# endregion
+
+
+# region Update substance by ID
+
+
+@given("that a user wants to update a substance by ID")  # type: ignore[reportArgumentType]
+async def update_substance_by_id(context: Context) -> None:
+    """Update substance"""
+    substance: Final[SubstanceDTO] = get_new_substance()
+    context.substance = await add_substance(substance, context.user_name)
+
+
+@when("/substances/update API endpoint is called with an ID")  # type: ignore[reportArgumentType]
+async def call_update_substance(context: Context) -> None:
+    """Call /substance/update API"""
+    substance: Final[SubstanceDTO | None] = context.substance
+    assert substance, "Invalid substance for update"
+    context.date = substance.date
+    substance.date = fake.future_date("+60d")
+    context.substance = await update_substance(pk=context.substance.id, substance=substance, user=context.user_name)
+    assert not context.failed, "/substance/update call failed"
+
+
+@then("updated substance is returned")
+def return_updated_substance(context: Context) -> None:
+    """Return updated substance"""
+    assert context.substance, "Invalid substance from update"
+    assert context.substance.date != context.date, "Could not update substance"
+
+
+# endregion
+
+
+# region Get cache stats
+
+
+@given("that a user wants cache stats")
+def get_cache(_: Context) -> None:
+    """Get cache stats"""
+
+
+@when("/cache API endpoint is called")  # type: ignore[reportArgumentType]
+async def call_cache(context: Context) -> None:
+    """Call /cache API"""
+    context.stats = await get_cache_stats()
+    assert not context.failed, "/cache call failed"
+
+
+@then("cache stats are returned")
+def return_cache_stats(context: Context) -> None:
+    """Return cache stats"""
+    assert context.stats, "Invalid get_cache_stats results"
+
+
+# endregion
+
+
+# region Clear cache stats
+
+
+@given("that a user wants to clear cache stats")
+def clear_cache(_: Context) -> None:
+    """Clear cache stats"""
+
+
+@when("/cache/clear API endpoint is called")  # type: ignore[reportArgumentType]
+async def call_clear_cache(context: Context) -> None:
+    """Call /cache/clear API"""
+    context.stats = await clear_cache_stats()
+    assert not context.failed, "/cache/clear call failed"
+
+
+@then("Cache cleared is returned")
+def return_cache_cleared(context: Context) -> None:
+    """Return cache cleared"""
+    assert context.stats == "Cache cleared", "Invalid clear_cache_stats results"
+
+
+# endregion
+
+
+# region Get version
+
+
+@given("a request for the version")
+def request_version(context: Context) -> None:
+    """Request version"""
+    with Path("pyproject.toml").open("rb") as pyproject:
+        context.real_version = str(Box(load(pyproject), frozen_box=True).project.version)
+
+
+@when("/version API endpoint is called")
+def call_get_version(context: Context) -> None:
+    """Call /version API"""
+    context.version = get_version()
+    assert not context.failed, "/version call failed"
+
+
+@then("port {port} is used")
+def verify_port(_: Context, port: str) -> None:
+    """Verify port"""
+    assert int(port.replace('"', "")) == PORT, f"Invalid port: {port}"
+
+
+@then("version is returned")
+def version_returned(context: Context) -> None:
+    """Return version"""
+    assert context.real_version == context.version, "Invalid get_version results"
+
+
+@then("version is cached")
+def verify_cache(_: Context) -> None:
+    """Verify cache"""
+    cache: Final[_CacheInfo] = get_version.cache_info()
+    assert cache.hits == 1, "Version not cached (hits)"
+    assert cache.misses == 1, "Version not cached (misses)"
+
+
+# endregion
+
+
+# region Stringify a UserDTO
+
+
+@given("that a UserDTO should stringify")
+def stringify_user_dto(_: Context) -> None:
+    """Stringify a UserDTO"""
+
+
+@when("a UserDTO is output")
+def output_user_dto(context: Context) -> None:
+    """Output a UserDTO"""
+    context.user_dto = str(
+        UserDTO(
+            cost=fake.pydecimal(left_digits=3, right_digits=2, positive=True, max_value=1),
+            showCoin=fake.boolean(),
+            showCost=fake.boolean(),
+        )
+    )
+    assert not context.failed, "Unable to set UserDTO"
+
+
+@then("UserDTO should be a string")
+def user_dto_string(context: Context) -> None:
+    """UserDTO should be a string"""
+    assert context.user_dto, "Invalid UserDTO string"
+    assert isinstance(context.user_dto, str), "Invalid UserDTO type"
+
+
+# endregion
+
+
+# region Stringify a SubstanceDTO
+
+
+@given("that a SubstanceDTO should stringify")
+def stringify_substance_dto(_: Context) -> None:
+    """Stringify a SubstanceDTO"""
+
+
+@when("a SubstanceDTO is output")
+def output_substance_dto(context: Context) -> None:
+    """Output a SubstanceDTO"""
+    context.substance_dto = str(get_new_substance())
+    assert not context.failed, "Unable to set SubstanceDTO"
+
+
+@then("SubstanceDTO should be a string")
+def substance_dto_string(context: Context) -> None:
+    """SubstanceDTO should be a string"""
+    assert context.substance_dto, "Invalid SubstanceDTO string"
+    assert isinstance(context.substance_dto, str), "Invalid SubstanceDTO type"
+
+
+# endregion

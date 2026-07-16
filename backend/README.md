@@ -8,13 +8,13 @@
 ![Backend](https://img.shields.io/badge/Backend-1.0.0-chocolate?style=plastic&logo=docker "Backend")
 
 ![Behave](https://img.shields.io/badge/Behave->=1.3.3-informational?style=plastic "Behave") &nbsp;
-![FastAPI](https://img.shields.io/badge/FastAPI->=0.139.0-informational?style=plastic&logo=fastapi "FastAPI") &nbsp;
-![Peewee](https://img.shields.io/badge/Peewee->=4.1.2-informational?style=plastic "Peewee") &nbsp;
+![FastAPI](https://img.shields.io/badge/FastAPI->=0.139.2-informational?style=plastic&logo=fastapi "FastAPI") &nbsp;
+![Peewee](https://img.shields.io/badge/Peewee->=4.2.3-informational?style=plastic "Peewee") &nbsp;
 ![Pydantic](https://img.shields.io/badge/Pydantic->=2.13.4-informational?style=plastic&logo=pydantic "Pydantic") &nbsp;
 ![SQLite](https://img.shields.io/badge/SQLite-3.49.2-informational?style=plastic&logo=sqlite "SQLite") &nbsp;
 ![uv](https://img.shields.io/badge/uv->=0.11.28-informational?style=plastic&logo=uv "uv")
 
-![Coverage](https://img.shields.io/badge/Coverage-91.50%25-success?style=plastic "Coverage")
+![Coverage](https://img.shields.io/badge/Coverage-68.75%25-success?style=plastic "Coverage")
 <!-- cspell:enable -->
 
 ---

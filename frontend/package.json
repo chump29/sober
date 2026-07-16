@@ -57,11 +57,11 @@
     "*.html": "bun run --bun html-validate *.html"
   },
   "overrides": {
-    "@biomejs/biome": "2.5.3",
+    "@biomejs/biome": "2.5.4",
     "@types/bun": "1.3.14",
     "@types/node": "26.1.1",
     "cspell": "10.0.1",
-    "cve-lite-cli": "1.26.0",
+    "cve-lite-cli": "1.27.0",
     "globals": "17.7.0",
     "typescript": "7.0.2"
   },
@@ -90,7 +90,7 @@
   "devDependencies": {
     "@faker-js/faker": "^10.5.0",
     "@happy-dom/global-registrator": "^20.10.6",
-    "@postfmly/config": "^1.4.32",
+    "@postfmly/config": "^1.4.34",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
@@ -108,12 +108,12 @@
     "jest-fetch-mock": "^4.2.0",
     "lcov-total": "^2.1.1",
     "lint-staged": "^17.0.8",
-    "pretty-bytes": "^7.1.0",
+    "pretty-bytes": "^7.1.1",
     "rimraf": "^6.1.3",
     "rollup-plugin-jsx-remove-attributes": "^3.1.2",
     "stylelint": "^17.14.0",
     "stylelint-config-standard": "^40.0.0",
-    "vite": "^8.1.4",
+    "vite": "^8.1.5",
     "vite-plugin-minify": "^3.0.0",
     "vite-plugin-package-version": "^1.1.0",
     "vite-plugin-webfont-dl": "^3.12.0"
