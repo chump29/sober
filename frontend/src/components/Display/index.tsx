@@ -493,7 +493,7 @@ const Display = (): JSX.Element => {
                   <Text size="sm">{s.name}</Text>
                 </Tooltip>
               ),
-              value: s.name
+              value: s.name as string
             }) satisfies ISubstanceDisplay
         )
       : []
@@ -773,7 +773,7 @@ const Display = (): JSX.Element => {
                       c="var(--color-blue)"
                       className="sober-date"
                       data-testid="datepicker"
-                      disabled={substances?.length === 0}
+                      disabled={!selectedSubstance.name || selectedSubstance.name.length === 0}
                       label="Sober since:"
                       leftSection={<IconCalendar color="var(--color-red)" size={16} />}
                       maxDate={dayjs().toDate()}

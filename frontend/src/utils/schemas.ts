@@ -135,9 +135,10 @@ const MAX_LEN_STR: number = 64
 /**
  * Validate substance name
  * @function
- * @summary non-empty string, max length = {@link MAX_LEN_STR}
+ * @summary string, max length = {@link MAX_LEN_STR}
+ * @default ""
  */
-const NameSchema = pipe(string(), trim(), nonEmpty(), maxLength(MAX_LEN_STR))
+const NameSchema = optional(pipe(string(), trim(), maxLength(MAX_LEN_STR)), "")
 
 type NameSchema = typeof NameSchema
 
