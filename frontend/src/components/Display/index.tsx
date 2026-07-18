@@ -773,7 +773,7 @@ const Display = (): JSX.Element => {
                       c="var(--color-blue)"
                       className="sober-date"
                       data-testid="datepicker"
-                      disabled={!selectedSubstance.name || selectedSubstance.name.length === 0}
+                      disabled={!selectedSubstance.name}
                       label="Sober since:"
                       leftSection={<IconCalendar color="var(--color-red)" size={16} />}
                       maxDate={dayjs().toDate()}
