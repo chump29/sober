@@ -108,7 +108,7 @@ for _env in frontend backend; do
       _sqlite=$(docker exec "$_name" apk list --no-cache sqlite | cut -d " " -f 1)
       _sqlite=${_sqlite:7:-3}
     else
-      _sqlite=3.49.2
+      _sqlite=3.53.2
       _static=" (*)"
     fi
     docker context use default > /dev/null 2>&1

@@ -11,7 +11,7 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI->=0.139.2-informational?style=plastic&logo=fastapi "FastAPI") &nbsp;
 ![Peewee](https://img.shields.io/badge/Peewee->=4.2.6-informational?style=plastic "Peewee") &nbsp;
 ![Pydantic](https://img.shields.io/badge/Pydantic->=2.13.4-informational?style=plastic&logo=pydantic "Pydantic") &nbsp;
-![SQLite](https://img.shields.io/badge/SQLite-3.49.2-informational?style=plastic&logo=sqlite "SQLite") &nbsp;
+![SQLite](https://img.shields.io/badge/SQLite-3.53.2-informational?style=plastic&logo=sqlite "SQLite") &nbsp;
 ![uv](https://img.shields.io/badge/uv->=0.11.28-informational?style=plastic&logo=uv "uv")
 
 ![Coverage](https://img.shields.io/badge/Coverage-68.75%25-success?style=plastic "Coverage")

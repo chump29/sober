@@ -1,4 +1,12 @@
-import { type ChangeEvent, type EffectCallback, type JSX, type KeyboardEvent, useEffect } from "react"
+import {
+  type ChangeEvent,
+  type EffectCallback,
+  type JSX,
+  type KeyboardEvent,
+  type RefObject,
+  useEffect,
+  useRef
+} from "react"
 
 import { info } from "@postfmly/logger"
 
@@ -62,7 +70,7 @@ import {
 import { DEBUG, UpdateType, validate } from "../../utils/index.ts"
 import { type ICoin } from "../../utils/interfaces/ICoin.ts"
 import { type ICost } from "../../utils/interfaces/ICost.ts"
-import { type ISubstance, SubstanceSchema } from "../../utils/interfaces/ISubstance.ts"
+import { defaultSubstance, type ISubstance, SubstanceSchema } from "../../utils/interfaces/ISubstance.ts"
 import { type ISubstanceDisplay } from "../../utils/interfaces/ISubstanceDisplay.ts"
 import { type IUser, UserSchema } from "../../utils/interfaces/IUser.ts"
 import { BooleanSchema, CostSchema, DateSchema, MAX_LEN_STR, NameSchema } from "../../utils/schemas.ts"
@@ -130,6 +138,8 @@ const Display = (): JSX.Element => {
 
   const cost: ICost | null = getCost()
   const coin: ICoin | null = getCoin()
+
+  const showCounter: RefObject<boolean> = useRef<boolean>(false)
 
   const nameField = useField<string>({
     initialValue: "",
@@ -210,13 +220,25 @@ const Display = (): JSX.Element => {
     fetchSubstances,
     {
       onSuccess: (s: ISubstance[]): void => {
-        if (selectedSubstance.id === undefined) {
-          const substance: ISubstance | null = validate<ISubstance, SubstanceSchema>(
-            s[0] as ISubstance,
-            SubstanceSchema
-          )
-          if (substance) {
-            setSelectedSubstance(substance)
+        const subs: ISubstance[] | null = validate<ISubstance[], SubstanceSchema>(s, SubstanceSchema)
+        if (!subs || subs.length === 0) {
+          return
+        }
+
+        const foundSubstance: ISubstance | undefined = subs.find(
+          (sub: ISubstance): boolean => sub.name === selectedSubstance.name
+        )
+        if (!foundSubstance) {
+          setSelectedSubstance(defaultSubstance)
+        }
+
+        const substance: ISubstance | undefined =
+          !displayStore.getState().selectedSubstance.name || subs.length === 1 ? subs[0] : foundSubstance
+        if (substance && substance !== displayStore.getState().selectedSubstance) {
+          setSelectedSubstance(substance)
+
+          if (DEBUG) {
+            info(`Setting substance to: ${substance.name}`)
           }
         }
       }
@@ -564,6 +586,10 @@ const Display = (): JSX.Element => {
     init()
 
     const interval: NodeJS.Timeout = setInterval((): void => {
+      if (!showCounter.current) {
+        showCounter.current = true
+      }
+
       setDisplay(selectedSubstance.date)
     }, ms("1s"))
 
@@ -765,15 +791,17 @@ const Display = (): JSX.Element => {
                   </Tooltip>
                 </Box>
               </Center>
-              <Stack align="center" c="var(--color-blue)" ff="var(--font-counters)" fw="bold" fz="h1" gap="xs">
-                <Box>{seconds}</Box>
-                <Box>{minutes}</Box>
-                <Box>{hours}</Box>
-                <Box>{days}</Box>
-                <Box>{weeks}</Box>
-                <Box>{months}</Box>
-                <Box>{years}</Box>
-              </Stack>
+              {showCounter.current ? (
+                <Stack align="center" c="var(--color-blue)" ff="var(--font-counters)" fw="bold" fz="h1" gap="xs">
+                  <Box>{seconds}</Box>
+                  <Box>{minutes}</Box>
+                  <Box>{hours}</Box>
+                  <Box>{days}</Box>
+                  <Box>{weeks}</Box>
+                  <Box>{months}</Box>
+                  <Box>{years}</Box>
+                </Stack>
+              ) : null}
               {userData?.showCost && cost ? (
                 <Center mt={20}>
                   <Text c="var(--color-red)" fw="bold" inline mr={10} size="xl">

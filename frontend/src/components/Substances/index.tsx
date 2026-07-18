@@ -49,6 +49,14 @@ const Substances = ({
 
     const n: string = titleCase(name)
 
+    if (allSubstances?.find((substance: ISubstance): boolean => substance.name === n)) {
+      if (DEBUG) {
+        info("Substance already added")
+      }
+
+      return
+    }
+
     new Promise<void>((resolve): void => {
       fetchClient<ISubstance>({
         body: {
@@ -137,25 +145,29 @@ const Substances = ({
     setSelectedSubstance(substance)
   }
 
-  const handleDelete = async (): Promise<void> => {
+  const handleDeleteAndRefresh = (): void => {
     if (!(user && selectedSubstance)) {
       return
     }
 
-    await fetchClient<boolean>({
-      endpoint: `substances/delete/${selectedSubstance.id}`,
-      method: httpMethods.DELETE,
-      user
-    }).then((data: boolean | null): void => {
-      if (!data) {
-        // * NOTE: catches false and null
-        return
-      }
+    new Promise<void>((resolve): void => {
+      fetchClient<boolean>({
+        endpoint: `substances/delete/${selectedSubstance.id}`,
+        method: httpMethods.DELETE,
+        user
+      } satisfies IFetchClient).then((data: boolean | null): void => {
+        if (!data) {
+          // * NOTE: catches false and null
+          return
+        }
 
-      if (DEBUG) {
-        info(`Deleted ID ${selectedSubstance.id}`)
-      }
-    })
+        if (DEBUG) {
+          info(`Deleted ID ${selectedSubstance.id}`)
+        }
+
+        resolve()
+      })
+    }).then(async (): Promise<ISubstance[] | undefined> => await refreshSubstances())
   }
 
   return (
@@ -216,9 +228,15 @@ const Substances = ({
             </Tooltip>
             {substances.length > 0 ? (
               <>
-                <SegmentedControl color="var(--color-blue)" data={substances} onChange={handleChange} size="sm" />
+                <SegmentedControl
+                  color="var(--color-blue)"
+                  data={substances}
+                  onChange={handleChange}
+                  size="sm"
+                  value={selectedSubstance.name}
+                />
                 <Tooltip label="Delete Substance">
-                  <ActionIcon onClick={handleDelete} variant="transparent">
+                  <ActionIcon onClick={handleDeleteAndRefresh} variant="transparent">
                     <IconMinus color="var(--color-red)" size={16} />
                   </ActionIcon>
                 </Tooltip>

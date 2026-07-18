@@ -22,7 +22,7 @@ services:
     image: git.postfmly.com/admin/sober-backend:arm64
     restart: unless-stopped
     ports:
-      - "89:80"
+      - "5560:5560"
     volumes:
       - db:/backend/db
     environment:
