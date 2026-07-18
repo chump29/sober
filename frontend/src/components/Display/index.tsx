@@ -1,4 +1,12 @@
-import { type ChangeEvent, type EffectCallback, type JSX, type KeyboardEvent, useEffect } from "react"
+import {
+  type ChangeEvent,
+  type EffectCallback,
+  type JSX,
+  type KeyboardEvent,
+  type RefObject,
+  useEffect,
+  useRef
+} from "react"
 
 import { info } from "@postfmly/logger"
 
@@ -130,6 +138,8 @@ const Display = (): JSX.Element => {
 
   const cost: ICost | null = getCost()
   const coin: ICoin | null = getCoin()
+
+  const showCounter: RefObject<boolean> = useRef<boolean>(false)
 
   const nameField = useField<string>({
     initialValue: "",
@@ -576,6 +586,10 @@ const Display = (): JSX.Element => {
     init()
 
     const interval: NodeJS.Timeout = setInterval((): void => {
+      if (!showCounter.current) {
+        showCounter.current = true
+      }
+
       setDisplay(selectedSubstance.date)
     }, ms("1s"))
 
@@ -777,15 +791,17 @@ const Display = (): JSX.Element => {
                   </Tooltip>
                 </Box>
               </Center>
-              <Stack align="center" c="var(--color-blue)" ff="var(--font-counters)" fw="bold" fz="h1" gap="xs">
-                <Box>{seconds}</Box>
-                <Box>{minutes}</Box>
-                <Box>{hours}</Box>
-                <Box>{days}</Box>
-                <Box>{weeks}</Box>
-                <Box>{months}</Box>
-                <Box>{years}</Box>
-              </Stack>
+              {showCounter ? (
+                <Stack align="center" c="var(--color-blue)" ff="var(--font-counters)" fw="bold" fz="h1" gap="xs">
+                  <Box>{seconds}</Box>
+                  <Box>{minutes}</Box>
+                  <Box>{hours}</Box>
+                  <Box>{days}</Box>
+                  <Box>{weeks}</Box>
+                  <Box>{months}</Box>
+                  <Box>{years}</Box>
+                </Stack>
+              ) : null}
               {userData?.showCost && cost ? (
                 <Center mt={20}>
                   <Text c="var(--color-red)" fw="bold" inline mr={10} size="xl">
