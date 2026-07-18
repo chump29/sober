@@ -45,7 +45,7 @@ jobs:
         run: bun run test
 
   check-backend:
-    runs-on: amd64
+    runs-on: arm64 # using separate runner so they run synchronously
     defaults:
       run:
         working-directory: ./backend
