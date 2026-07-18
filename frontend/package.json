@@ -40,7 +40,7 @@
     "lint:spell": "bun run --bun cspell --dot --verbose .",
     "lint:ts": "bun run --bun tsc",
     "prepare": "cd .. && bun run --bun husky frontend/.husky",
-    "prod": "bun run build && cd dist && bunx --bun serve",
+    "prod": "bun run build && cd dist && bunx --bun serve -n",
     "scan": "bun run --bun cve-lite --check-overrides",
     "test": "bun test --isolate --preload ./tests/dom-setup.ts --preload ./tests/setup.ts --bail",
     "test:coverage": "bun test --isolate --dots --coverage --coverage-dir ./tests/coverage --coverage-reporter=text --coverage-reporter=lcov --preload ./tests/dom-setup.ts --preload ./tests/setup.ts --bail",
