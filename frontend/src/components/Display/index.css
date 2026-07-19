@@ -41,7 +41,6 @@
 .sober-date {
   & .mantine-DatePickerInput-input {
     color: var(--color-yellow);
-    cursor: pointer;
   }
 }
 

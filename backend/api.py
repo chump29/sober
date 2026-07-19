@@ -26,7 +26,6 @@ from peewee import (
     AutoField,
     BooleanField,
     CharField,
-    Check,
     DateField,
     DecimalField,
     ForeignKeyField,
@@ -46,7 +45,6 @@ from pydantic import (
     StrictStr,
     TypeAdapter,
     ValidationError,
-    model_validator,
 )
 from rich.console import Console
 from rich.traceback import install as catch_exceptions
@@ -109,26 +107,9 @@ class BaseModel(DatabaseModel):
         database: Final[SqliteDatabase] = DB
 
 
-class DecimalFieldToDecimal(DecimalField):
-    """Convert to Decimal instead of str"""
-
-    def python_value(self, value: str | Decimal | None) -> Decimal | None:
-        """Convert to Decimal with two digits"""
-        if value is not None and not isinstance(value, Decimal):
-            return Decimal(value).quantize(Decimal("0.01"))
-        return value
-
-
 class User(BaseModel):
     """User database model"""
 
-    cost: DecimalField = DecimalFieldToDecimal(
-        auto_round=True,
-        constraints=[Check("show_cost != 1 OR cost > 0")],
-        decimal_places=2,
-        default=None,
-        null=True,
-    )
     id: AutoField = AutoField()
     show_coin: BooleanField = BooleanField(default=True)
     show_cost: BooleanField = BooleanField(default=False)
@@ -141,19 +122,31 @@ class User(BaseModel):
 
     def __str__(self: User) -> str:
         """Show User data as string"""
-        s: str = f"user={shorten(str(self.user))}, show_coin={self.show_coin}, show_cost={self.show_cost}"
-        if self.show_cost and self.cost:
-            s += f", cost={self.cost}"
-        return s
+        return f"user={shorten(str(self.user))}, show_coin={self.show_coin}, show_cost={self.show_cost}"
 
     def __repr__(self: User) -> str:
         """Show User data as string representation"""
         return str(self)
 
 
+class DecimalFieldToDecimal(DecimalField):
+    """Convert to Decimal instead of str"""
+
+    def python_value(self, value: str | Decimal | None) -> Decimal | None:
+        """Convert to Decimal with two digits"""
+        if value is not None and not isinstance(value, Decimal):
+            return Decimal(value).quantize(Decimal("0.01"))
+        return value
+
+
 class Substance(BaseModel):
     """Substance database model"""
 
+    cost: DecimalField = DecimalFieldToDecimal(
+        auto_round=True,
+        decimal_places=2,
+        default=Decimal()
+    )
     date: DateField = DateField()
     id: AutoField = AutoField()
     name: CharField = CharField(max_length=MAX_LEN, unique=True)
@@ -161,7 +154,7 @@ class Substance(BaseModel):
 
     def __str__(self: Substance) -> str:
         """Show Substance data as string"""
-        return f"name={self.name} on date={self.date}"
+        return f"name={self.name}, date={self.date}, cost={self.cost}"
 
     def __repr__(self: Substance) -> str:
         """Show Substance data as string representation"""
@@ -183,28 +176,13 @@ type DecimalToFloat = Annotated[Decimal, PlainSerializer(float, return_type=floa
 class UserDTO(BaseValidation):
     """User domain model"""
 
-    cost: DecimalToFloat | None = Field(decimal_places=2, default=None, gt=0)
     show_coin: bool = Field(alias="showCoin")
     show_cost: bool = Field(alias="showCost")
     user: StrictStr | None = Field(max_length=MAX_LEN, default=None)
 
-    @model_validator(mode="after")
-    def validate_cost(self) -> UserDTO:
-        """Validate cost"""
-        if self.show_cost and self.cost and not self.cost > Decimal():
-            msg: Final[str] = "cost must be greater than 0 when show_cost is true"
-            raise ValueError(msg)
-        return self
-
     def __str__(self: UserDTO) -> str:
         """Show UserDTO data as string"""
-        s: str = ""
-        if self.user:
-            s += f"user={shorten(str(self.user))}, "
-        s += f"showCoin={self.show_coin}, showCost={self.show_cost}"
-        if self.show_cost:
-            s += f", cost={self.cost}"
-        return s
+        return f"user={shorten(str(self.user))}, showCoin={self.show_coin}, showCost={self.show_cost}"
 
     def __repr__(self: UserDTO) -> str:
         """Show UserDTO data as string representation"""
@@ -214,13 +192,14 @@ class UserDTO(BaseValidation):
 class SubstanceDTO(BaseValidation):
     """Substance domain model"""
 
+    cost: DecimalToFloat | None = Field(decimal_places=2, default=Decimal())
     date: date
     id: StrictInt | None = Field(gt=0, default=None)
     name: StrictStr = Field(max_length=MAX_LEN)
 
     def __str__(self: SubstanceDTO) -> str:
         """Show SubstanceDTO data as string"""
-        return f"name={self.name} on date={self.date}"
+        return f"name={self.name}, date={self.date}, cost={self.cost}"
 
     def __repr__(self: SubstanceDTO) -> str:
         """Show SubstanceDTO data as string representation"""
@@ -431,7 +410,7 @@ async def update_user(data: UserDTO, user: Annotated[str, Depends(verify_jwt)]) 
             log(f"Updating user data for {shorten(user_hash)}:", str(data))
         get_user.cache_clear()
         return to_user_dto(
-            User.update(cost=data.cost, show_coin=data.show_coin, show_cost=data.show_cost)
+            User.update(show_coin=data.show_coin, show_cost=data.show_cost)
             .where(User.user == user_hash)
             .returning(User)
             .execute()[0]
@@ -503,7 +482,7 @@ async def add_substance(substance: SubstanceDTO, user: Annotated[str, Depends(ve
         if DEBUG:
             log(f"Adding substance for {shorten(user_hash)}:", str(s))
         get_substances.cache_clear()
-        return to_substance_dto(Substance.create(date=s.date, name=s.name, user=user_hash))
+        return to_substance_dto(Substance.create(cost=s.cost, date=s.date, name=s.name, user=user_hash))
     except Exception:
         CONSOLE.print_exception()
         return None
@@ -575,7 +554,7 @@ async def update_substance(
             log(f"Updating substance for {shorten(user_hash)}:", str(s))
         get_substances.cache_clear()
         return to_substance_dto(
-            Substance.update(date=s.date)
+            Substance.update(date=s.date, cost=s.cost)
             .where(Substance.user == user_hash)
             .where(Substance.name == s.name)
             .returning(Substance)

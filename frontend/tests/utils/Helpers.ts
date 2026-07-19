@@ -29,6 +29,7 @@ const getCost = (): ICost => {
 
 const getSubstance = (): ISubstance =>
   ({
+    cost: Number(fake.commerce.price()),
     date: dayjs(fake.date.soon()).format(DATE_FORMAT),
     id: fake.number.int({
       max: 1000,
@@ -39,7 +40,6 @@ const getSubstance = (): ISubstance =>
 
 const getUser = (): IUser =>
   ({
-    cost: Number(fake.commerce.price()),
     showCoin: fake.datatype.boolean(),
     showCost: fake.datatype.boolean()
   }) satisfies IUser

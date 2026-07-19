@@ -108,7 +108,12 @@ for _env in frontend backend; do
       _sqlite=$(docker exec "$_name" apk list --no-cache sqlite | cut -d " " -f 1)
       _sqlite=${_sqlite:7:-3}
     else
-      _sqlite=3.53.2
+      if command -v htmlq > /dev/null; then
+        _sqlite=$(curl -s https://pkgs.alpinelinux.org/package/edge/main/x86_64/sqlite | htmlq --text "strong[aria-label='Package up-to-date']")
+        _sqlite=${_sqlite:7:-3}
+      else
+        _sqlite=3.53.2
+      fi
       _static=" (*)"
     fi
     docker context use default > /dev/null 2>&1

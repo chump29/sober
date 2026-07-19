@@ -81,7 +81,6 @@ const validate = <T, S extends GenericSchema, R = T>(obj: T | null, schema: S): 
  * @constant
  */
 const UpdateType = {
-  Cost: "Cost",
   ShowCoin: "ShowCoin",
   ShowCost: "ShowCost"
 } as const

@@ -105,11 +105,13 @@ const Display = (): JSX.Element => {
       const u: string | null = validate<string, NameSchema>(data as string, NameSchema)
       if (!u) {
         resetSoberUser() // not valid
+
         return
       }
 
       if (u.includes("showCoin") && u.includes("showCost")) {
         resetSoberUser() // deprecated format
+
         return
       }
 
@@ -222,6 +224,10 @@ const Display = (): JSX.Element => {
       onSuccess: (s: ISubstance[]): void => {
         const subs: ISubstance[] | null = validate<ISubstance[], SubstanceSchema>(s, SubstanceSchema)
         if (!subs || subs.length === 0) {
+          setSelectedSubstance(defaultSubstance)
+
+          handleSetCost(0)
+
           return
         }
 
@@ -230,12 +236,16 @@ const Display = (): JSX.Element => {
         )
         if (!foundSubstance) {
           setSelectedSubstance(defaultSubstance)
+
+          handleSetCost(0)
         }
 
         const substance: ISubstance | undefined =
           !displayStore.getState().selectedSubstance.name || subs.length === 1 ? subs[0] : foundSubstance
         if (substance && substance !== displayStore.getState().selectedSubstance) {
           setSelectedSubstance(substance)
+
+          handleSetCost(substance.cost)
 
           if (DEBUG) {
             info(`Setting substance to: ${substance.name}`)
@@ -378,20 +388,6 @@ const Display = (): JSX.Element => {
       body.showCoin = validate<boolean, BooleanSchema>(Boolean(val), BooleanSchema) ?? false
     } else if (type === UpdateType.ShowCost && userData?.showCost !== Boolean(val)) {
       body.showCost = validate<boolean, BooleanSchema>(Boolean(val), BooleanSchema) ?? false
-
-      if (!body.showCost) {
-        body.cost = null
-
-        if (userData) {
-          userData.cost = null
-        }
-
-        setCostValue(undefined)
-
-        costField.setValue(0)
-      }
-    } else if (type === UpdateType.Cost && Number(val) > 0 && userData?.cost !== Number(val)) {
-      body.cost = validate<number, CostSchema>(Number(val), CostSchema)
     } else {
       return null
     }
@@ -428,9 +424,33 @@ const Display = (): JSX.Element => {
     })
 
   const handleCost = async (value: number | undefined): Promise<void> => {
-    await updateUser(UpdateType.Cost, Number(value)).then((val: boolean | number | null): void => {
-      if (DEBUG && val !== null) {
-        info(`Cost is: $${val as number}`)
+    if (!userValue?.trim()) {
+      // * NOTE: catches zero length and null
+      return
+    }
+
+    if (value === costValue) {
+      return
+    }
+
+    await fetchClient<ISubstance>({
+      body: {
+        ...selectedSubstance,
+        cost: value ?? 0
+      } satisfies ISubstance,
+      endpoint: `substances/update/${selectedSubstance.id}`,
+      method: httpMethods.PUT,
+      user: userValue
+    } satisfies IFetchClient).then((data: ISubstance | null): void => {
+      const d: ISubstance | null = validate<ISubstance, SubstanceSchema>(data, SubstanceSchema)
+      if (!d) {
+        return
+      }
+
+      setSelectedSubstance(d)
+
+      if (DEBUG) {
+        info(`Cost is: $${d.cost}`)
       }
     })
   }
@@ -443,7 +463,7 @@ const Display = (): JSX.Element => {
       c = validate<number, CostSchema>(costNum, CostSchema) as number
     }
 
-    setCostValue(c ?? undefined)
+    handleSetCost(c ?? undefined)
 
     costField.setValue(c)
   }
@@ -451,7 +471,6 @@ const Display = (): JSX.Element => {
   const handleCostConfirm = (): void => {
     if (!costValue) {
       // * NOTE: catches zero and undefined
-      // ! NOTE: if changed to non-zero, cannot make zero again, must disable setting
       return
     }
 
@@ -465,7 +484,7 @@ const Display = (): JSX.Element => {
   }
 
   const resetCost = (): void => {
-    setCostValue(userData?.cost ?? undefined)
+    handleSetCost(selectedSubstance.cost ?? 0)
 
     costField.setValue(costValue ?? 0)
   }
@@ -487,6 +506,7 @@ const Display = (): JSX.Element => {
       ? substances.map(
           (s: ISubstance): ISubstanceDisplay =>
             ({
+              cost: s.cost ?? 0,
               id: s.id as number,
               label: (
                 <Tooltip label={s.name} withArrow>
@@ -512,6 +532,31 @@ const Display = (): JSX.Element => {
     </Tooltip>
   )
 
+  const handleSetCost = (c: number | undefined): void => {
+    if (c === 0) {
+      setCost(null)
+
+      return
+    }
+
+    const d: number = displayStore.getState().d
+
+    setCostValue(c)
+
+    const soberDataCost: number = c ?? 0
+
+    if (d > 0 && soberDataCost > 0) {
+      const DaysPerWeek: number = 7
+
+      const costPerDay: number = soberDataCost / DaysPerWeek
+
+      setCost({
+        cost: d * costPerDay,
+        costPerDay: `Cost per day: $${new Big(costPerDay).toFixed(2, 0)}`
+      } satisfies ICost)
+    }
+  }
+
   const init = async (): Promise<void> => {
     setUserValueFromSoberUser()
     if (!displayStore.getState().userValue) {
@@ -527,22 +572,7 @@ const Display = (): JSX.Element => {
 
       resolve()
     })
-      .then((): void => {
-        const d: number = displayStore.getState().d
-
-        const soberDataCost: number = userData?.cost ?? 0
-
-        if (d > 0 && soberDataCost > 0) {
-          const DaysPerWeek: number = 7
-
-          const costPerDay: number = soberDataCost / DaysPerWeek
-
-          setCost({
-            cost: d * costPerDay,
-            costPerDay: `Cost per day: $${new Big(costPerDay).toFixed(2, 0)}`
-          } satisfies ICost)
-        }
-      })
+      .then((): void => handleSetCost(selectedSubstance.cost))
       .then((): void => {
         let txt: string = "No milestones to show yet."
         let img: string | undefined
@@ -734,6 +764,7 @@ const Display = (): JSX.Element => {
                     </Tooltip>
                   </>
                 }
+                value={costValue ?? 0}
                 withAsterisk={true}
               />
             </Stack>
@@ -780,6 +811,7 @@ const Display = (): JSX.Element => {
                       mb={20}
                       mt={50}
                       onChange={handleChangeDate}
+                      pointer={true}
                       popoverProps={{
                         withinPortal: true
                       }}

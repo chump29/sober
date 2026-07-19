@@ -8,6 +8,7 @@ import { ISubstanceDisplayMatcher } from "../Matchers.ts"
 describe("ISubstanceDisplay", (): void => {
   test("ISubstanceDisplay", (): void => {
     expect({
+      cost: Number(fake.commerce.price()),
       id: fake.number.int(),
       label: null, // React.ReactNode
       value: fake.word.sample()

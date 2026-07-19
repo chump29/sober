@@ -105,10 +105,10 @@ describe("schemas", (): void => {
   })
 
   test("CostSchema - fail", (): void => {
-    const c: SafeParseResult<CostSchema> = safeParse(CostSchema, 0)
+    const c: SafeParseResult<CostSchema> = safeParse(CostSchema, -1)
 
     expect(c.success).toBeFalse()
-    expect(c.issues?.[0].message).toInclude(">0")
+    expect(c.issues?.[0].message).toContain(">=0")
   })
 
   test("NameSchema", (): void => {

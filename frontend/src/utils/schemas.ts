@@ -12,7 +12,6 @@ import {
   maxLength,
   minValue,
   nonEmpty,
-  nullable,
   number,
   optional,
   pipe,
@@ -118,9 +117,9 @@ type TimeoutSchema = typeof TimeoutSchema
 /**
  * Validate cost
  * @function
- * @summary null | valid number, must be > 0
+ * @summary valid number >= 0
  */
-const CostSchema = nullable(pipe(number(), gtValue(0)))
+const CostSchema = pipe(number(), minValue(0))
 
 type CostSchema = typeof CostSchema
 

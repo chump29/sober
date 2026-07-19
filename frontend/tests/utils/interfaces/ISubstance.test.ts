@@ -12,12 +12,21 @@ describe("ISubstance", (): void => {
     expect(safeParse(SubstanceSchema, substance).success).toBeTrue()
   })
 
-  test("ISubstance - fail", (): void => {
+  test("ISubstance - fail ID", (): void => {
     substance.id = 0
 
     const s: SafeParseResult<SubstanceSchema> = safeParse(SubstanceSchema, substance)
 
     expect(s.success).toBeFalse()
     expect(s.issues?.[0].message).toContain(">0")
+  })
+
+  test("ISubstance - fail cost", (): void => {
+    substance.cost = -1
+
+    const s: SafeParseResult<SubstanceSchema> = safeParse(SubstanceSchema, substance)
+
+    expect(s.success).toBeFalse()
+    expect(s.issues?.[0].message).toContain(">=0")
   })
 })

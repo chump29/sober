@@ -4,7 +4,6 @@
 
 """CRUD tests"""
 
-from decimal import Decimal
 from pathlib import Path
 from tomllib import load
 from typing import TYPE_CHECKING, Final
@@ -81,7 +80,6 @@ async def call_update_user(context: Context) -> None:
     user: Final[UserDTO | None] = get_user(context.user_name)
     assert user, "get_user failed for update"
     user.show_cost = True
-    user.cost = fake.pydecimal(left_digits=3, right_digits=2, positive=True, min_value=1)
     context.user = await update_user(user, context.user_name)
     assert not context.failed, "/user/update call failed"
 
@@ -93,8 +91,6 @@ def return_updated_user_data(context: Context) -> None:
     user: Final[UserDTO] = context.user
     assert isinstance(user.show_cost, bool), "show_cost not a boolean"
     assert user.show_cost, "Could not set show_cost"
-    assert isinstance(user.cost, Decimal), "cost not a Decimal"
-    assert user.cost > Decimal(), "Could not set cost"
 
 
 # endregion
@@ -334,7 +330,6 @@ def output_user_dto(context: Context) -> None:
     """Output a UserDTO"""
     context.user_dto = str(
         UserDTO(
-            cost=fake.pydecimal(left_digits=3, right_digits=2, positive=True, max_value=1),
             showCoin=fake.boolean(),
             showCost=fake.boolean(),
         )

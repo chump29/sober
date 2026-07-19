@@ -1,12 +1,10 @@
 import { type InferInput, object } from "valibot"
 
-import { BooleanSchema, CostSchema } from "../schemas.ts"
+import { BooleanSchema } from "../schemas.ts"
 
 /**
  * Validate an {@link IUser} object
  * @constant
- * @property {null | number} cost
- * @see {@link CostSchema}
  * @property {boolean} showCoin
  * @see {@link BooleanSchema}
  * @property {boolean} showCost
@@ -14,7 +12,6 @@ import { BooleanSchema, CostSchema } from "../schemas.ts"
  * @returns {IUser} {@link IUser} object
  */
 const UserSchema = object({
-  cost: CostSchema,
   showCoin: BooleanSchema,
   showCost: BooleanSchema
 })

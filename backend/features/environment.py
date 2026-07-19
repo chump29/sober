@@ -21,7 +21,12 @@ fake: Final[Faker] = Faker()
 
 def get_new_substance() -> SubstanceDTO:
     """Return new SubstanceDTO"""
-    return SubstanceDTO(date=fake.future_date(), id=fake.pyint(min_value=1, max_value=100), name=fake.word())
+    return SubstanceDTO(
+        cost=fake.pydecimal(left_digits=3, right_digits=2, positive=True),
+        date=fake.future_date(),
+        id=fake.pyint(min_value=1, max_value=100),
+        name=fake.word(),
+    )
 
 
 def before_feature(context: Context, _: Feature) -> None:

@@ -17,19 +17,20 @@ const ICostMatcher: ICost = {
 } satisfies ICost
 
 const ISubstanceMatcher: ISubstance = {
+  cost: expect.any(Number),
   date: expect.any(String),
   id: expect.any(Number),
   name: expect.any(String)
 } satisfies ISubstance
 
 const ISubstanceDisplayMatcher: ISubstanceDisplay = {
+  cost: expect.any(Number),
   id: expect.any(Number),
   label: null, // React.ReactNode
   value: expect.any(String)
 } satisfies ISubstanceDisplay
 
 const IUserMatcher: IUser = {
-  cost: expect.any(Number),
   showCoin: expect.any(Boolean),
   showCost: expect.any(Boolean)
 } satisfies IUser
