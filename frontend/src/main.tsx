@@ -1,7 +1,9 @@
-import { error, info } from "@postfmly/logger"
-
 import { MantineProvider } from "@mantine/core"
 import { ModalsProvider } from "@mantine/modals"
+import { Notifications } from "@mantine/notifications"
+
+import { error, info } from "@postfmly/logger"
+
 import { default as httpMethods } from "http-methods-constants"
 import { createRoot } from "react-dom/client"
 
@@ -55,6 +57,7 @@ if (root) {
   createRoot(root).render(
     <MantineProvider defaultColorScheme="dark">
       <ModalsProvider>
+        <Notifications />
         <Display />
       </ModalsProvider>
     </MantineProvider>

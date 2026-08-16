@@ -4,6 +4,7 @@
 
 """CRUD tests"""
 
+from json import dumps
 from pathlib import Path
 from tomllib import load
 from typing import TYPE_CHECKING, Final
@@ -11,23 +12,25 @@ from typing import TYPE_CHECKING, Final
 # pylint: disable-next=import-error
 from api import (
     PORT,
+    Substance,
     SubstanceDTO,
-    UserDTO,
+    User,
     add_substance,
     clear_cache_stats,
     delete_substance,
+    delete_user,
     get_cache_stats,
+    get_favicon,
     get_substance,
     get_substances,
     get_user,
+    get_user_hash,
     get_version,
     update_substance,
-    update_user,
 )
 from behave import given, then, when
 from box import Box
-from environment import get_new_substance
-from faker import Faker
+from environment import fake, get_new_substance, log  # pylint: disable=import-error
 
 if TYPE_CHECKING:
     from behave.runner import Context
@@ -36,198 +39,31 @@ else:
     Context = object
     _CacheInfo = object
 
-fake: Final[Faker] = Faker()
+# region Stringify a SubstanceDTO
 
 
-# region Get user
+@given("that a SubstanceDTO should stringify")
+def stringify_substance_dto(_: Context) -> None:
+    """Stringify a SubstanceDTO"""
 
 
-@given("that a user wants a user record")
-def get_user_record(_: Context) -> None:
-    """Get user"""
+@when("a SubstanceDTO is output")
+def output_substance_dto(context: Context) -> None:
+    """Output a SubstanceDTO"""
+    context.substance_dto = str(get_new_substance())
+    assert not context.failed, "Unable to set SubstanceDTO"
 
 
-@when("/user API endpoint is called")
-def call_user(context: Context) -> None:
-    """Call /user API"""
-    context.user = get_user(context.user_name)
-    assert not context.failed, "/user call failed"
-
-
-@then("user data is returned")
-def return_user_data(context: Context) -> None:
-    """Return user data"""
-    assert context.user, "Invalid get_user results"
-    user: Final[UserDTO] = context.user
-    assert isinstance(user.show_coin, bool), "showCoin not set"
-    assert isinstance(user.show_cost, bool), "showCost not set"
+@then("SubstanceDTO should be a string")
+def substance_dto_string(context: Context) -> None:
+    """SubstanceDTO should be a string"""
+    assert context.substance_dto, "Invalid SubstanceDTO string"
+    assert isinstance(context.substance_dto, str), "Invalid SubstanceDTO type"
+    if context.config.wip:
+        log("SubstanceDTO", context.substance_dto)
 
 
 # endregion
-
-
-# region Update user
-
-
-@given("that a user wants to update a user record")
-def update_user_record(_: Context) -> None:
-    """Update user"""
-
-
-@when("/user/update API endpoint is called with data")  # type: ignore[reportArgumentType]
-async def call_update_user(context: Context) -> None:
-    """Call /user/update API with data"""
-    user: Final[UserDTO | None] = get_user(context.user_name)
-    assert user, "get_user failed for update"
-    user.show_cost = True
-    context.user = await update_user(user, context.user_name)
-    assert not context.failed, "/user/update call failed"
-
-
-@then("user data is updated")
-def return_updated_user_data(context: Context) -> None:
-    """Return updated user data"""
-    assert context.user, "Could not update user"
-    user: Final[UserDTO] = context.user
-    assert isinstance(user.show_cost, bool), "show_cost not a boolean"
-    assert user.show_cost, "Could not set show_cost"
-
-
-# endregion
-
-
-# region Add substance
-
-
-@given("that a user wants to add a substance record")
-def add_substance_record(_: Context) -> None:
-    """Add substance"""
-
-
-@when("/substances/add API endpoint is called")  # type: ignore[reportArgumentType]
-async def call_substance_add(context: Context) -> None:
-    """Call /substances/add API"""
-    substance: Final[SubstanceDTO] = get_new_substance()
-    context.substance = await add_substance(substance, context.user_name)
-    assert not context.failed, "/substance/add call failed"
-
-
-@then("new substance is returned")
-def return_new_substance(context: Context) -> None:
-    """Return new substance"""
-    assert context.substance, "Invalid add_substance results"
-
-
-# endregion
-
-
-# region Get all substances
-
-
-@given("that a user wants all substance records")
-def get_all_substances(_: Context) -> None:
-    """Get all substances"""
-
-
-@when("/substances API endpoint is called")
-def call_substances(context: Context) -> None:
-    """Call /substances API"""
-    context.substances = get_substances(context.user_name)
-    assert not context.failed, "/substances call failed"
-
-
-@then("all substances are returned")
-def return_all_substances(context: Context) -> None:
-    """Return all substances"""
-    assert context.substances, "Invalid get_all_substances results"
-    assert len(context.substances) == 1, "Incorrect get_all_substances length"
-
-
-# endregion
-
-
-# region Get substance by ID
-
-
-@given("that a user wants a substance by ID")  # type: ignore[reportArgumentType]
-async def get_substance_by_id(context: Context) -> None:
-    """Get substance by ID"""
-    substance: Final[SubstanceDTO] = get_new_substance()
-    context.substance = await add_substance(substance, context.user_name)
-
-
-@when("/substances/get API endpoint is called with an ID")  # type: ignore[reportArgumentType]
-async def call_get_substance(context: Context) -> None:
-    """Call /substances/get API"""
-    context.substance = await get_substance(context.substance.id, context.user_name)
-    assert not context.failed, "/substances/get call failed"
-
-
-@then("substance is returned")
-def return_substance(context: Context) -> None:
-    """Return substance"""
-    assert context.substance, "Invalid get_substance results"
-
-
-# endregion
-
-
-# region Delete substance by ID
-
-
-@given("that a user wants to delete a substance by ID")  # type: ignore[reportArgumentType]
-async def delete_substance_by_id(context: Context) -> None:
-    """Delete substance"""
-    substance: Final[SubstanceDTO] = get_new_substance()
-    context.substance = await add_substance(substance, context.user_name)
-
-
-@when("/substance/delete API endpoint is called with an ID")  # type: ignore[reportArgumentType]
-async def call_delete_substance(context: Context) -> None:
-    """Call /substance/delete API"""
-    context.isDeleted = await delete_substance(pk=context.substance.id, user=context.user_name)
-    assert not context.failed, "/substance/delete call failed"
-
-
-@then("substance is deleted")
-def is_deleted(context: Context) -> None:
-    """Is deleted"""
-    assert context.isDeleted, "Could not delete substance"
-
-
-# endregion
-
-
-# region Update substance by ID
-
-
-@given("that a user wants to update a substance by ID")  # type: ignore[reportArgumentType]
-async def update_substance_by_id(context: Context) -> None:
-    """Update substance"""
-    substance: Final[SubstanceDTO] = get_new_substance()
-    context.substance = await add_substance(substance, context.user_name)
-
-
-@when("/substances/update API endpoint is called with an ID")  # type: ignore[reportArgumentType]
-async def call_update_substance(context: Context) -> None:
-    """Call /substance/update API"""
-    substance: Final[SubstanceDTO | None] = context.substance
-    assert substance, "Invalid substance for update"
-    context.date = substance.date
-    substance.date = fake.future_date("+60d")
-    context.substance = await update_substance(pk=context.substance.id, substance=substance, user=context.user_name)
-    assert not context.failed, "/substance/update call failed"
-
-
-@then("updated substance is returned")
-def return_updated_substance(context: Context) -> None:
-    """Return updated substance"""
-    assert context.substance, "Invalid substance from update"
-    assert context.substance.date != context.date, "Could not update substance"
-
-
-# endregion
-
 
 # region Get cache stats
 
@@ -248,10 +84,11 @@ async def call_cache(context: Context) -> None:
 def return_cache_stats(context: Context) -> None:
     """Return cache stats"""
     assert context.stats, "Invalid get_cache_stats results"
+    if context.config.wip:
+        log("Stats", dumps(context.stats, indent=2))
 
 
 # endregion
-
 
 # region Clear cache stats
 
@@ -275,7 +112,6 @@ def return_cache_cleared(context: Context) -> None:
 
 
 # endregion
-
 
 # region Get version
 
@@ -304,6 +140,8 @@ def verify_port(_: Context, port: str) -> None:
 def version_returned(context: Context) -> None:
     """Return version"""
     assert context.real_version == context.version, "Invalid get_version results"
+    if context.config.wip:
+        log("Version", context.version)
 
 
 @then("version is cached")
@@ -316,57 +154,253 @@ def verify_cache(_: Context) -> None:
 
 # endregion
 
-
-# region Stringify a UserDTO
-
-
-@given("that a UserDTO should stringify")
-def stringify_user_dto(_: Context) -> None:
-    """Stringify a UserDTO"""
+# region Create user
 
 
-@when("a UserDTO is output")
-def output_user_dto(context: Context) -> None:
-    """Output a UserDTO"""
-    context.user_dto = str(
-        UserDTO(
-            showCoin=fake.boolean(),
-            showCost=fake.boolean(),
-        )
-    )
-    assert not context.failed, "Unable to set UserDTO"
+@given("that a user wants to create a user record")
+def create_user_record(_: Context) -> None:
+    """Create user"""
 
 
-@then("UserDTO should be a string")
-def user_dto_string(context: Context) -> None:
-    """UserDTO should be a string"""
-    assert context.user_dto, "Invalid UserDTO string"
-    assert isinstance(context.user_dto, str), "Invalid UserDTO type"
+@when("/user API endpoint is called (create)")
+def call_create_user(context: Context) -> None:
+    """Call /user API (create)"""
+    get_user(context.user)
+    assert not context.failed, "/user (create) call failed"
+
+
+@then("user data is created")
+def create_user_data(context: Context) -> None:
+    """Create user data"""
+    user: Final[User | None] = User.get_or_none(user=get_user_hash(context.user))
+    assert user, "User not created"
+    if context.config.wip:
+        log("User", str(user))
 
 
 # endregion
 
-
-# region Stringify a SubstanceDTO
-
-
-@given("that a SubstanceDTO should stringify")
-def stringify_substance_dto(_: Context) -> None:
-    """Stringify a SubstanceDTO"""
+# region Get user
 
 
-@when("a SubstanceDTO is output")
-def output_substance_dto(context: Context) -> None:
-    """Output a SubstanceDTO"""
-    context.substance_dto = str(get_new_substance())
-    assert not context.failed, "Unable to set SubstanceDTO"
+@given("that a user wants to get a user record from cache")
+def get_user_record(_: Context) -> None:
+    """Get user from cache"""
 
 
-@then("SubstanceDTO should be a string")
-def substance_dto_string(context: Context) -> None:
-    """SubstanceDTO should be a string"""
-    assert context.substance_dto, "Invalid SubstanceDTO string"
-    assert isinstance(context.substance_dto, str), "Invalid SubstanceDTO type"
+@when("/user API endpoint is called (get)")
+def call_get_user(context: Context) -> None:
+    """Call /user API (get)"""
+    get_user(context.user)
+    assert not context.failed, "/user (get) call failed"
+
+
+@then("user data is found in cache")
+def verify_user_cache(_: Context) -> None:
+    """Verify user cache"""
+    cache: Final[_CacheInfo] = get_user.cache_info()
+    assert cache.hits == 1, "User not cached (hits)"
+    assert cache.misses == 1, "User not cached (misses)"
+
+
+# endregion
+
+# region Delete user
+
+
+@given("that a user wants to delete a user record by ID")
+def delete_user_record(_: Context) -> None:
+    """Delete user"""
+
+
+@when("/user/delete API endpoint is called with an ID")  # type: ignore[reportArgumentType]
+async def call_delete_user(context: Context) -> None:
+    """Call /user/delete API"""
+    await delete_user(get_user_hash(context.user))
+    assert not context.failed, "/user/delete call failed"
+
+
+@then("user data is deleted")
+def user_is_deleted(context: Context) -> None:
+    """User deleted"""
+    user: Final[User | None] = User.get_or_none(user=get_user_hash(context.user))
+    assert not user, "Could not delete user"
+
+
+# endregion
+
+# region Add substance
+
+
+@given("that a user wants to add a substance record")
+def add_substance_record(context: Context) -> None:
+    """Add substance"""
+    get_user(context.user)  # create
+
+
+@when("/substances/add API endpoint is called")  # type: ignore[reportArgumentType]
+async def call_substance_add(context: Context) -> None:
+    """Call /substances/add API"""
+    substance: Final[SubstanceDTO] = get_new_substance()
+    context.substance = await add_substance(substance, context.user)
+    assert not context.failed, "/substance/add call failed"
+
+
+@then("new substance is returned")
+def return_new_substance(context: Context) -> None:
+    """Return new substance"""
+    assert context.substance, "Invalid add_substance results"
+    if context.config.wip:
+        log("SubstanceDTO", context.substance)
+
+
+# endregion
+
+# region Get substances
+
+
+@given("that a user wants substance records")
+def get_all_substances(_: Context) -> None:
+    """Get substances"""
+
+
+@when("/substances API endpoint is called")
+def call_substances(context: Context) -> None:
+    """Call /substances API"""
+    context.substances = get_substances(context.user)
+    assert not context.failed, "/substances call failed"
+
+
+@then("substances are returned")
+def return_substances(context: Context) -> None:
+    """Return substances"""
+    assert context.substances, "Invalid get_substances results"
+    assert len(context.substances) == 1, "Incorrect get_substances length"
+    get_substances(context.user)  # cache
+
+
+@then("substances are cached")
+def verify_substances_cache(_: Context) -> None:
+    """Verify substances cache"""
+    cache: Final[_CacheInfo] = get_substances.cache_info()
+    assert cache.hits == 1, "Substances not cached (hits)"
+    assert cache.misses == 1, "Substances not cached (misses)"
+
+
+# endregion
+
+# ! context lost
+
+# region Get substance by ID
+
+
+@given("that a user wants a substance by ID")
+def get_substance_by_id(context: Context) -> None:
+    """Get substance by ID"""
+    context.substances = get_substances(context.user)
+    assert context.substances, "Could not get substances"
+
+
+@when("/substances/get API endpoint is called with an ID")  # type: ignore[reportArgumentType]
+async def call_get_substance(context: Context) -> None:
+    """Call /substances/get API"""
+    context.substance = await get_substance(context.substances[0].id, context.user)
+    assert not context.failed, "/substances/get call failed"
+
+
+@then("substance is returned")
+def return_substance(context: Context) -> None:
+    """Return substance"""
+    assert context.substance, "Invalid get_substance results"
+
+
+# endregion
+
+# ! context lost
+
+# region Update substance by ID
+
+
+@given("that a user wants to update a substance by ID")
+def update_substance_by_id(context: Context) -> None:
+    """Update substance"""
+    context.substances = get_substances(context.user)
+    assert context.substances, "Could not get substances"
+
+
+@when("/substances/update API endpoint is called with an ID")  # type: ignore[reportArgumentType]
+async def call_update_substance(context: Context) -> None:
+    """Call /substance/update API"""
+    substance: Final[SubstanceDTO] = context.substances[0]
+    assert substance, "Invalid substance"
+    context.date = substance.date
+    substance.date = fake.future_date()
+    user: Final[User | None] = User.get_or_none(user=get_user_hash(context.user))
+    assert user, "Invalid user"
+    context.substance = await update_substance(pk=user.id, substance=substance, user=context.user)
+    assert not context.failed, "/substance/update call failed"
+
+
+@then("updated substance is returned")
+def return_updated_substance(context: Context) -> None:
+    """Return updated substance"""
+    assert context.substance, "Invalid substance from update"
+    assert context.substance.date != context.date, "Could not update substance"
+    if context.config.wip:
+        log("SubstanceDTO", context.substance)
+
+
+# endregion
+
+# ! context lost
+
+# region Delete substance by ID
+
+
+@given("that a user wants to delete a substance by ID")
+def delete_substance_by_id(context: Context) -> None:
+    """Delete substance"""
+    substance: Final[list[Substance]] = list(Substance.select())
+    assert substance, "Could not get Substance"
+    context.substance_id = substance[0].id
+
+
+@when("/substance/delete API endpoint is called with an ID")  # type: ignore[reportArgumentType]
+async def call_delete_substance(context: Context) -> None:
+    """Call /substance/delete API"""
+    context.isDeleted = await delete_substance(pk=context.substance_id, user=context.user)
+    assert not context.failed, "/substance/delete call failed"
+
+
+@then("substance is deleted")
+def is_deleted(context: Context) -> None:
+    """Is deleted"""
+    assert context.isDeleted, "Could not delete substance"
+
+
+# endregion
+
+# ! context lost
+
+# region Get favicon
+
+
+@given("that a browser makes a request for favicon")
+def request_favicon(_: Context) -> None:
+    """Request favicon"""
+
+
+@when("/favicon.ico API endpoint is called")  # type: ignore[reportArgumentType]
+async def call_favicon(context: Context) -> None:
+    """Call /favicon API"""
+    context.favicon = await get_favicon()
+    assert not context.failed, "/favicon call failed"
+
+
+@then("Nothing is returned")
+def favicon_return(context: Context) -> None:
+    """Nothing is returned"""
+    assert not context.favicon, "Invalid /favicon results"
 
 
 # endregion

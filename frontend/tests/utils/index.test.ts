@@ -4,10 +4,20 @@ import { fakerEN_US as fake } from "@faker-js/faker"
 import { expectTypeOf } from "expect-type"
 import { ValiError } from "valibot"
 
-import { DEBUG, FetchError, findElement, getVersion, handleError, UpdateType, validate } from "../../src/utils/index.ts"
-import { StringSchema } from "../../src/utils/schemas.ts"
+import {
+  DEBUG,
+  FetchError,
+  findElement,
+  getKeyByValue,
+  getVersion,
+  handleError,
+  SaveType,
+  UpdateType,
+  validate
+} from "../../src/utils/index.ts"
+import { CostType, StringSchema } from "../../src/utils/schemas.ts"
 
-describe("index", (): void => {
+describe("utils - index", (): void => {
   test("findElement", (): void => {
     document.body.innerHTML = '<div id="test">TEST</div>'
 
@@ -81,9 +91,7 @@ describe("index", (): void => {
   })
 
   test("validate - array", (): void => {
-    const arr: string[] = [
-      "test"
-    ]
+    const arr: string[] = ["test"]
 
     const s: string[] | null = validate<string[], StringSchema>(arr, StringSchema)
 
@@ -108,6 +116,18 @@ describe("index", (): void => {
   })
 
   test("DEBUG", (): void => {
-    expect(DEBUG).toBeTrue() // * NOTE: set in .env.test
+    expect(DEBUG).toBeTrue() // * NOTE: set from .env.test
+  })
+
+  test("getKeyByValue", (): void => {
+    const type: CostType = fake.helpers.enumValue(CostType)
+
+    const key: string = getKeyByValue(CostType, type)
+
+    expect(type).toBe(CostType[key as keyof typeof CostType])
+  })
+
+  test("SaveType", (): void => {
+    expectTypeOf(fake.helpers.objectValue(SaveType)).toEqualTypeOf<SaveType>()
   })
 })

@@ -3,41 +3,38 @@ import { beforeEach, describe, expect, test } from "bun:test"
 import { fakerEN_US as fake } from "@faker-js/faker"
 import { default as pluralize } from "@jarrodek/pluralize"
 import { renderHook } from "@testing-library/react"
-import { Big } from "big.js"
 import { default as dayjs } from "dayjs"
 import { default as duration } from "dayjs/plugin/duration"
 
-import {
-  displayStore,
-  displayStoreActions,
-  getCoin as dsGetCoin,
-  getCost as dsGetCost,
-  getCostValue,
-  getDays,
-  getHours,
-  getMinutes,
-  getMonths,
-  getSeconds,
-  getSelectedSubstance,
-  getUserData,
-  getUserValue,
-  getWeeks,
-  getYears
-} from "../../src/utils/displayStore.ts"
+import { displayStore, displayStoreActions, round } from "../../src/utils/displayStore.ts"
 import { type ICoin } from "../../src/utils/interfaces/ICoin.ts"
 import { type ICost } from "../../src/utils/interfaces/ICost.ts"
-import { defaultSubstance, type ISubstance } from "../../src/utils/interfaces/ISubstance.ts"
-import { type IUser } from "../../src/utils/interfaces/IUser.ts"
-import { getCoin, getCost, getSubstance, getUser } from "./Helpers.ts"
+import { type IDisplayActions } from "../../src/utils/interfaces/IDisplay.ts"
+import { type ISubstance } from "../../src/utils/interfaces/ISubstance.ts"
+import { DATE_FORMAT } from "../../src/utils/schemas.ts"
+import { getCoin, getCost, getSubstance } from "./Helpers.ts"
 
 dayjs.extend(duration)
 
+let date: string | null = null
+let diff: duration.Duration | null = null
+
+const setDisplay = (): void => {
+  displayStore.getState().actions.setDisplay(date)
+}
+
 beforeEach((): void => {
   displayStore.setState(displayStore.getInitialState(), true)
+
+  date = dayjs(fake.date.past({ years: { max: 10, min: 1 } })).format(DATE_FORMAT)
+
+  diff = dayjs.duration(dayjs().diff(dayjs(date)))
+
+  setDisplay()
 })
 
 describe("displayStore", (): void => {
-  test("setCoin", (): void => {
+  test("Coin", (): void => {
     const c: ICoin = getCoin()
 
     displayStore.getState().actions.setCoin(c)
@@ -45,156 +42,114 @@ describe("displayStore", (): void => {
     expect(displayStore.getState().coin).toBe(c)
   })
 
-  test("setCost", (): void => {
+  test("Cost", (): void => {
     const c: ICost = getCost()
 
     displayStore.getState().actions.setCost(c)
 
-    expect(displayStore.getState().cost).toBe(c)
+    const cost: ICost | null = displayStore.getState().cost
+
+    expect(cost).toBe(c)
   })
 
-  test("setCostValue", (): void => {
-    const c: number = Number(fake.commerce.price())
+  test("Days", (): void => {
+    const days: number = Math.floor(diff?.asDays() ?? 0)
 
-    displayStore.getState().actions.setCostValue(c)
-
-    expect(displayStore.getState().costValue).toBe(c)
+    expect(displayStore.getState().days).toBe(days > 0 ? pluralize("day", days, true) : "")
   })
 
-  test("setDisplay", (): void => {
-    const date: string = fake.date
-      .past({
-        refDate: dayjs().subtract(2, "years").toDate(),
-        years: 2
-      })
-      .toISOString()
+  test("Hours", (): void => {
+    const hours: number = Math.floor(diff?.asHours() ?? 0)
 
-    displayStore.getState().actions.setDisplay(date)
-
-    const diff: duration.Duration = dayjs.duration(dayjs().diff(dayjs(date)))
-
-    expect(displayStore.getState().d).toBe(Math.floor(diff.asDays()))
-    expect(displayStore.getState().w).toBe(Math.floor(diff.asWeeks()))
-    expect(displayStore.getState().m).toBe(Math.floor(diff.asMonths()))
-    expect(displayStore.getState().y).toBe(Math.floor(diff.asYears()))
+    expect(displayStore.getState().hours).toBe(hours > 0 ? pluralize("hour", hours, true) : "")
   })
 
-  test("setDisplay - fail", (): void => {
+  test("Minutes", (): void => {
+    const minutes: number = Math.floor(diff?.asMinutes() ?? 0)
+
+    expect(displayStore.getState().minutes).toBe(minutes > 0 ? pluralize("minute", minutes, true) : "")
+  })
+
+  test("Months", (): void => {
+    const months: number = round(diff?.asMonths() ?? 0)
+
+    expect(displayStore.getState().months).toBe(months > 0 ? pluralize("month", months, true) : "")
+  })
+
+  test("Seconds", (): void => {
+    const seconds: number = Math.floor(diff?.asSeconds() ?? 0)
+
+    expect(displayStore.getState().seconds).toBe(pluralize("second", seconds, true))
+  })
+
+  test("SelectedSubstance", (): void => {
+    const substance: ISubstance = getSubstance()
+
+    displayStore.getState().actions.setSelectedSubstance(substance)
+
+    expect(displayStore.getState().selectedSubstance).toBe(substance)
+  })
+
+  test("User", (): void => {
+    const user: string = fake.person.firstName()
+
+    displayStore.getState().actions.setUser(user)
+
+    expect(displayStore.getState().user).toBe(user)
+  })
+
+  test("Weeks", (): void => {
+    const weeks: number = round(diff?.asWeeks() ?? 0)
+
+    expect(displayStore.getState().weeks).toBe(weeks > 0 ? pluralize("week", weeks, true) : "")
+  })
+
+  test("Years", (): void => {
+    const years: number = round(diff?.asYears() ?? 0)
+
+    expect(displayStore.getState().years).toBe(years > 0 ? pluralize("year", years, true) : "")
+  })
+
+  test("Years - <1", (): void => {
+    date = dayjs().format(DATE_FORMAT)
+
+    setDisplay()
+
+    expect(displayStore.getState().years).toBe("")
+  })
+
+  test("Years - !showDecimals", (): void => {
+    const substance: ISubstance = getSubstance()
+    substance.showDecimals = false
+
+    displayStore.setState({ selectedSubstance: substance })
+
+    setDisplay()
+
+    const years: number = Math.floor(diff?.asYears() ?? 0)
+
+    expect(displayStore.getState().years).toBe(pluralize("year", years, true))
+  })
+
+  test("Invalid date", (): void => {
     displayStore.getState().actions.setDisplay(null)
 
-    expect(displayStore.getState().d).toBe(0)
-    expect(displayStore.getState().w).toBe(0)
-    expect(displayStore.getState().m).toBe(0)
-    expect(displayStore.getState().y).toBe(0)
-  })
-
-  test("setSelectedSubstance", (): void => {
-    const s: ISubstance = getSubstance()
-
-    displayStore.getState().actions.setSelectedSubstance(s)
-
-    expect(displayStore.getState().selectedSubstance).toBe(s)
-  })
-
-  test("setUserData", (): void => {
-    const u: IUser = getUser()
-
-    displayStore.getState().actions.setUserData(u)
-
-    expect(displayStore.getState().userData).toBe(u)
-  })
-
-  test("setUserValue", (): void => {
-    const u: string = fake.person.firstName()
-
-    displayStore.getState().actions.setUserValue(u)
-
-    expect(displayStore.getState().userValue).toBe(u)
-  })
-
-  test("hooks", (): void => {
-    const { result: coin } = renderHook((): ICoin | null => dsGetCoin())
-    expect(coin.current).toBeNull()
-
-    const { result: cost } = renderHook((): ICost | null => dsGetCost())
-    expect(cost.current).toBeNull()
-
-    const { result: costValue } = renderHook((): number | undefined => getCostValue())
-    expect(costValue.current).toBeUndefined()
-
-    const date: string = fake.date
-      .past({
-        refDate: dayjs().subtract(2, "years").toDate(),
-        years: 2
-      })
-      .toISOString()
-
-    displayStore.getState().actions.setDisplay(date)
-
-    const diff: duration.Duration = dayjs.duration(dayjs().diff(dayjs(date)))
-
-    const { result: s } = renderHook((): string => getSeconds())
-    expect(s.current).toBe(pluralize("second", Math.floor(diff.asSeconds()), true))
-
-    const { result: m } = renderHook((): string => getMinutes())
-    expect(m.current).toBe(pluralize("minute", Math.floor(diff.asMinutes()), true))
-
-    const { result: h } = renderHook((): string => getHours())
-    expect(h.current).toBe(pluralize("hour", Math.floor(diff.asHours()), true))
-
-    const { result: d } = renderHook((): string => getDays())
-    expect(d.current).toBe(pluralize("day", Math.floor(diff.asDays()), true))
-
-    const { result: w } = renderHook((): string => getWeeks())
-    expect(w.current).toBe(pluralize("week", Math.floor(diff.asWeeks()), true))
-
-    const { result: mo } = renderHook((): string => getMonths())
-    expect(mo.current).toBe(pluralize("month", Number(new Big(diff.asMonths()).toFixed(2, 0)), true))
-
-    const { result: y } = renderHook((): string => getYears())
-    expect(y.current).toBe(pluralize("year", Number(new Big(diff.asYears()).toFixed(2, 0)), true))
-
-    const { result: selectedSubstance } = renderHook((): ISubstance => getSelectedSubstance())
-    expect(selectedSubstance.current).toBe(defaultSubstance)
-
-    const { result: userData } = renderHook((): IUser | null => getUserData())
-    expect(userData.current).toBeNull()
-
-    const { result: userValue } = renderHook((): string | null => getUserValue())
-    expect(userValue.current).toBeNull()
+    expect(displayStore.getState().days).toBe("")
+    expect(displayStore.getState().daysInt).toBe(0)
+    expect(displayStore.getState().hours).toBe("")
+    expect(displayStore.getState().minutes).toBe("")
+    expect(displayStore.getState().months).toBe("")
+    expect(displayStore.getState().monthsFloat).toBe(0)
+    expect(displayStore.getState().seconds).toBe("")
+    expect(displayStore.getState().weeks).toBe("")
+    expect(displayStore.getState().weeksFloat).toBe(0)
+    expect(displayStore.getState().years).toBe("")
+    expect(displayStore.getState().yearsFloat).toBe(0)
   })
 
   test("displayStoreActions", (): void => {
-    renderHook((): void => {
-      const { setCoin, setCost, setCostValue, setDisplay, setSelectedSubstance, setUserData, setUserValue } =
-        displayStoreActions()
+    const { result } = renderHook((): IDisplayActions => displayStoreActions())
 
-      setCoin(null)
-      setCost(null)
-      setCostValue(undefined)
-      setDisplay(null)
-      setSelectedSubstance(defaultSubstance)
-      setUserData(null)
-      setUserValue(null)
-    })
-
-    expect(displayStore.getState().coin).toBeNull()
-    expect(displayStore.getState().cost).toBeNull()
-    expect(displayStore.getState().costValue).toBeUndefined()
-    expect(displayStore.getState().d).toBe(0)
-    expect(displayStore.getState().days.length).toBe(0)
-    expect(displayStore.getState().hours.length).toBe(0)
-    expect(displayStore.getState().coin).toBeNull()
-    expect(displayStore.getState().m).toBe(0)
-    expect(displayStore.getState().minutes.length).toBe(0)
-    expect(displayStore.getState().months.length).toBe(0)
-    expect(displayStore.getState().seconds.length).toBe(0)
-    expect(displayStore.getState().selectedSubstance).toBe(defaultSubstance)
-    expect(displayStore.getState().userData).toBeNull()
-    expect(displayStore.getState().userValue).toBeNull()
-    expect(displayStore.getState().w).toBe(0)
-    expect(displayStore.getState().weeks.length).toBe(0)
-    expect(displayStore.getState().y).toBe(0)
-    expect(displayStore.getState().years.length).toBe(0)
+    expect(result.current).toBeDefined()
   })
 })

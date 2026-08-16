@@ -1,17 +1,23 @@
-import { beforeEach, describe, expect, mock, spyOn, test } from "bun:test"
+import { beforeEach, describe, expect, type jest, mock, spyOn, test } from "bun:test"
+import { sleep } from "bun"
 
-import { fakerEN_US as fake } from "@faker-js/faker"
 import { MantineProvider } from "@mantine/core"
 import { ModalsProvider } from "@mantine/modals"
-import { act, configure, render, screen, waitFor } from "@testing-library/react"
-import { default as httpStatus } from "http-status-codes"
-import { default as fetchMock } from "jest-fetch-mock"
-import { default as ms } from "ms"
+import { Notifications } from "@mantine/notifications"
 
-import { fetchClient } from "../../../src/api/index.ts"
+import { fakerEN_US as fake } from "@faker-js/faker"
+import { act, configure, render, screen, waitFor } from "@testing-library/react"
+import { default as ExtractNumbers } from "extract-numbers"
+//import { type UserEvent, userEvent } from "@testing-library/user-event"
+import { default as httpStatus } from "http-status-codes"
+import { type FetchMock, default as fetchMock } from "jest-fetch-mock"
+import { default as ms } from "ms"
+import { match } from "ts-pattern"
+
 import Display from "../../../src/components/Display/index.tsx"
-import { type IFetchClient } from "../../../src/utils/interfaces/IFetchClient.ts"
-import { getSubstance, getUser } from "../../utils/Helpers.ts"
+import { type ISubstance } from "../../../src/utils/interfaces/ISubstance.ts"
+import { CostType } from "../../../src/utils/schemas.ts"
+import { getSubstance } from "../../utils/Helpers.ts"
 
 configure({
   asyncUtilTimeout: ms("3s")
@@ -21,63 +27,92 @@ mock.module("@mantine/hooks", (): unknown => ({
   useReducedMotion: () => true
 }))
 
-fetchMock.enableMocks().mockResponse(async (req: Request): Promise<Response> => {
-  const endpoint: string = new URL(req.url).pathname
+let substance: ISubstance | null = null
 
-  if (endpoint === "/api/user") {
-    return await act((): Response => Response.json(getUser()))
-  }
+const fetch: FetchMock = fetchMock.enableMocks().mockResponse(
+  (req: Request): Response =>
+    match<string, Response>(new URL(req.url).pathname)
+      .returnType<Response>()
+      .with("/api/substances", (): Response => Response.json([substance]))
+      .with("/api/user", (): Response => new Response())
+      .otherwise(
+        (): Response =>
+          new Response(null, {
+            status: httpStatus.IM_A_TEAPOT
+          })
+      )
+)
 
-  if (endpoint === "/api/substances") {
-    return await act(
-      (): Response =>
-        Response.json([
-          getSubstance()
-        ])
-    )
-  }
+const infoSpy: jest.Mock = spyOn(console, "info")
 
-  return new Response(null, {
-    status: httpStatus.IM_A_TEAPOT
-  })
-})
+//let user: UserEvent | null = null
+
+const extract: ExtractNumbers = new ExtractNumbers({ removeCommas: true, string: false })
 
 beforeEach(async (): Promise<void> => {
+  infoSpy.mockReset()
+
+  //user = userEvent.setup()
+
+  substance = getSubstance()
+  substance.costType = CostType.Day
+  substance.showCoin = true
+  substance.showCost = true
+
   localStorage.setItem("soberUser", fake.person.firstName())
 
-  await waitFor(() =>
-    render(
-      <MantineProvider>
-        <ModalsProvider>
-          <Display />
-        </ModalsProvider>
-      </MantineProvider>
-    )
-  )
+  await act(async (): Promise<void> => {
+    await waitFor((): void => {
+      render(
+        <MantineProvider>
+          <ModalsProvider>
+            <Notifications />
+            <Display />
+          </ModalsProvider>
+        </MantineProvider>
+      )
+    })
+  })
 })
 
-describe("index", (): void => {
-  test("fetchClient - fail", async (): Promise<void> => {
-    // biome-ignore lint/suspicious/noEmptyBlockStatements: silence console.error()
-    const error = spyOn(console, "error").mockImplementation(() => {})
-
-    await fetchClient<null>({} as IFetchClient)
-
+describe("Display - index", (): void => {
+  test("init", (): void => {
     const NUM_TIMES: number = 4
-    expect(error).toHaveBeenCalledTimes(NUM_TIMES)
-  })
 
-  test("should show user logged in", async (): Promise<void> => {
-    await waitFor(async () => {
-      expect(await screen.findByTestId("loggedIn"), "Logged in user not found").toBeInTheDocument()
-
-      expect(await screen.findByTestId("settings"), "Settings icon not found").toBeInTheDocument()
+    act((): void => {
+      expect(fetch).toHaveBeenCalledTimes(NUM_TIMES)
     })
   })
 
-  test("should show date picker", async (): Promise<void> => {
-    await waitFor(async () => {
-      expect(await screen.findByTestId("datepicker"), "Date picker not found").toBeInTheDocument()
+  test("elements", async (): Promise<void> => {
+    expect(await screen.findByTestId("loggedIn")).toBeInTheDocument()
+
+    expect(await screen.findByTestId("settings")).toBeInTheDocument()
+
+    expect(await screen.findByTestId("datePicker")).toBeInTheDocument()
+
+    expect(await screen.findByTestId("counter")).toBeInTheDocument()
+
+    expect(await screen.findByTestId("cost")).toBeInTheDocument()
+
+    expect(await screen.findByTestId("coinButton")).toBeInTheDocument()
+  })
+
+  test("increment", async (): Promise<void> => {
+    const counter: HTMLDivElement = await screen.findByTestId("seconds")
+
+    expect(counter).toBeInTheDocument()
+
+    const numBefore: number[] = extract.extractNumbers(counter.textContent) as number[]
+    expect(numBefore).toHaveLength(1)
+
+    await waitFor(async (): Promise<void> => {
+      await sleep(ms("1s"))
     })
+
+    const numAfter: number[] = extract.extractNumbers(counter.textContent) as number[]
+    expect(numAfter).toHaveLength(1)
+
+    expect(numBefore[0]).toBeLessThan(numAfter[0] as number)
   })
 })

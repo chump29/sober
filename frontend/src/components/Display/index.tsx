@@ -1,16 +1,5 @@
-import {
-  type ChangeEvent,
-  type EffectCallback,
-  type JSX,
-  type KeyboardEvent,
-  type RefObject,
-  useEffect,
-  useRef
-} from "react"
+import { type ChangeEvent, type EffectCallback, type JSX, type KeyboardEvent, useEffect } from "react"
 
-import { info } from "@postfmly/logger"
-
-import { default as pluralize } from "@jarrodek/pluralize"
 import {
   ActionIcon,
   Anchor,
@@ -22,9 +11,7 @@ import {
   Image,
   Modal,
   NumberFormatter,
-  NumberInput,
   Stack,
-  Switch,
   Text,
   TextInput,
   Tooltip
@@ -32,52 +19,53 @@ import {
 import { DatePickerInput } from "@mantine/dates"
 import { useField } from "@mantine/form"
 import { useDisclosure, useLocalStorage } from "@mantine/hooks"
+
+import { info } from "@postfmly/logger"
+
+import { default as pluralize } from "@jarrodek/pluralize"
 import { Big } from "big.js"
 import { default as dayjs } from "dayjs"
 import { default as advancedFormat } from "dayjs/plugin/advancedFormat"
 import { default as timezone } from "dayjs/plugin/timezone"
 import { default as utc } from "dayjs/plugin/utc"
+import { fastIsEqual } from "fast-is-equal"
 import { default as httpMethods } from "http-methods-constants"
 import { default as ms } from "ms"
 import {
   TbCalendar as IconCalendar,
   TbCheck as IconCheck,
-  TbCurrencyDollar as IconCurrencyDollar,
   TbKey as IconKey,
   TbSettings as IconSettings,
   TbX as IconX
 } from "react-icons/tb"
 import { default as useSWR } from "swr/immutable"
+import { titleCase } from "title-case"
+import { match, P } from "ts-pattern"
 
 import { fetchClient } from "../../api/index.ts"
 import {
-  displayStore,
   displayStoreActions,
   getCoin,
   getCost,
-  getCostValue,
   getDays,
   getHours,
   getMinutes,
   getMonths,
   getSeconds,
-  getSelectedSubstance,
-  getUserData,
-  getUserValue,
   getWeeks,
   getYears
 } from "../../utils/displayStore.ts"
-import { DEBUG, UpdateType, validate } from "../../utils/index.ts"
+import { DEBUG, getKeyByValue, handleError, validate } from "../../utils/index.ts"
 import { type ICoin } from "../../utils/interfaces/ICoin.ts"
 import { type ICost } from "../../utils/interfaces/ICost.ts"
+import { type IFetchClient } from "../../utils/interfaces/IFetchClient.ts"
 import { defaultSubstance, type ISubstance, SubstanceSchema } from "../../utils/interfaces/ISubstance.ts"
 import { type ISubstanceDisplay } from "../../utils/interfaces/ISubstanceDisplay.ts"
-import { type IUser, UserSchema } from "../../utils/interfaces/IUser.ts"
-import { BooleanSchema, CostSchema, DateSchema, MAX_LEN_STR, NameSchema } from "../../utils/schemas.ts"
+import { CostSchema, CostType, DateSchema, MAX_LEN_STR, NameSchema } from "../../utils/schemas.ts"
+import { default as Settings } from "../Settings/index.tsx"
 import { default as Substances } from "../Substances/index.tsx"
 
 import "./index.css"
-import { type IFetchClient } from "../../utils/interfaces/IFetchClient.ts"
 
 dayjs.extend(utc) // * NOTE: required for timezone
 dayjs.extend(timezone)
@@ -91,6 +79,8 @@ dayjs.tz.setDefault(dayjs.tz.guess())
 if (DEBUG) {
   info(`Timezone set to: ${dayjs.tz.guess()}`)
 }
+
+const INTERVAL_MS: number = ms("1s")
 
 const Display = (): JSX.Element => {
   const [soberUser, setSoberUser, resetSoberUser] = useLocalStorage<string | undefined>({
@@ -131,34 +121,32 @@ const Display = (): JSX.Element => {
     }
   })
 
-  const selectedSubstance: ISubstance = getSelectedSubstance()
-
-  const userValue: string | null = getUserValue()
-  const costValue: number | undefined = getCostValue()
-
-  const userData: IUser | null = getUserData()
-
-  const cost: ICost | null = getCost()
-  const coin: ICoin | null = getCoin()
-
-  const showCounter: RefObject<boolean> = useRef<boolean>(false)
-
   const nameField = useField<string>({
     initialValue: "",
     validateOnChange: true,
     validate: (s: string): string | null => (s.length > 0 ? null : "Must enter a name")
   })
 
-  const costField = useField<number>({
-    initialValue: 0,
-    validateOnChange: true,
-    validate: (c: number): string | null => (c > 0 ? null : "Must enter a cost")
-  })
-
   const [openedLogin, { open: openLogin, close: closeLogin }] = useDisclosure(false)
   const [openedSettings, { open: openSettings, close: closeSettings }] = useDisclosure(false)
   const [openedCoin, { open: openCoin, close: closeCoin }] = useDisclosure(false)
 
+  const {
+    getDaysInt,
+    getMonthsFloat,
+    getSelectedSubstance,
+    getUser,
+    getWeeksFloat,
+    getYearsFloat,
+    setCoin,
+    setCost,
+    setDisplay,
+    setSelectedSubstance,
+    setUser
+  } = displayStoreActions()
+
+  const coin: ICoin | null = getCoin()
+  const cost: ICost | null = getCost()
   const days: string = getDays()
   const hours: string = getHours()
   const minutes: string = getMinutes()
@@ -167,34 +155,24 @@ const Display = (): JSX.Element => {
   const weeks: string = getWeeks()
   const years: string = getYears()
 
-  const { setDisplay, setUserData, setSelectedSubstance, setUserValue, setCostValue, setCost, setCoin } =
-    displayStoreActions()
+  const selectedSubstanceDate: string = getSelectedSubstance().date
 
-  const fetchUser = async (): Promise<void> => {
-    const user: string | null = displayStore.getState().userValue
-    if (!user) {
+  const validateUser = async (): Promise<void> => {
+    const userValue: string | null = getUser()
+    if (!userValue) {
       return
     }
 
-    await fetchClient<IUser>({
+    // * NOTE: Validate/create user
+    await fetchClient({
       endpoint: "user",
       method: httpMethods.GET,
-      user
-    } satisfies IFetchClient).then((data: IUser | null): void => {
-      const u: IUser | null = validate<IUser, UserSchema>(data, UserSchema)
-      if (!u) {
-        return
-      }
-
-      setUserData(u)
-
-      if (DEBUG) {
-        info(`Got user data for ${user}`)
-      }
-    })
+      user: userValue
+    } satisfies IFetchClient)
   }
 
   const fetchSubstances = async (endpoint: string): Promise<ISubstance[]> => {
+    const userValue: string | null = getUser()
     if (!userValue) {
       return [] as ISubstance[]
     }
@@ -231,6 +209,8 @@ const Display = (): JSX.Element => {
           return
         }
 
+        const selectedSubstance: ISubstance = getSelectedSubstance()
+
         const foundSubstance: ISubstance | undefined = subs.find(
           (sub: ISubstance): boolean => sub.name === selectedSubstance.name
         )
@@ -241,21 +221,40 @@ const Display = (): JSX.Element => {
         }
 
         const substance: ISubstance | undefined =
-          !displayStore.getState().selectedSubstance.name || subs.length === 1 ? subs[0] : foundSubstance
-        if (substance && substance !== displayStore.getState().selectedSubstance) {
-          setSelectedSubstance(substance)
+          !selectedSubstance.name || subs.length === 1 ? subs[0] : foundSubstance
 
-          handleSetCost(substance.cost)
-
+        if (!substance) {
           if (DEBUG) {
-            info(`Setting substance to: ${substance.name}`)
+            handleError("Substance not found")
           }
+
+          return
+        }
+
+        if (fastIsEqual(substance, selectedSubstance)) {
+          if (DEBUG) {
+            info("Found same substance… skipping")
+          }
+
+          return
+        }
+
+        setSelectedSubstance(substance)
+
+        handleSetCost(substance.cost)
+
+        if (DEBUG) {
+          info(`Setting substance to: ${substance.name} on ${substance.date}`)
         }
       }
     }
   )
 
   const handleChangeDate = async (date: string | null): Promise<void> => {
+    const userValue: string | null = getUser()
+
+    const selectedSubstance: ISubstance = getSelectedSubstance()
+
     if (selectedSubstance.id === undefined || !userValue) {
       return
     }
@@ -293,7 +292,7 @@ const Display = (): JSX.Element => {
 
   const setUserAndRefresh = (): void => {
     new Promise<void>((resolve): void => {
-      const user: string = userValue as string
+      const user: string = getUser() as string
 
       setSoberUser(user)
 
@@ -304,7 +303,7 @@ const Display = (): JSX.Element => {
       resolve()
     })
       .then(async (): Promise<void> => {
-        await fetchUser()
+        await validateUser()
       })
       .then(async (): Promise<void> => {
         await refreshSubstances()
@@ -313,7 +312,7 @@ const Display = (): JSX.Element => {
 
   const resetUserAndRefresh = (): void => {
     new Promise<void>((resolve): void => {
-      setUserValue(null)
+      setUser(null)
 
       resetSoberUser()
 
@@ -333,13 +332,13 @@ const Display = (): JSX.Element => {
       return
     }
 
-    setUserValue(u)
+    setUser(u)
 
     nameField.setValue(u)
   }
 
   const handleNameConfirm = (): void => {
-    if (!userValue) {
+    if (!getUser()) {
       return
     }
 
@@ -349,23 +348,19 @@ const Display = (): JSX.Element => {
   }
 
   const handleNameChangeKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
-    if (e.key === "Enter" && userValue !== null) {
+    if (e.key === "Enter" && getUser() !== null) {
       handleNameConfirm()
     }
   }
 
-  const setUserValueFromSoberUser = (): void => {
-    setUserValue(soberUser ?? null)
+  const setUserFromSoberUser = (): void => {
+    setUser(soberUser ?? null)
   }
 
   const handleNameCancel = (): void => {
     closeLogin()
 
-    setUserValueFromSoberUser()
-  }
-
-  const handleLogout = (): void => {
-    resetUserAndRefresh()
+    setUserFromSoberUser()
   }
 
   const handleLogin = (): void => {
@@ -373,132 +368,6 @@ const Display = (): JSX.Element => {
 
     nameField.setValue("")
     nameField.validate() // show error
-  }
-
-  const updateUser = async (type: UpdateType, val: boolean | number): Promise<boolean | number | null> => {
-    if (!userValue?.trim()) {
-      // * NOTE: catches zero length and null
-      return null
-    }
-
-    const body: IUser = {
-      ...userData
-    } as IUser
-    if (type === UpdateType.ShowCoin && userData?.showCoin !== Boolean(val)) {
-      body.showCoin = validate<boolean, BooleanSchema>(Boolean(val), BooleanSchema) ?? false
-    } else if (type === UpdateType.ShowCost && userData?.showCost !== Boolean(val)) {
-      body.showCost = validate<boolean, BooleanSchema>(Boolean(val), BooleanSchema) ?? false
-    } else {
-      return null
-    }
-
-    return await fetchClient<IUser>({
-      body,
-      endpoint: "user/update",
-      method: httpMethods.PUT,
-      user: userValue
-    } satisfies IFetchClient).then((data: IUser | null): boolean | number | null => {
-      const d: IUser | null = validate<IUser, UserSchema>(data, UserSchema)
-      if (!d) {
-        return null
-      }
-
-      setUserData(d)
-
-      return val
-    })
-  }
-
-  const handleShowCoin = async (event: ChangeEvent<HTMLInputElement>): Promise<void> =>
-    await updateUser(UpdateType.ShowCoin, event.currentTarget.checked).then((val: boolean | number | null): void => {
-      if (DEBUG && val !== null) {
-        info(`${(val as boolean) ? "IS" : "NOT"} showing coin`)
-      }
-    })
-
-  const handleShowCost = async (event: ChangeEvent<HTMLInputElement>): Promise<void> =>
-    await updateUser(UpdateType.ShowCost, event.currentTarget.checked).then((val: boolean | number | null): void => {
-      if (DEBUG && val !== null) {
-        info(`${(val as boolean) ? "IS" : "NOT"} showing cost`)
-      }
-    })
-
-  const handleCost = async (value: number | undefined): Promise<void> => {
-    if (!userValue?.trim()) {
-      // * NOTE: catches zero length and null
-      return
-    }
-
-    if (value === costValue) {
-      return
-    }
-
-    await fetchClient<ISubstance>({
-      body: {
-        ...selectedSubstance,
-        cost: value ?? 0
-      } satisfies ISubstance,
-      endpoint: `substances/update/${selectedSubstance.id}`,
-      method: httpMethods.PUT,
-      user: userValue
-    } satisfies IFetchClient).then((data: ISubstance | null): void => {
-      const d: ISubstance | null = validate<ISubstance, SubstanceSchema>(data, SubstanceSchema)
-      if (!d) {
-        return
-      }
-
-      setSelectedSubstance(d)
-
-      if (DEBUG) {
-        info(`Cost is: $${d.cost}`)
-      }
-    })
-  }
-
-  const handleCostChange = (costVal: number | string): void => {
-    const costNum: number = Number(costVal)
-
-    let c: number | null = 0
-    if (costNum > 0) {
-      c = validate<number, CostSchema>(costNum, CostSchema) as number
-    }
-
-    handleSetCost(c ?? undefined)
-
-    costField.setValue(c)
-  }
-
-  const handleCostConfirm = (): void => {
-    if (!costValue) {
-      // * NOTE: catches zero and undefined
-      return
-    }
-
-    handleCost(costValue)
-  }
-
-  const handleCostKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
-    if (e.key === "Enter" && costValue !== undefined) {
-      handleCostConfirm()
-    }
-  }
-
-  const resetCost = (): void => {
-    handleSetCost(selectedSubstance.cost ?? 0)
-
-    costField.setValue(costValue ?? 0)
-  }
-
-  const handleCostCancel = (): void => {
-    resetCost()
-  }
-
-  const handleOpenSettings = (): void => {
-    resetCost()
-
-    openSettings()
-
-    costField.validate()
   }
 
   const getSubstancesDisplay = (): ISubstanceDisplay[] =>
@@ -522,7 +391,7 @@ const Display = (): JSX.Element => {
     <Tooltip label="Log In" withArrow={true}>
       <Button
         c="var(--mantine-color-dark-0)"
-        color="var(--color-og107)"
+        color="var(--color-blue)"
         leftSection={<IconKey color="yellow" size={16} />}
         onClick={handleLogin}
         size="xs"
@@ -533,81 +402,90 @@ const Display = (): JSX.Element => {
   )
 
   const handleSetCost = (c: number | undefined): void => {
-    if (c === 0) {
+    const substanceCost: number | null = validate<number | undefined, CostSchema, number>(c, CostSchema)
+
+    // * NOTE: catches 0 or null
+    if (!substanceCost) {
       setCost(null)
 
       return
     }
 
-    const d: number = displayStore.getState().d
+    const substance: ISubstance = getSelectedSubstance()
 
-    setCostValue(c)
+    try {
+      const totalCost: number = match<CostType, number>(substance.costType)
+        .returnType<number>()
+        .with(CostType.Day, (): number => substanceCost * getDaysInt())
+        .with(CostType.Week, (): number => substanceCost * getWeeksFloat())
+        .with(CostType.Month, (): number => substanceCost * getMonthsFloat())
+        .with(CostType.Year, (): number => substanceCost * getYearsFloat())
+        .exhaustive()
 
-    const soberDataCost: number = c ?? 0
-
-    if (d > 0 && soberDataCost > 0) {
-      const DaysPerWeek: number = 7
-
-      const costPerDay: number = soberDataCost / DaysPerWeek
+      if (totalCost === 0) {
+        return
+      }
 
       setCost({
-        cost: d * costPerDay,
-        costPerDay: `Cost per day: $${new Big(costPerDay).toFixed(2, 0)}`
+        cost: totalCost,
+        costPer: `Cost per ${getKeyByValue(CostType, substance.costType)}: $${new Big(substance.cost).toFixed(2, Big.roundDown)}`
       } satisfies ICost)
+    } catch (e: unknown) {
+      // * NOTE: Handles NonExhaustiveError
+      handleError(e)
     }
   }
 
   const init = async (): Promise<void> => {
-    setUserValueFromSoberUser()
-    if (!displayStore.getState().userValue) {
+    setUserFromSoberUser()
+    if (!getUser()) {
       return
     }
 
-    if (!userData) {
-      await fetchUser().then(async (): Promise<ISubstance[] | undefined> => await refreshSubstances())
-    }
+    await validateUser().then(async (): Promise<ISubstance[] | undefined> => await refreshSubstances())
+
+    const selectedSubstance: ISubstance = getSelectedSubstance()
 
     new Promise<void>((resolve): void => {
       setDisplay(selectedSubstance.date)
 
+      handleSetCost(selectedSubstance.cost)
+
       resolve()
-    })
-      .then((): void => handleSetCost(selectedSubstance.cost))
-      .then((): void => {
-        let txt: string = "No milestones to show yet."
-        let img: string | undefined
+    }).then((): void => {
+      let txt: string = "No milestones to show yet."
+      let img: string | undefined
 
-        const m: number = displayStore.getState().m
+      const m: number = Math.floor(getMonthsFloat())
 
-        if (m > 0) {
-          const EighteenMonths: number = 18
-          const MaxYears: number = 5 // TODO: more images
+      if (m > 0) {
+        const EighteenMonths: number = 18
+        const MaxYears: number = 5 // TODO: more images
 
-          const y: number = displayStore.getState().y
+        const y: number = Math.floor(getYearsFloat())
 
-          txt = y > 0 ? pluralize("year", y, true) : pluralize("month", m, true)
+        txt = titleCase(y > 0 ? pluralize("year", y, true) : pluralize("month", m, true))
 
-          img = "/coins/"
+        img = "/coins/"
 
-          if (m === EighteenMonths) {
-            img = `${img}18m.png`
-          } else if (y > 0) {
-            img = `${img}${y}y.png`
-          } else {
-            img = `${img}${m}m.png`
-          }
+        // biome-ignore format: don't expand braces
+        img += match<object, string>({ m, y })
+          .returnType<string>()
+          .with({ m: EighteenMonths }, (): string => "18m.png")
+          .with({ y: P.number.gt(0) }, (): string => `${y}y.png`)
+          .otherwise((): string => `${m}m.png`)
 
-          if (y > MaxYears) {
-            img = undefined
-            txt = `${txt} (No image)`
-          }
+        if (y > MaxYears) {
+          img = undefined
+          txt = `${txt} (No image)`
         }
+      }
 
-        setCoin({
-          image: img,
-          text: txt
-        } satisfies ICoin)
-      })
+      setCoin({
+        image: img,
+        text: txt
+      } satisfies ICoin)
+    })
   }
 
   // biome-ignore lint/correctness/useExhaustiveDependencies(init): not a dependency
@@ -616,61 +494,89 @@ const Display = (): JSX.Element => {
     init()
 
     const interval: NodeJS.Timeout = setInterval((): void => {
-      if (!showCounter.current) {
-        showCounter.current = true
-      }
-
-      setDisplay(selectedSubstance.date)
-    }, ms("1s"))
+      setDisplay(selectedSubstanceDate)
+    }, INTERVAL_MS)
 
     return (): void => clearInterval(interval)
-  }, [
-    selectedSubstance.date
-  ])
+  }, [selectedSubstanceDate])
 
   return (
     <>
-      <Modal centered={true} onClose={closeLogin} opened={openedLogin} size="auto" withCloseButton={false}>
-        <Tooltip label="Name" withArrow={true}>
-          <TextInput
-            {...nameField.getInputProps()}
-            label="Name"
-            maxLength={MAX_LEN_STR}
-            onChange={handleNameChange}
-            onKeyDown={handleNameChangeKeyDown}
-            placeholder="Enter name..."
-            rightSection={
-              <>
-                <Tooltip label="Confirm" withArrow={true}>
-                  <IconCheck
-                    color="green"
-                    onClick={handleNameConfirm}
-                    size={16}
-                    style={{
-                      cursor: "pointer",
-                      flexShrink: 0,
-                      marginRight: "5px"
-                    }}
-                  />
-                </Tooltip>
-                <Tooltip label="Cancel" withArrow={true}>
-                  <IconX
-                    color="red"
-                    onClick={handleNameCancel}
-                    size={16}
-                    style={{
-                      cursor: "pointer",
-                      flexShrink: 0,
-                      marginRight: "20px"
-                    }}
-                  />
-                </Tooltip>
-              </>
-            }
-            withAsterisk={true}
-          />
-        </Tooltip>
-      </Modal>
+      <Modal.Root
+        centered={true}
+        onClose={closeLogin}
+        opened={openedLogin}
+        size="auto"
+        transitionProps={{
+          duration: 250,
+          timingFunction: "linear",
+          transition: "scale"
+        }}>
+        <Modal.Overlay backgroundOpacity={0.75} />
+        <Modal.Content>
+          <Modal.Header>
+            <Modal.Title
+              c="var(--color-green)"
+              fw="bold"
+              styles={{
+                title: {
+                  fontSize: "1.5rem"
+                }
+              }}>
+              Login
+            </Modal.Title>
+            <Tooltip label="Close" withArrow>
+              <Modal.CloseButton
+                style={{
+                  cursor: "pointer"
+                }}
+              />
+            </Tooltip>
+          </Modal.Header>
+          <Modal.Body>
+            <Tooltip label="Name" withArrow={true}>
+              <TextInput
+                {...nameField.getInputProps()}
+                data-autofocus
+                label="Name"
+                maxLength={MAX_LEN_STR}
+                onChange={handleNameChange}
+                onKeyDown={handleNameChangeKeyDown}
+                placeholder="Enter name…"
+                rightSection={
+                  <>
+                    <Tooltip label="Confirm" withArrow={true}>
+                      <IconCheck
+                        color="green"
+                        onClick={handleNameConfirm}
+                        size={16}
+                        style={{
+                          cursor: "pointer",
+                          flexShrink: 0,
+                          marginRight: "5px"
+                        }}
+                      />
+                    </Tooltip>
+                    <Tooltip label="Cancel" withArrow={true}>
+                      <IconX
+                        color="red"
+                        onClick={handleNameCancel}
+                        size={16}
+                        style={{
+                          cursor: "pointer",
+                          flexShrink: 0,
+                          marginRight: "20px"
+                        }}
+                      />
+                    </Tooltip>
+                  </>
+                }
+                withAsterisk={true}
+              />
+            </Tooltip>
+          </Modal.Body>
+        </Modal.Content>
+      </Modal.Root>
       <Group
         style={{
           left: "10px",
@@ -681,7 +587,7 @@ const Display = (): JSX.Element => {
           <Text c="dimmed" data-testid="loggedIn" fs="italic" size="xs">
             Logged in as:{" "}
             <Tooltip label="Log Out" withArrow={true}>
-              <Anchor c="blue" onClick={handleLogout} underline="never">
+              <Anchor c="blue" onClick={resetUserAndRefresh} underline="never">
                 {soberUser}
               </Anchor>
             </Tooltip>
@@ -690,93 +596,20 @@ const Display = (): JSX.Element => {
           getLoginButton()
         )}
       </Group>
-      {/* biome-ignore lint/correctness/useUniqueElementIds: needed for CSS */}
-      <Modal.Root centered id="settings" onClose={closeSettings} opened={openedSettings} size="auto">
-        <Modal.Overlay />
-        <Modal.Content>
-          <Modal.Header>
-            <Modal.Title>Settings</Modal.Title>
-            <Tooltip label="Close" withArrow>
-              <Modal.CloseButton />
-            </Tooltip>
-          </Modal.Header>
-          <Modal.Body>
-            <Stack>
-              <Switch
-                checked={userData?.showCoin ?? true}
-                color="var(--color-blue)"
-                description="Display AA coin"
-                label="Show Coin"
-                offLabel="OFF"
-                onChange={handleShowCoin}
-                onLabel="ON"
-                size="md"
-              />
-              <Switch
-                checked={userData?.showCost ?? true}
-                color="var(--color-blue)"
-                description="Display weekly cost"
-                label="Show Cost"
-                offLabel="OFF"
-                onChange={handleShowCost}
-                onLabel="ON"
-                size="md"
-              />
-              <NumberInput
-                {...costField.getInputProps()}
-                allowDecimal
-                allowNegative={false}
-                decimalScale={2}
-                disabled={!userData?.showCost}
-                fixedDecimalScale
-                hideControls
-                label="Cost Per Week"
-                leftSection={<IconCurrencyDollar color="var(--color-red)" size={16} />}
-                min={0}
-                onChange={handleCostChange}
-                onKeyDown={handleCostKeyDown}
-                placeholder="Enter cost..."
-                rightSection={
-                  <>
-                    <Tooltip label="Confirm" withArrow={true}>
-                      <IconCheck
-                        color="green"
-                        onClick={handleCostConfirm}
-                        size={16}
-                        style={{
-                          cursor: Number(costValue ?? null) === 0 ? "not-allowed" : "pointer",
-                          flexShrink: 0,
-                          marginRight: "5px"
-                        }}
-                      />
-                    </Tooltip>
-                    <Tooltip label="Cancel" withArrow={true}>
-                      <IconX
-                        color="red"
-                        onClick={handleCostCancel}
-                        size={16}
-                        style={{
-                          cursor: "pointer",
-                          flexShrink: 0,
-                          marginRight: "30px"
-                        }}
-                      />
-                    </Tooltip>
-                  </>
-                }
-                value={costValue ?? 0}
-                withAsterisk={true}
-              />
-            </Stack>
-          </Modal.Body>
-        </Modal.Content>
-      </Modal.Root>
-      {soberUser ? (
+      <Settings
+        closeSettings={closeSettings}
+        openedSettings={openedSettings}
+        refreshSubstances={refreshSubstances}
+        substances={substances}
+        user={getUser()}
+      />
+      {getUser() ? (
         <>
           <Tooltip label="Settings" withArrow>
             <ActionIcon
               data-testid="settings"
-              onClick={handleOpenSettings}
+              disabled={getSelectedSubstance().name.length === 0}
+              onClick={openSettings}
               pos="absolute"
               right={10}
               style={{
@@ -790,10 +623,10 @@ const Display = (): JSX.Element => {
           <Substances
             allSubstances={substances}
             refreshSubstances={refreshSubstances}
-            selectedSubstance={selectedSubstance}
+            selectedSubstance={getSelectedSubstance()}
             setSelectedSubstance={setSelectedSubstance}
             substances={getSubstancesDisplay()}
-            user={userValue}
+            user={soberUser ?? null}
           />
           <Center>
             <Stack>
@@ -803,8 +636,8 @@ const Display = (): JSX.Element => {
                     <DatePickerInput
                       c="var(--color-blue)"
                       className="sober-date"
-                      data-testid="datepicker"
-                      disabled={!selectedSubstance.name}
+                      data-testid="datePicker"
+                      disabled={!getSelectedSubstance().name}
                       label="Sober since:"
                       leftSection={<IconCalendar color="var(--color-red)" size={16} />}
                       maxDate={dayjs().toDate()}
@@ -816,25 +649,30 @@ const Display = (): JSX.Element => {
                         withinPortal: true
                       }}
                       ta="center"
-                      value={selectedSubstance.date}
+                      value={getSelectedSubstance().date}
                       valueFormat="dddd, MMMM Do, YYYY"
                       w={250}
                     />
                   </Tooltip>
                 </Box>
               </Center>
-              {showCounter ? (
-                <Stack align="center" c="var(--color-blue)" ff="var(--font-counters)" fw="bold" fz="h1" gap="xs">
-                  <Box>{seconds}</Box>
-                  <Box>{minutes}</Box>
-                  <Box>{hours}</Box>
-                  <Box>{days}</Box>
-                  <Box>{weeks}</Box>
-                  <Box>{months}</Box>
-                  <Box>{years}</Box>
-                </Stack>
-              ) : null}
-              {userData?.showCost && cost ? (
+              <Stack
+                align="center"
+                c="var(--color-blue)"
+                data-testid="counter"
+                ff="var(--font-counters)"
+                fw="bold"
+                fz="h1"
+                gap="xs">
+                <Box data-testid="seconds">{seconds}</Box>
+                <Box>{minutes}</Box>
+                <Box>{hours}</Box>
+                <Box>{days}</Box>
+                <Box>{weeks}</Box>
+                <Box>{months}</Box>
+                <Box>{years}</Box>
+              </Stack>
+              {getSelectedSubstance().showCost && cost ? (
                 <Center mt={20}>
                   <Text c="var(--color-red)" fw="bold" inline mr={10} size="xl">
                     Savings:
@@ -842,7 +680,7 @@ const Display = (): JSX.Element => {
                   <Tooltip
                     label={
                       <Text fs="italic" fw="bold" size="sm">
-                        {cost.costPerDay}
+                        {cost.costPer}
                       </Text>
                     }
                     withArrow>
@@ -855,12 +693,19 @@ const Display = (): JSX.Element => {
                       style={{
                         cursor: "pointer"
                       }}>
-                      <NumberFormatter decimalScale={2} prefix="$" thousandSeparator="," value={cost.cost} />
+                      <NumberFormatter
+                        data-testid="cost"
+                        decimalScale={2}
+                        fixedDecimalScale={true}
+                        prefix="$"
+                        thousandSeparator=","
+                        value={cost.cost}
+                      />
                     </Text>
                   </Tooltip>
                 </Center>
               ) : null}
-              {userData?.showCoin && coin ? (
+              {getSelectedSubstance().showCoin && coin ? (
                 <>
                   {/* biome-ignore lint/correctness/useUniqueElementIds: needed for CSS */}
                   <Modal
@@ -877,7 +722,7 @@ const Display = (): JSX.Element => {
                     }}
                     title="AA Coin">
                     <Stack ta="center">
-                      <Text c="var(--color-blue)" fw="bold" size="lg">
+                      <Text c="var(--color-blue)" fw="bold" size="xl">
                         {coin.text}
                       </Text>
                       {coin.image ? <Image src={coin.image} title={coin.text} /> : null}
@@ -886,6 +731,7 @@ const Display = (): JSX.Element => {
                   <Tooltip label="Show Coin" withArrow>
                     <Button
                       c="var(--color-black)"
+                      data-testid="coinButton"
                       fw="bold"
                       gradient={{
                         deg: 90,

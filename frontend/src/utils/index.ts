@@ -1,13 +1,14 @@
 import { error } from "@postfmly/logger"
 
-import { array, type GenericSchema, isValiError, parse, summarize } from "valibot"
+import { match } from "ts-pattern"
+import { array, type GenericSchema, isValiError, parse, summarize, type ValiError } from "valibot"
 
 import { StringAsBooleanSchema } from "./schemas.ts"
 
 /**
  * Find DOM element
  * @function
- * @param {string} element - element identifier
+ * @param {string} element - Element identifier
  * @returns {HTMLElement | null} DOM element, or null
  */
 const findElement = (element: string): HTMLElement | null => document.querySelector(element)
@@ -15,7 +16,7 @@ const findElement = (element: string): HTMLElement | null => document.querySelec
 /**
  * Format version string
  * @function
- * @param {string | undefined} version - version string
+ * @param {string | undefined} version - Version string
  * @returns {string} v[version], or N/A
  */
 const getVersion = (version: string | undefined): string => (version && version.length > 0 ? `v${version}` : "N/A")
@@ -42,21 +43,23 @@ class FetchError extends Error {
  * @param {unknown} e The error object
  */
 const handleError = (e: unknown): void => {
-  if (isValiError(e)) {
-    error(summarize(e.issues))
-  } else if (e instanceof DOMException && e.name === "TimeoutError") {
-    error("Request timed out")
-  } else {
-    error(e)
-  }
+  // biome-ignore format: don't expand braces
+  match<object, void>({
+    isTimeoutError: e instanceof DOMException && e.name === "TimeoutError",
+    isValiError: isValiError(e)
+  })
+  .returnType<void>()
+  .with({ isTimeoutError: true }, () => error("Request timed out"))
+  .with({ isValiError: true }, (): void => error(summarize((e as ValiError<GenericSchema>).issues)))
+  .otherwise((): void => error(e))
 }
 
 /**
  * Validate object or array
  * @function
- * @param {T | null} obj object or array
- * @param {S} schema validation schema
- * @returns {R | null} Validated object or array, or null
+ * @param {T | null} obj Value, object, or array
+ * @param {S} schema Validation schema
+ * @returns {T | R | null} Value, object, array, or null
  */
 const validate = <T, S extends GenericSchema, R = T>(obj: T | null, schema: S): R | null => {
   if (obj === undefined || obj === null) {
@@ -78,7 +81,7 @@ const validate = <T, S extends GenericSchema, R = T>(obj: T | null, schema: S): 
 
 /**
  * Update type
- * @constant
+ * @constant {UpdateType}
  */
 const UpdateType = {
   ShowCoin: "ShowCoin",
@@ -99,4 +102,32 @@ type UpdateType = (typeof UpdateType)[keyof typeof UpdateType]
 const DEBUG: boolean =
   validate<string, StringAsBooleanSchema, boolean>(import.meta.env.VITE_DEBUG, StringAsBooleanSchema) ?? false
 
-export { DEBUG, FetchError, findElement, getVersion, handleError, UpdateType, validate }
+/**
+ * Get key by value
+ * @function
+ * @param {T} obj Const literal
+ * @param {number} value Value
+ * @returns {string} Key
+ */
+const getKeyByValue = <T extends Record<string, number>>(obj: T, value: number): string =>
+  Object.keys(obj).find((key: string): boolean => obj[key] === value) as string
+
+/**
+ * Save type
+ * @constant {SaveType}
+ */
+const SaveType = {
+  COST: 1,
+  COST_TYPE: 2,
+  SHOW_COIN: 3,
+  SHOW_COST: 4,
+  SHOW_DECIMALS: 5
+} as const
+
+/**
+ * Save type
+ * @type {SaveType}
+ */
+type SaveType = (typeof SaveType)[keyof typeof SaveType]
+
+export { DEBUG, FetchError, findElement, getKeyByValue, getVersion, handleError, SaveType, UpdateType, validate }

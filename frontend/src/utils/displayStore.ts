@@ -6,16 +6,22 @@ import { create } from "zustand"
 
 import { type ICoin } from "./interfaces/ICoin.ts"
 import { type ICost } from "./interfaces/ICost.ts"
-import { type IDisplay, type IDisplayActions } from "./interfaces/IDisplay.ts"
+import { defaultValues, type IDisplay, type IDisplayActions } from "./interfaces/IDisplay.ts"
 import { defaultSubstance, type ISubstance } from "./interfaces/ISubstance.ts"
-import { type IUser } from "./interfaces/IUser.ts"
 
 dayjs.extend(duration)
 
 const displayStore = create<IDisplay>()(
-  (set) =>
+  (set, get) =>
     ({
       actions: {
+        getDaysInt: (): number => get().daysInt,
+        getMonthsFloat: (): number => get().monthsFloat,
+        getSelectedSubstance: (): ISubstance => get().selectedSubstance,
+        getUser: (): string | null => get().user,
+        getWeeksFloat: (): number => get().weeksFloat,
+        getYearsFloat: (): number => get().yearsFloat,
+
         setCoin: (data: ICoin | null): void =>
           set({
             coin: data
@@ -24,14 +30,10 @@ const displayStore = create<IDisplay>()(
           set({
             cost: data
           }),
-        setCostValue: (data: number | undefined): void =>
-          set({
-            costValue: data
-          }),
         setDisplay: (date: string | null | undefined): void =>
-          set(() => {
+          set((): IDisplay => {
             if (!date) {
-              return {} as IDisplay
+              return defaultValues as IDisplay
             }
 
             const diff: duration.Duration = dayjs.duration(dayjs().diff(dayjs(date)))
@@ -39,76 +41,68 @@ const displayStore = create<IDisplay>()(
             const minutes: number = Math.floor(diff.asMinutes())
             const hours: number = Math.floor(diff.asHours())
             const days: number = Math.floor(diff.asDays())
-            const weeks: number = Math.floor(diff.asWeeks())
+            const weeksDuration: number = diff.asWeeks()
+            const weeks: number = round(weeksDuration)
             const monthsDuration: number = diff.asMonths()
-            const months: number = monthsDuration > 1 ? Number(new Big(monthsDuration).toFixed(2, 0)) : 0
+            const months: number = round(monthsDuration)
             const yearsDuration: number = diff.asYears()
-            const years: number = yearsDuration > 1 ? Number(new Big(yearsDuration).toFixed(2, 0)) : 0
+            const years: number = round(yearsDuration)
 
             return {
-              d: days,
               days: days > 0 ? pluralize("day", days, true) : "",
+              daysInt: days,
               hours: hours > 0 ? pluralize("hour", hours, true) : "",
-              m: Math.floor(months),
               minutes: minutes > 0 ? pluralize("minute", minutes, true) : "",
               months: months > 0 ? pluralize("month", months, true) : "",
+              monthsFloat: months,
               seconds: pluralize("second", seconds, true),
-              w: weeks,
               weeks: weeks > 0 ? pluralize("week", weeks, true) : "",
-              y: Math.floor(years),
-              years: years > 0 ? pluralize("year", years, true) : ""
+              weeksFloat: weeks,
+              years: years > 0 ? pluralize("year", years, true) : "",
+              yearsFloat: years
             } as IDisplay
           }),
         setSelectedSubstance: (data: ISubstance): void =>
           set({
             selectedSubstance: data
           }),
-        setUserData: (data: IUser | null): void =>
+        setUser: (data: string | null): void =>
           set({
-            userData: data
-          }),
-        setUserValue: (data: string | null): void =>
-          set({
-            userValue: data
+            user: data
           })
       } satisfies IDisplayActions,
+      ...defaultValues,
       coin: null,
       cost: null,
-      costValue: undefined,
-      d: 0,
-      days: "",
-      hours: "",
-      m: 0,
-      minutes: "",
-      months: "",
-      seconds: "",
       selectedSubstance: defaultSubstance,
-      userData: null,
-      userValue: null,
-      w: 0,
-      weeks: "",
-      y: 0,
-      years: ""
-    }) satisfies IDisplay
+      user: null
+    }) as IDisplay
 )
+
+// hoisted
+const round = (num: number): number => {
+  if (num < 1) {
+    return 0
+  }
+
+  if (displayStore.getState().selectedSubstance.showDecimals) {
+    return Number(new Big(num).toFixed(2, Big.roundDown))
+  }
+
+  return Math.floor(num)
+}
 
 export const getCoin = (): ICoin | null => displayStore((state: IDisplay): ICoin | null => state.coin)
 export const getCost = (): ICost | null => displayStore((state: IDisplay): ICost | null => state.cost)
-export const getCostValue = (): number | undefined =>
-  displayStore((state: IDisplay): number | undefined => state.costValue)
 export const getDays = (): string => displayStore((state: IDisplay): string => state.days)
 export const getHours = (): string => displayStore((state: IDisplay): string => state.hours)
 export const getMinutes = (): string => displayStore((state: IDisplay): string => state.minutes)
 export const getMonths = (): string => displayStore((state: IDisplay): string => state.months)
 export const getSeconds = (): string => displayStore((state: IDisplay): string => state.seconds)
-export const getSelectedSubstance = (): ISubstance =>
-  displayStore((state: IDisplay): ISubstance => state.selectedSubstance)
-export const getUserData = (): IUser | null => displayStore((state: IDisplay): IUser | null => state.userData)
-export const getUserValue = (): string | null => displayStore((state: IDisplay): string | null => state.userValue)
 export const getWeeks = (): string => displayStore((state: IDisplay): string => state.weeks)
 export const getYears = (): string => displayStore((state: IDisplay): string => state.years)
 
 export const displayStoreActions = (): IDisplayActions =>
   displayStore((state: IDisplay): IDisplayActions => state.actions)
 
-export { displayStore }
+export { displayStore, round }

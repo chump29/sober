@@ -1,28 +1,22 @@
-import { type InferInput, object, optional, union } from "valibot"
+import { type InferInput, object, optional } from "valibot"
 
 import { MethodSchema, StringSchema } from "../schemas.ts"
 import { SubstanceSchema } from "./ISubstance.ts"
-import { UserSchema } from "./IUser.ts"
 
 /**
  * Validate an {@link IFetchClient} object
- * @constant
- * @property {IUser | ISubstance} [body]
- * @see {@link BodySchema}
+ * @constant {FetchClientSchema}
+ * @property {ISubstance | undefined} [body]
+ * @see {@link SubstanceSchema}
  * @property {string} endpoint
  * @see {@link StringSchema}
  * @property {string} method
  * @see {@link MethodSchema}
- * @property {string} [user]
+ * @property {string | undefined} [user]
  * @see {@link StringSchema}
  */
 const FetchClientSchema = object({
-  body: optional(
-    union([
-      UserSchema,
-      SubstanceSchema
-    ])
-  ),
+  body: optional(SubstanceSchema),
   endpoint: StringSchema,
   method: MethodSchema,
   user: optional(StringSchema)

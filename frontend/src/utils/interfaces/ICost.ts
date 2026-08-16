@@ -1,6 +1,6 @@
 interface ICost {
   cost: number
-  costPerDay: string
+  costPer: string
 }
 
 export { type ICost }

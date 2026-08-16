@@ -18,6 +18,7 @@ import {
   regex,
   string,
   toBoolean,
+  toNumber,
   transform,
   trim,
   url,
@@ -28,7 +29,7 @@ import {
 /**
  * Validate against Semantic Versioning Specification
  * @function
- * @summary non-empty string, valid {@link https://semver.org/ SemVer}
+ * @summary Non-empty string, valid {@link https://semver.org/ SemVer}
  */
 const VersionSchema = pipe(
   string(),
@@ -46,7 +47,7 @@ type VersionSchema = typeof VersionSchema
 /**
  * Validate string as boolean
  * @function
- * @summary non-empty string, valid boolean {@link https://developer.mozilla.org/en-US/docs/Glossary/Truthy value}
+ * @summary Non-empty string, valid boolean {@link https://developer.mozilla.org/en-US/docs/Glossary/Truthy value}
  */
 const StringAsBooleanSchema = pipe(string(), trim(), nonEmpty(), toBoolean())
 
@@ -55,7 +56,7 @@ type StringAsBooleanSchema = typeof StringAsBooleanSchema
 /**
  * Validate boolean
  * @function
- * @summary valid boolean {@link https://developer.mozilla.org/en-US/docs/Glossary/Truthy value}
+ * @summary Valid boolean {@link https://developer.mozilla.org/en-US/docs/Glossary/Truthy value}
  */
 const BooleanSchema = boolean()
 
@@ -73,7 +74,7 @@ const DATE_FORMAT: string = "YYYY-MM-DD"
 /**
  * Validate date
  * @function
- * @summary non-empty string, valid {@link https://www.iso.org/iso-8601-date-and-time-format.html ISO 8601} date format
+ * @summary Non-empty string, valid {@link https://www.iso.org/iso-8601-date-and-time-format.html ISO 8601} date format
  */
 const DateSchema = pipe(
   string(),
@@ -90,7 +91,7 @@ type DateSchema = typeof DateSchema
 /**
  * Validate URL
  * @function
- * @summary valid {@link https://datatracker.ietf.org/doc/html/rfc3986 URL}
+ * @summary Valid {@link https://datatracker.ietf.org/doc/html/rfc3986 URL}
  */
 const UrlSchema = pipe(string(), trim(), nonEmpty(), url())
 
@@ -117,11 +118,21 @@ type TimeoutSchema = typeof TimeoutSchema
 /**
  * Validate cost
  * @function
- * @summary valid number >= 0
+ * @summary number, >= 0
  */
 const CostSchema = pipe(number(), minValue(0))
 
 type CostSchema = typeof CostSchema
+
+/**
+ * Validate cost input
+ * @function
+ * @summary Non-empty string, >= 0
+ * @returns {number} number
+ */
+const CostInputSchema = pipe(string(), trim(), nonEmpty(), toNumber(), minValue(0))
+
+type CostInputSchema = typeof CostInputSchema
 
 /**
  * Maximum user length
@@ -134,17 +145,17 @@ const MAX_LEN_STR: number = 64
 /**
  * Validate substance name
  * @function
- * @summary string, max length = {@link MAX_LEN_STR}
- * @default ""
+ * @summary Non-empty string, max length = {@link MAX_LEN_STR}
  */
-const NameSchema = optional(pipe(string(), trim(), maxLength(MAX_LEN_STR)), "")
+const NameSchema = pipe(string(), trim(), nonEmpty(), maxLength(MAX_LEN_STR))
 
 type NameSchema = typeof NameSchema
 
 /**
  * Validate ID
  * @function
- * @summary integer, > 0
+ * @summary undefined | integer, > 0
+ * @default undefined
  */
 const IdSchema = optional(pipe(number(), integer(), gtValue(0)))
 
@@ -153,7 +164,7 @@ type IdSchema = typeof IdSchema
 /**
  * Validate title
  * @function
- * @summary non-empty string, exactly two words, US English locale
+ * @summary Non-empty string, exactly two words, US English locale
  */
 const TitleSchema = pipe(string(), trim(), nonEmpty(), words("en-US", 2))
 
@@ -162,7 +173,7 @@ type TitleSchema = typeof TitleSchema
 /**
  * Validate string
  * @function
- * @summary non-empty string
+ * @summary Non-empty string
  */
 const StringSchema = pipe(string(), trim(), nonEmpty())
 
@@ -177,9 +188,38 @@ const MethodSchema = v_enum(httpMethods)
 
 type MethodSchema = typeof MethodSchema
 
+/**
+ * Cost type
+ * @constant {CostType}
+ */
+const CostType = {
+  Day: 1,
+  Month: 3,
+  Week: 2,
+  Year: 4
+} as const
+
+/**
+ * Cost type
+ * @type {CostType}
+ */
+type CostType = (typeof CostType)[keyof typeof CostType]
+
+/**
+ * Validate CostType
+ * @function
+ * @summary Valid {@link CostType}
+ */
+const CostTypeSchema = v_enum(CostType)
+
+type CostTypeSchema = typeof CostTypeSchema
+
 export {
   BooleanSchema,
+  CostInputSchema,
   CostSchema,
+  CostType,
+  CostTypeSchema,
   DATE_FORMAT,
   DateSchema,
   IdSchema,

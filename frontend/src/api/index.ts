@@ -9,7 +9,7 @@ const API_URL: string = validate<string, UrlSchema>(import.meta.env.VITE_API_URL
 const API_TIMEOUT: number =
   validate<string, TimeoutSchema, number>(import.meta.env.VITE_API_TIMEOUT, TimeoutSchema) ?? ms("2s")
 
-const fetchClient = async <R>(settings: IFetchClient): Promise<R | null> => {
+const fetchClient = async <R = null>(settings: IFetchClient): Promise<R | null> => {
   const s: IFetchClient | null = validate<IFetchClient, FetchClientSchema>(settings, FetchClientSchema)
   if (!s) {
     handleError("Invalid fetch settings")
@@ -35,7 +35,8 @@ const fetchClient = async <R>(settings: IFetchClient): Promise<R | null> => {
         throw new FetchError(response)
       }
 
-      return await response.json()
+      const text: string = await response.text()
+      return text.length > 0 ? JSON.parse(text) : null
     })
     .then((data: R | null): R | null => {
       if (data === null) {

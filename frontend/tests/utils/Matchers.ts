@@ -2,9 +2,10 @@ import { expect } from "bun:test"
 
 import { type ICoin } from "../../src/utils/interfaces/ICoin.ts"
 import { type ICost } from "../../src/utils/interfaces/ICost.ts"
+import { type IDisplay } from "../../src/utils/interfaces/IDisplay.ts"
+import { type ISelectDisplay } from "../../src/utils/interfaces/ISelectDisplay.ts"
 import { type ISubstance } from "../../src/utils/interfaces/ISubstance.ts"
 import { type ISubstanceDisplay } from "../../src/utils/interfaces/ISubstanceDisplay.ts"
-import { type IUser } from "../../src/utils/interfaces/IUser.ts"
 
 const ICoinMatcher: ICoin = {
   image: expect.any(String),
@@ -13,14 +14,37 @@ const ICoinMatcher: ICoin = {
 
 const ICostMatcher: ICost = {
   cost: expect.any(Number),
-  costPerDay: expect.any(String)
+  costPer: expect.any(String)
 } satisfies ICost
+
+const IDisplayMatcher: IDisplay = {
+  days: expect.any(String),
+  daysInt: expect.any(Number),
+  hours: expect.any(String),
+  minutes: expect.any(String),
+  months: expect.any(String),
+  monthsFloat: expect.any(Number),
+  seconds: expect.any(String),
+  weeks: expect.any(String),
+  weeksFloat: expect.any(Number),
+  years: expect.any(String),
+  yearsFloat: expect.any(Number)
+} as IDisplay
+
+const ISelectDisplayMatcher: ISelectDisplay = {
+  label: expect.any(String),
+  value: expect.any(Number)
+}
 
 const ISubstanceMatcher: ISubstance = {
   cost: expect.any(Number),
+  costType: expect.any(Number),
   date: expect.any(String),
-  id: expect.any(Number),
-  name: expect.any(String)
+  id: undefined,
+  name: expect.any(String),
+  showCoin: expect.any(Boolean),
+  showCost: expect.any(Boolean),
+  showDecimals: expect.any(Boolean)
 } satisfies ISubstance
 
 const ISubstanceDisplayMatcher: ISubstanceDisplay = {
@@ -30,9 +54,11 @@ const ISubstanceDisplayMatcher: ISubstanceDisplay = {
   value: expect.any(String)
 } satisfies ISubstanceDisplay
 
-const IUserMatcher: IUser = {
-  showCoin: expect.any(Boolean),
-  showCost: expect.any(Boolean)
-} satisfies IUser
-
-export { ICoinMatcher, ICostMatcher, ISubstanceDisplayMatcher, ISubstanceMatcher, IUserMatcher }
+export {
+  ICoinMatcher,
+  ICostMatcher,
+  IDisplayMatcher,
+  ISelectDisplayMatcher,
+  ISubstanceDisplayMatcher,
+  ISubstanceMatcher
+}

@@ -1,7 +1,15 @@
 import { UnsecuredJWT } from "jose"
 
+import { name } from "../../package.json" with { type: "json" }
+
 const getJWT = (user: string): string =>
-  new UnsecuredJWT().setExpirationTime("30s").setIssuedAt().setSubject(user).encode()
+  new UnsecuredJWT()
+    .setExpirationTime("30s")
+    .setIssuedAt()
+    .setSubject(user)
+    .setIssuer(name)
+    .setAudience(import.meta.env.VITE_AUDIENCE)
+    .encode()
 
 /**
  * Get request headers

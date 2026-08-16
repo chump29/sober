@@ -33,7 +33,7 @@ delete_substance[["`/delete/*[pk]*`"]]
 get_substance[["`/get/*[pk]*`"]]
 update_substance[["`/update`"]]
 get_user[["`/user`"]]
-update_user[["`/update`"]]
+delete_user[["`/delete/[user]`"]]
 get_cache_stats[["`/cache`"]]
 clear_cache_stats[["`/clear`"]]
 get_version[["`/version`"]]
@@ -43,7 +43,7 @@ get_substances-->delete_substance
 get_substances-->get_substance
 get_substances-->update_substance
 api-->get_user
-get_user-->update_user
+get_user-->delete_user
 get_cache_stats-->clear_cache_stats
 ```
 
@@ -86,6 +86,7 @@ get_cache_stats-->clear_cache_stats
 |    Hierarchy     |     `uv tree --package [package]`      |
 | Hierarchy Parent | `uv tree --package [package] --invert` |
 |   Clean Cache    |            `uv cache clean`            |
+|  Security Audit  |               `uv audit`               |
 
 ### 🧪 Development
 

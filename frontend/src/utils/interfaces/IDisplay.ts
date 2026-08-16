@@ -1,37 +1,53 @@
 import { type ICoin } from "./ICoin.ts"
 import { type ICost } from "./ICost.ts"
 import { type ISubstance } from "./ISubstance.ts"
-import { type IUser } from "./IUser.ts"
 
 interface IDisplayActions {
+  getDaysInt: () => number
+  getMonthsFloat: () => number
+  getSelectedSubstance: () => ISubstance
+  getUser: () => string | null
+  getWeeksFloat: () => number
+  getYearsFloat: () => number
+
   setCoin: (data: ICoin | null) => void
   setCost: (data: ICost | null) => void
-  setCostValue: (data: number | undefined) => void
   setDisplay: (date: string | null | undefined) => void
   setSelectedSubstance: (data: ISubstance) => void
-  setUserData: (data: IUser | null) => void
-  setUserValue: (data: string | null) => void
+  setUser: (data: string | null) => void
 }
 
 interface IDisplay {
   actions: IDisplayActions
   coin: ICoin | null
   cost: ICost | null
-  costValue: number | undefined
-  d: number
   days: string
+  daysInt: number
   hours: string
-  m: number
   minutes: string
   months: string
+  monthsFloat: number
   seconds: string
   selectedSubstance: ISubstance
-  userData: IUser | null
-  userValue: string | null
-  w: number
+  user: string | null
   weeks: string
-  y: number
+  weeksFloat: number
   years: string
+  yearsFloat: number
 }
 
-export { type IDisplay, type IDisplayActions }
+const defaultValues: Partial<IDisplay> = {
+  days: "",
+  daysInt: 0,
+  hours: "",
+  minutes: "",
+  months: "",
+  monthsFloat: 0,
+  seconds: "",
+  weeks: "",
+  weeksFloat: 0,
+  years: "",
+  yearsFloat: 0
+} as Partial<IDisplay>
+
+export { defaultValues, type IDisplay, type IDisplayActions }

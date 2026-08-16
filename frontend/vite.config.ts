@@ -55,18 +55,11 @@ export default defineConfig({
       usage: "vite"
     }),
     version(),
-    webFontDownload(
-      [
-        "https://fonts.googleapis.com/css2?family=Cairo+Play&display=swap"
-      ],
-      {
-        assetsSubfolder: "fonts",
-        injectAsStyleTag: false,
-        subsetsAllowed: [
-          "latin"
-        ]
-      }
-    ),
+    webFontDownload(["https://fonts.googleapis.com/css2?family=Cairo+Play&display=swap"], {
+      assetsSubfolder: "fonts",
+      injectAsStyleTag: false,
+      subsetsAllowed: ["latin"]
+    }),
     {
       name: "title",
       transformIndexHtml: {

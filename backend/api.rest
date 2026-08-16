@@ -1,0 +1,5 @@
+# @prompt user
+
+@port = 5560
+
+DELETE http://localhost:{{port}}/api/user/delete/{{user}}

@@ -5,7 +5,7 @@ import { default as httpMethods } from "http-methods-constants"
 import { type SafeParseResult, safeParse } from "valibot"
 
 import { FetchClientSchema, type IFetchClient } from "../../../src/utils/interfaces/IFetchClient.ts"
-import { getSubstance, getUser } from "../Helpers.ts"
+import { getSubstance } from "../Helpers.ts"
 
 describe("IFetchClient", (): void => {
   const fetchClient: IFetchClient = {
@@ -13,15 +13,6 @@ describe("IFetchClient", (): void => {
     method: fake.helpers.objectKey(httpMethods),
     user: fake.person.firstName()
   } as IFetchClient
-
-  test("IFetchClient - user", (): void => {
-    const f: SafeParseResult<FetchClientSchema> = safeParse(FetchClientSchema, {
-      ...fetchClient,
-      body: getUser()
-    } satisfies IFetchClient)
-
-    expect(f.success).toBeTrue()
-  })
 
   test("IFetchClient - substance", (): void => {
     const f: SafeParseResult<FetchClientSchema> = safeParse(FetchClientSchema, {

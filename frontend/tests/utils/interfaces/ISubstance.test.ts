@@ -1,32 +1,10 @@
 import { describe, expect, test } from "bun:test"
 
-import { type SafeParseResult, safeParse } from "valibot"
-
-import { type ISubstance, SubstanceSchema } from "../../../src/utils/interfaces/ISubstance.ts"
-import { getSubstance } from "../Helpers.ts"
+import { defaultSubstance } from "../../../src/utils/interfaces/ISubstance.ts"
+import { ISubstanceMatcher } from "../Matchers.ts"
 
 describe("ISubstance", (): void => {
-  const substance: ISubstance = getSubstance()
-
   test("ISubstance", (): void => {
-    expect(safeParse(SubstanceSchema, substance).success).toBeTrue()
-  })
-
-  test("ISubstance - fail ID", (): void => {
-    substance.id = 0
-
-    const s: SafeParseResult<SubstanceSchema> = safeParse(SubstanceSchema, substance)
-
-    expect(s.success).toBeFalse()
-    expect(s.issues?.[0].message).toContain(">0")
-  })
-
-  test("ISubstance - fail cost", (): void => {
-    substance.cost = -1
-
-    const s: SafeParseResult<SubstanceSchema> = safeParse(SubstanceSchema, substance)
-
-    expect(s.success).toBeFalse()
-    expect(s.issues?.[0].message).toContain(">=0")
+    expect(defaultSubstance).toMatchObject(ISubstanceMatcher)
   })
 })

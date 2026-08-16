@@ -16,7 +16,7 @@ clear
 
 echo -e "${_title} ${_red}Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ BACKEND${_nc} ${_title}\n"
 
-echo -en "${_task} ${_yellow}Installing dependencies${_nc} ... "
+echo -en "${_task} ${_yellow}Installing dependencies${_nc}… "
 uv sync --frozen --extra dev --quiet
 echo -e "${_cyan}Complete${_nc}\n"
 

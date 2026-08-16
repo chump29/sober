@@ -1,16 +1,20 @@
 import { type ChangeEvent, type JSX, type KeyboardEvent, type RefObject, useRef } from "react"
 
-import { info } from "@postfmly/logger"
-
 import { ActionIcon, Box, Center, Modal, SegmentedControl, Stack, Text, TextInput, Tooltip } from "@mantine/core"
 import { useField } from "@mantine/form"
 import { useDisclosure } from "@mantine/hooks"
+import { hideNotification, showNotification } from "@mantine/notifications"
+
+import { info } from "@postfmly/logger"
+
 import { default as httpMethods } from "http-methods-constants"
+import { default as ms } from "ms"
 import { TbCheck as IconCheck, TbMinus as IconMinus, TbPlus as IconPlus, TbX as IconX } from "react-icons/tb"
 import { type KeyedMutator } from "swr"
 import { titleCase } from "title-case"
 
 import { fetchClient } from "../../api/index.ts"
+import { displayStoreActions } from "../../utils/displayStore.ts"
 import { DEBUG, validate } from "../../utils/index.ts"
 import { type IFetchClient } from "../../utils/interfaces/IFetchClient.ts"
 import { defaultSubstance, type ISubstance, SubstanceSchema } from "../../utils/interfaces/ISubstance.ts"
@@ -32,6 +36,8 @@ const Substances = ({
   substances: ISubstanceDisplay[]
   user: string | null
 }): JSX.Element => {
+  const { getSelectedSubstance } = displayStoreActions()
+
   const [openedSubstance, { open: openSubstance, close: closeSubstance }] = useDisclosure(false)
 
   const substanceField = useField<string>({
@@ -42,20 +48,14 @@ const Substances = ({
 
   const substanceValue: RefObject<string> = useRef<string>("")
 
+  const isRenaming: RefObject<boolean> = useRef<boolean>(false)
+
   const addSubstanceAndRefresh = (name: string): void => {
     if (!user) {
       return
     }
 
     const n: string = titleCase(name)
-
-    if (allSubstances?.find((substance: ISubstance): boolean => substance.name === n)) {
-      if (DEBUG) {
-        info("Substance already added")
-      }
-
-      return
-    }
 
     new Promise<void>((resolve): void => {
       fetchClient<ISubstance>({
@@ -80,7 +80,18 @@ const Substances = ({
 
         resolve()
       })
-    }).then(async (): Promise<ISubstance[] | undefined> => await refreshSubstances())
+    })
+      .then(async (): Promise<ISubstance[] | undefined> => await refreshSubstances())
+      .then((): string =>
+        showNotification({
+          autoClose: ms("7.5s"),
+          className: "var(--color-blue)",
+          id: "setDate",
+          message: `Choose your sober date for ${getSelectedSubstance().name}`,
+          title: "Set Sober Date",
+          withBorder: true
+        })
+      )
   }
 
   const handleSubstanceChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -96,12 +107,59 @@ const Substances = ({
     substanceField.setValue(substanceValue.current)
   }
 
+  const handleClose = (): void => {
+    isRenaming.current = false // reset
+
+    closeSubstance()
+  }
+
   const handleSubstanceConfirm = (): void => {
     if (substanceValue.current.trim().length === 0) {
       return
     }
 
-    closeSubstance()
+    if (isRenaming.current) {
+      if (!(user && selectedSubstance)) {
+        return
+      }
+
+      selectedSubstance.name = substanceValue.current
+
+      new Promise<void>((resolve): void => {
+        fetchClient<void>({
+          body: selectedSubstance,
+          endpoint: `substances/update/${selectedSubstance.id}`,
+          method: httpMethods.PUT,
+          user
+        } satisfies IFetchClient).then((): void => {
+          if (DEBUG) {
+            info(`Updated ID ${selectedSubstance.id} to ${selectedSubstance.name}`)
+          }
+
+          resolve()
+        })
+      })
+        .then((): string => hideNotification("setDate"))
+        .then(async (): Promise<ISubstance[] | undefined> => await refreshSubstances())
+
+      handleClose()
+
+      return
+    }
+
+    if (
+      allSubstances?.find(
+        (substance: ISubstance): boolean => substance.name.toLowerCase() === substanceValue.current.toLowerCase()
+      )
+    ) {
+      if (DEBUG) {
+        substanceField.setError("Substance already added")
+      }
+
+      return
+    }
+
+    handleClose()
 
     addSubstanceAndRefresh(substanceValue.current)
   }
@@ -119,7 +177,7 @@ const Substances = ({
   }
 
   const handleSubstanceCancel = (): void => {
-    closeSubstance()
+    handleClose()
 
     resetSubstance()
   }
@@ -138,11 +196,23 @@ const Substances = ({
       return
     }
 
-    if (DEBUG) {
-      info(`Showing substance: ${substance.name} @ ${substance.date}`)
-    }
-
     setSelectedSubstance(substance)
+
+    if (DEBUG) {
+      info(`Showing substance: ${substance.name} on ${substance.date}`)
+    }
+  }
+
+  const handleRename = (): void => {
+    isRenaming.current = true
+
+    const name: string = selectedSubstance.name
+
+    substanceField.setValue(name)
+
+    substanceValue.current = name
+
+    openSubstance()
   }
 
   const handleDeleteAndRefresh = (): void => {
@@ -172,20 +242,22 @@ const Substances = ({
 
   return (
     <>
-      <Modal centered={true} onClose={closeSubstance} opened={openedSubstance} size="auto" withCloseButton={false}>
+      <Modal centered={true} onClose={handleClose} opened={openedSubstance} size="auto" withCloseButton={false}>
         <Tooltip label="Substance" withArrow={true}>
           <TextInput
             {...substanceField.getInputProps()}
+            data-testid="substanceName"
             label="Substance"
             maxLength={MAX_LEN_STR}
             onChange={handleSubstanceChange}
             onKeyDown={handleSubstanceChangeKeyDown}
-            placeholder="Enter substance..."
+            placeholder="Enter substance…"
             rightSection={
               <>
                 <Tooltip label="Confirm" withArrow={true}>
                   <IconCheck
                     color="green"
+                    data-testid="confirmSubstance"
                     onClick={handleSubstanceConfirm}
                     size={16}
                     style={{
@@ -198,6 +270,7 @@ const Substances = ({
                 <Tooltip label="Cancel" withArrow={true}>
                   <IconX
                     color="red"
+                    data-testid="cancelSubstance"
                     onClick={handleSubstanceCancel}
                     size={16}
                     style={{
@@ -222,21 +295,25 @@ const Substances = ({
           ) : null}
           <Box ta="center">
             <Tooltip label="Add Substance">
-              <ActionIcon onClick={handleOpenSubstance} variant="transparent">
+              <ActionIcon data-testid="addButton" onClick={handleOpenSubstance} variant="transparent">
                 <IconPlus color="var(--color-green)" size={16} />
               </ActionIcon>
             </Tooltip>
             {substances.length > 0 ? (
               <>
-                <SegmentedControl
+                <SegmentedControl<string>
                   color="var(--color-blue)"
                   data={substances}
+                  data-testid={`segment-${selectedSubstance.name}`}
                   onChange={handleChange}
+                  onDoubleClick={handleRename}
                   size="sm"
+                  transitionDuration={ms(".5s")}
+                  transitionTimingFunction="linear"
                   value={selectedSubstance.name}
                 />
                 <Tooltip label="Delete Substance">
-                  <ActionIcon onClick={handleDeleteAndRefresh} variant="transparent">
+                  <ActionIcon data-testid="removeButton" onClick={handleDeleteAndRefresh} variant="transparent">
                     <IconMinus color="var(--color-red)" size={16} />
                   </ActionIcon>
                 </Tooltip>

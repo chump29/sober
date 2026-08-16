@@ -82,7 +82,7 @@ port@{shape: comment, label: "&nbsp; Nginx exposes port 80"}
 |  Check Updates  |     `bun outdated`     |       &mdash;       |
 |   Update All    |      `bun update`      |       &mdash;       |
 | Update Specific | `bun update [package]` |       &mdash;       |
-| Security Audit  |      `bun audit`       |       &mdash;       |
+| Security Audit  |     `bun run scan`     |     `bun scan`      |
 |  Package Info   |  `bun info [package]`  |       &mdash;       |
 |   Run Script    |   `bun run [script]`   |   `bun [script]`    |
 |      List       |       `bun list`       |       &mdash;       |

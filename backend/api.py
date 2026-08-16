@@ -5,18 +5,18 @@
 """API Service"""
 
 from dataclasses import dataclass
-from datetime import date
+from datetime import UTC, date, datetime
 from decimal import Decimal
+from enum import IntEnum, auto
 from hashlib import sha256
 from os import getenv, getpid, kill
 from pathlib import Path
 from signal import SIGINT, SIGKILL, SIGTERM, Signals, signal
-from tomllib import load
-from typing import TYPE_CHECKING, Annotated, Final
+from typing import TYPE_CHECKING, Annotated, ClassVar, Final
 
-from box import Box
 from cachetools import LRUCache, _CacheInfo, cached
 from dotenv import load_dotenv
+from env import set_env_vars  # pyright: ignore[reportMissingImports]
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -26,9 +26,13 @@ from peewee import (
     AutoField,
     BooleanField,
     CharField,
+    Check,
     DateField,
+    DateTimeField,
     DecimalField,
+    Default,
     ForeignKeyField,
+    IntegerField,
 )
 from peewee import Model as DatabaseModel
 from peewee import (
@@ -45,11 +49,11 @@ from pydantic import (
     StrictStr,
     TypeAdapter,
     ValidationError,
+    model_validator,
 )
 from rich.console import Console
 from rich.traceback import install as catch_exceptions
 from semver import Version
-from str2bool3 import str2bool
 from uvicorn import run
 
 if TYPE_CHECKING:
@@ -57,20 +61,32 @@ if TYPE_CHECKING:
 
     from cachetools import _cached_wrapper_info
 
+
 load_dotenv()
 load_dotenv(".env.local")
 
-DEBUG: Final[bool] = str2bool(getenv("DEBUG")) or False
+CONSOLE: Final[Console] = Console()
+catch_exceptions()
+
+try:
+    DEBUG: bool = TypeAdapter(bool).validate_python(getenv("DEBUG", default="False"))
+except ValidationError:
+    CONSOLE.print("[bold][red]❌ Validation Error:[/bold] Invalid DEBUG value[/red]")
+    DEBUG: bool = False
 
 DB_PATH: Final[str] = "./db/"
 DB_FILE: Final[str] = getenv("DB_FILE", "sober.db")
 DB_STR: Final[str] = f"{DB_PATH}{DB_FILE}"
 DB: Final[SqliteDatabase] = SqliteDatabase(
-    DB_STR, pragmas={"journal_mode": "wal", "wal_checkpoint": "TRUNCATE", "foreign_keys": 1}
+    DB_STR,
+    pragmas={
+        "busy_timeout": 3000,
+        "foreign_keys": True,
+        "journal_mode": "WAL",
+        "synchronous": "NORMAL",
+        "wal_checkpoint": "TRUNCATE",
+    },
 )
-
-CONSOLE: Final[Console] = Console()
-catch_exceptions()
 
 
 def shutdown(sig: int, _: FrameType | None = None) -> None:
@@ -107,22 +123,40 @@ class BaseModel(DatabaseModel):
         database: Final[SqliteDatabase] = DB
 
 
+class CostType(IntEnum):
+    """CostType lookup"""
+
+    DAY = auto()
+    WEEK = auto()
+    MONTH = auto()
+    YEAR = auto()
+
+
+def get_datetime_now() -> datetime:
+    """Get current UTC datetime"""
+    return datetime.now(UTC).replace(microsecond=0, tzinfo=None)
+
+
+def get_date_now() -> date:
+    """Get current UTC date"""
+    return get_datetime_now().today()
+
+
 class User(BaseModel):
     """User database model"""
 
+    created: DateTimeField = DateTimeField(default=get_datetime_now, constraints=[Default("CURRENT_TIMESTAMP")])
     id: AutoField = AutoField()
-    show_coin: BooleanField = BooleanField(default=True)
-    show_cost: BooleanField = BooleanField(default=False)
     user: CharField = CharField(max_length=MAX_LEN, unique=True)
 
     @property
-    def substances(self) -> list[Substance]:
+    def substances(self: User) -> list[Substance]:
         """Back reference"""
         return list(Substance.select().where(Substance.user == self.user))
 
     def __str__(self: User) -> str:
         """Show User data as string"""
-        return f"user={shorten(str(self.user))}, show_coin={self.show_coin}, show_cost={self.show_cost}"
+        return f"user={shorten(str(self.user))}, created={self.created}"
 
     def __repr__(self: User) -> str:
         """Show User data as string representation"""
@@ -145,16 +179,33 @@ class Substance(BaseModel):
     cost: DecimalField = DecimalFieldToDecimal(
         auto_round=True,
         decimal_places=2,
-        default=Decimal()
+        default=Decimal,
+        constraints=[Default(Decimal())],
     )
-    date: DateField = DateField()
+    cost_type: IntegerField = IntegerField(default=CostType.DAY.value, constraints=[Default(CostType.DAY.value)])
+    created_at: DateTimeField = DateTimeField(default=get_datetime_now, constraints=[Default("CURRENT_TIMESTAMP")])
+    date: DateField = DateField(default=get_date_now, constraints=[Default("CURRENT_DATE")])
     id: AutoField = AutoField()
     name: CharField = CharField(max_length=MAX_LEN, unique=True)
+    show_coin: BooleanField = BooleanField(default=False, constraints=[Default(False)])
+    show_cost: BooleanField = BooleanField(default=False, constraints=[Default(False)])
+    show_decimals: BooleanField = BooleanField(default=True, constraints=[Default(True)])
+    updated_at: DateTimeField = DateTimeField(default=get_datetime_now, constraints=[Default("CURRENT_TIMESTAMP")])
     user: ForeignKeyField = ForeignKeyField(User, backref="substances", field=User.user, on_delete="CASCADE")
+
+    @dataclass
+    class Meta:  # pyright: ignore [reportIncompatibleVariableOverride]
+        """Constraints"""
+
+        constraints: ClassVar[list] = [Check("NOT show_cost OR cost > 0")]
 
     def __str__(self: Substance) -> str:
         """Show Substance data as string"""
-        return f"name={self.name}, date={self.date}, cost={self.cost}"
+        return (
+            f"name={self.name}, created_at={self.created_at}, updated_at={self.updated_at}, date={self.date}, "
+            f"show_coin={self.show_coin}, show_cost={self.show_cost}, show_decimals={self.show_decimals}, "
+            f"cost={self.cost}, cost_type={CostType(self.cost_type)}"
+        )
 
     def __repr__(self: Substance) -> str:
         """Show Substance data as string representation"""
@@ -164,42 +215,39 @@ class Substance(BaseModel):
 class BaseValidation(ValidationModel):
     """Base domain model"""
 
-    model_config = ConfigDict(
-        extra="ignore",  # explicit
-        validate_by_name=True,
-    )
+    model_config = ConfigDict(extra="ignore", validate_by_name=True)
 
 
-type DecimalToFloat = Annotated[Decimal, PlainSerializer(float, return_type=float, when_used="json-unless-none")]
-
-
-class UserDTO(BaseValidation):
-    """User domain model"""
-
-    show_coin: bool = Field(alias="showCoin")
-    show_cost: bool = Field(alias="showCost")
-    user: StrictStr | None = Field(max_length=MAX_LEN, default=None)
-
-    def __str__(self: UserDTO) -> str:
-        """Show UserDTO data as string"""
-        return f"user={shorten(str(self.user))}, showCoin={self.show_coin}, showCost={self.show_cost}"
-
-    def __repr__(self: UserDTO) -> str:
-        """Show UserDTO data as string representation"""
-        return str(self)
+type DecimalToFloat = Annotated[Decimal, PlainSerializer(float, return_type=float)]
 
 
 class SubstanceDTO(BaseValidation):
     """Substance domain model"""
 
-    cost: DecimalToFloat | None = Field(decimal_places=2, default=Decimal())
+    cost: DecimalToFloat = Field(decimal_places=2, ge=0.0)
+    cost_type: StrictInt = Field(alias="costType", gt=0, le=len(CostType))
     date: date
     id: StrictInt | None = Field(gt=0, default=None)
     name: StrictStr = Field(max_length=MAX_LEN)
+    show_coin: bool = Field(alias="showCoin")
+    show_cost: bool = Field(alias="showCost")
+    show_decimals: bool = Field(alias="showDecimals")
+
+    @model_validator(mode="after")
+    def check_cost(self: SubstanceDTO) -> SubstanceDTO:
+        """Check cost"""
+        if self.show_cost and self.cost == 0:
+            msg: Final[str] = "Cost must be greater than 0"
+            raise ValueError(msg)
+        return self
 
     def __str__(self: SubstanceDTO) -> str:
         """Show SubstanceDTO data as string"""
-        return f"name={self.name}, date={self.date}, cost={self.cost}"
+        return (
+            f"name={self.name}, date={self.date}, "
+            f"showCoin={self.show_coin}, showCost={self.show_cost}, showDecimals={self.show_decimals}, "
+            f"cost={self.cost}, costType={CostType(self.cost_type).name.title()}"
+        )
 
     def __repr__(self: SubstanceDTO) -> str:
         """Show SubstanceDTO data as string representation"""
@@ -231,24 +279,28 @@ elif DEBUG:
 
 ROUTER: Final[FastAPI] = FastAPI(docs_url="/docs", openapi_url="/openapi.json", redoc_url="/redoc")
 ROUTER.add_middleware(
-    CORSMiddleware, allow_credentials=True, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 API: Final[APIRouter] = APIRouter(prefix="/api")
 
 
-type Json = int | float | None | dict[str, Json] | list[str] | list[Json] | str
+type Json = int | float | dict[str, Json] | list[str] | list[Json] | str | None
 
 
-@ROUTER.get("/cache", response_model=Json | None)
-async def get_cache_stats() -> Json | None:
+@ROUTER.get("/cache", response_model=Json)
+async def get_cache_stats() -> Json:  # noqa: C901 - 13/10
     """Get cache stats"""
     try:
 
         def get_cached_users(func: _cached_wrapper_info) -> list[str]:
             """Get cached users"""
             json: list[str] = []
-            if func.cache:
+            if func.cache is not None:
                 for item in list(func.cache.items()):
                     try:
                         u: str = item[0][1][1]  # before update (cached parameters)
@@ -256,6 +308,17 @@ async def get_cache_stats() -> Json | None:
                         u = item[0][0]  # after update (only user parameter)
                     if u not in json:
                         json.append(u)
+            return json
+
+        def get_cached_values(func: _cached_wrapper_info) -> list[str]:
+            """Get cached values"""
+            json: list[str] = []
+            if func.cache is not None:
+                for item in list(func.cache.values()):
+                    if item is not None:
+                        v: SubstanceDTO = item[0]
+                        if v not in json:
+                            json.append(f"{v.name} on {v.date}")
             return json
 
         def create_stats(func: _cached_wrapper_info) -> Json:
@@ -268,6 +331,7 @@ async def get_cache_stats() -> Json | None:
                     "Maximum Size": info.maxsize,
                     "Current Size": info.currsize,
                     "Cached Users": get_cached_users(func),
+                    "Cached Values": get_cached_values(func),
                 }
             }
 
@@ -285,6 +349,11 @@ async def clear_cache_stats() -> str:
     return "Cache cleared"
 
 
+set_env_vars()
+
+NA: Final[str] = "N/A"
+
+
 @ROUTER.get("/version", response_model=str | None)
 @cached(cache=LRUCache(maxsize=1), info=True)
 def get_version() -> str | None:
@@ -296,16 +365,15 @@ def get_version() -> str | None:
         raise ValueError(msg)
 
     try:
-        with Path("pyproject.toml").open("rb") as pyproject:
-            version: Final[str] = str(Box(load(pyproject), frozen_box=True).project.version)
-            if not Version.is_valid(version):
-                invalid_version(version)
-            if DEBUG:
-                log("Got version:", version)
-            return version
+        version: Final[str] = getenv("_VERSION", NA)
+        if not Version.is_valid(version):
+            invalid_version(version)
+        if DEBUG:
+            log("Got version:", version)
     except Exception:
         CONSOLE.print_exception()
         return None
+    return version
 
 
 def verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())]) -> str | None:
@@ -322,19 +390,23 @@ def verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(HTTP
         payload = decode(
             jwt=credentials.credentials,
             options={
-                "require": ["exp", "iat", "sub"],
+                "require": ["aud", "exp", "iat", "iss", "sub"],
+                "verify_aud": True,
                 "verify_exp": True,
                 "verify_iat": True,
+                "verify_iss": True,
                 "verify_signature": False,
                 "verify_sub": True,
             },
             algorithms=["none"],
             leeway=5,
+            audience=getenv("_NAME", NA),
+            issuer=getenv("ISSUER", NA),
         )
         user = payload.get("sub")
-    except InvalidTokenError:
+    except InvalidTokenError as e:
         if DEBUG:
-            CONSOLE.print_exception()
+            CONSOLE.print(f"[bold][red]❌ JWT Error:[/bold] {e}[/red]")
         invalid_jwt()
     except Exception:
         if DEBUG:
@@ -353,71 +425,60 @@ def validate_user(user: str) -> bool:
     try:
         TypeAdapter(Annotated[str, Field(max_length=MAX_LEN, strict=True)]).validate_python(user)
     except ValidationError:
-        CONSOLE.print("[bold red]❌ Validation Error:[/bold] Invalid user")
+        CONSOLE.print("[bold][red]❌ Validation Error:[/bold] Invalid user[/red]")
         return False
     return True
 
 
-def to_user_dto(user: User) -> UserDTO:
-    """Convert User to UserDTO"""
-    return UserDTO(**model_to_dict(user))
+def bad_request() -> None:
+    """Raise 400 error"""
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Bad Request")
 
 
-@API.get("/user", response_model=UserDTO | None)
+@API.get("/user", response_class=Response, response_model=None, status_code=status.HTTP_204_NO_CONTENT)
 @cached(cache=LRUCache(maxsize=2), info=True)
-def get_user(user: Annotated[str, Depends(verify_jwt)]) -> UserDTO | None:
+def get_user(user: Annotated[str, Depends(verify_jwt)]) -> None:
     """Get user"""
     if not validate_user(user):
-        return None
-    u: UserDTO | None = None
+        bad_request()
+    else:
+        try:
+            user_hash: Final[str] = get_user_hash(user)
+            created: Final[bool] = User.get_or_create(user=user_hash)[1]
+            if DEBUG:
+                short_user: Final[str] = shorten(user_hash)
+                if created:
+                    log(f"Created user: {short_user}")
+                else:
+                    log(f"Found user: {short_user}")
+        except Exception:
+            CONSOLE.print_exception()
+            bad_request()
+
+
+@API.delete("/user/delete/{user}", response_class=Response, response_model=None, status_code=status.HTTP_204_NO_CONTENT)
+async def delete_user(user: str) -> None:
+    """
+    Delete user
+
+    Args:
+        user (str): hashed user
+
+    Returns:
+        Response: 204 or 400 HTTP status code
+    """
     try:
-        user_hash: Final[str] = get_user_hash(user)
-        created: Final[tuple[User, bool]] = User.get_or_create(user=user_hash)
-        u = to_user_dto(created[0])
-        if not u:
-            return None
-        if DEBUG:
-            short_user: Final[str] = shorten(user_hash)
-            if created[1]:
-                log(f"User created: {short_user}")
-            else:
-                log(f"Getting user: {short_user}")
-        u.user = None  # sanitize user
+        u: Final[User | None] = User.get_or_none(User.user == user)
+        if u is None:
+            bad_request()
+        else:
+            get_user.cache_clear()
+            u.delete_instance()
+            if DEBUG:
+                log(f"Deleted user: {get_user_hash(user)}")
     except Exception:
         CONSOLE.print_exception()
-        u = None
-    return u
-
-
-def validate_data(data: UserDTO) -> bool:
-    """Validate data"""
-    try:
-        TypeAdapter(UserDTO).validate_python(data)
-    except ValidationError:
-        CONSOLE.print("[bold red]❌ Validation Error:[/bold] Invalid UserDTO")
-        return False
-    return True
-
-
-@API.put("/user/update", response_model=UserDTO | None)
-async def update_user(data: UserDTO, user: Annotated[str, Depends(verify_jwt)]) -> UserDTO | None:
-    """Update user"""
-    if not validate_data(data) or not validate_user(user):
-        return None
-    try:
-        user_hash: Final[str] = get_user_hash(user)
-        if DEBUG:
-            log(f"Updating user data for {shorten(user_hash)}:", str(data))
-        get_user.cache_clear()
-        return to_user_dto(
-            User.update(show_coin=data.show_coin, show_cost=data.show_cost)
-            .where(User.user == user_hash)
-            .returning(User)
-            .execute()[0]
-        )
-    except Exception:
-        CONSOLE.print_exception()
-        return None
+        bad_request()
 
 
 def to_substance_dto(substance: Substance) -> SubstanceDTO:
@@ -426,7 +487,7 @@ def to_substance_dto(substance: Substance) -> SubstanceDTO:
 
 
 @API.get("/substances", response_model=list[SubstanceDTO] | None)
-@cached(cache=LRUCache(maxsize=3), info=True)
+@cached(cache=LRUCache(maxsize=5), info=True)
 def get_substances(user: Annotated[str, Depends(verify_jwt)]) -> list[SubstanceDTO] | None:
     """Get all substances"""
     if not validate_user(user):
@@ -434,7 +495,7 @@ def get_substances(user: Annotated[str, Depends(verify_jwt)]) -> list[SubstanceD
     try:
         user_hash: Final[str] = get_user_hash(user)
         u: Final[User | None] = User.get_or_none(User.user == user_hash)
-        if not u:
+        if u is None:
             return None
         substances: Final[list[Substance]] = u.substances
         count: Final[int] = len(substances)
@@ -464,12 +525,12 @@ def validate_substance(substance: SubstanceDTO) -> bool:
     try:
         TypeAdapter(SubstanceDTO).validate_python(substance)
     except ValidationError:
-        CONSOLE.print("[bold red]❌ Validation Error:[/bold] Invalid SubstanceDTO")
+        CONSOLE.print("[bold][red]❌ Validation Error:[/bold] Invalid SubstanceDTO[/red]")
         return False
     return True
 
 
-@API.post("/substances/add", response_model=SubstanceDTO | None)
+@API.post("/substances/add", response_model=SubstanceDTO | None, status_code=status.HTTP_201_CREATED)
 async def add_substance(substance: SubstanceDTO, user: Annotated[str, Depends(verify_jwt)]) -> SubstanceDTO | None:
     """Add substance"""
     if not validate_substance(substance) or not validate_user(user):
@@ -482,7 +543,9 @@ async def add_substance(substance: SubstanceDTO, user: Annotated[str, Depends(ve
         if DEBUG:
             log(f"Adding substance for {shorten(user_hash)}:", str(s))
         get_substances.cache_clear()
-        return to_substance_dto(Substance.create(cost=s.cost, date=s.date, name=s.name, user=user_hash))
+        return to_substance_dto(
+            Substance.create(cost=s.cost, name=s.name, user=user_hash, cost_type=s.cost_type, date=s.date)
+        )
     except Exception:
         CONSOLE.print_exception()
         return None
@@ -493,7 +556,7 @@ def validate_pk(pk: int) -> bool:
     try:
         TypeAdapter(Annotated[int, Field(gt=0, strict=True)]).validate_python(pk)
     except ValidationError:
-        CONSOLE.print("[bold red]❌ Validation Error:[/bold] Invalid PK")
+        CONSOLE.print("[bold][red]❌ Validation Error:[/bold] Invalid PK[/red]")
         return False
     return True
 
@@ -505,7 +568,7 @@ async def get_substance(pk: int, user: Annotated[str, Depends(verify_jwt)]) -> S
         return None
     try:
         substance: Final[Substance | None] = Substance.get_or_none(Substance.id == pk)
-        if not substance:
+        if substance is None:
             return None
         if DEBUG:
             log("Getting substance ID", str(pk))
@@ -523,9 +586,9 @@ async def delete_substance(pk: int, user: Annotated[str, Depends(verify_jwt)]) -
     try:
         user_hash: Final[str] = get_user_hash(user)
         substance: Final[Substance | None] = Substance.get_or_none(Substance.id == pk, Substance.user == user_hash)
-        if substance:
+        if substance is not None:
             if DEBUG:
-                log(f"Deleting substance for {shorten(user_hash)}:", str(substance))
+                log(f"Deleting substance {substance.name} for {shorten(user_hash)}")
             get_substances.cache_clear()
             substance.delete_instance()
         else:
@@ -554,9 +617,18 @@ async def update_substance(
             log(f"Updating substance for {shorten(user_hash)}:", str(s))
         get_substances.cache_clear()
         return to_substance_dto(
-            Substance.update(date=s.date, cost=s.cost)
+            Substance.update(
+                cost=s.cost,
+                cost_type=s.cost_type,
+                date=s.date,
+                name=s.name,
+                show_coin=s.show_coin,
+                show_cost=s.show_cost,
+                show_decimals=s.show_decimals,
+                updated_at=get_datetime_now(),
+            )
+            .where(Substance.id == s.id)
             .where(Substance.user == user_hash)
-            .where(Substance.name == s.name)
             .returning(Substance)
             .execute()[0]
         )
@@ -568,10 +640,15 @@ async def update_substance(
 ROUTER.include_router(API)
 
 
-@ROUTER.get("/favicon.ico", include_in_schema=False)
-async def get_favicon() -> Response:
+@ROUTER.get(
+    "/favicon.ico",
+    include_in_schema=False,
+    response_class=Response,
+    response_model=None,
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def get_favicon() -> None:
     """Ignore favicon"""
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 def validate_port(port: int) -> bool:
@@ -579,7 +656,7 @@ def validate_port(port: int) -> bool:
     try:
         TypeAdapter(Annotated[int, Field(ge=1024, le=65535, strict=True)]).validate_python(port)
     except ValidationError:
-        CONSOLE.print("[bold red]❌ Validation Error:[/bold] Port must be 1024-65535")
+        CONSOLE.print("[bold][red]❌ Validation Error:[/bold] Port must be 1024-65535[/red]")
         return False
     return True
 
@@ -603,7 +680,7 @@ except Exception as e:
 get_version()  # precache
 
 if __name__ == "__main__":
-    CONSOLE.print("✨ Running local server...")
+    CONSOLE.print("✨ Running local server…")
     if DEBUG:
         CONSOLE.print("🐞 Debug is ON")
     run("api:ROUTER", host="0.0.0.0", port=PORT, reload=True)  # noqa: S104

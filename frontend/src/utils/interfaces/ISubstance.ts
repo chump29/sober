@@ -1,28 +1,53 @@
 import { default as dayjs } from "dayjs"
 import { type InferInput, object } from "valibot"
 
-import { CostSchema, DATE_FORMAT, DateSchema, IdSchema, NameSchema } from "../schemas.ts"
+import {
+  BooleanSchema,
+  CostSchema,
+  CostType,
+  CostTypeSchema,
+  DATE_FORMAT,
+  DateSchema,
+  IdSchema,
+  NameSchema
+} from "../schemas.ts"
 
 /**
  * Validate an {@link ISubstance} object
- * @constant
- * @property {null | number} cost
+ * @constant {SubstanceSchema}
+ * @property {number} cost
  * @see {@link CostSchema}
+ * @property {CostType} costType
+ * @see {@link CostTypeSchema}
  * @property {string} date
  * @see {@link DateSchema}
- * @property {number} id
+ * @property {undefined | number} id
  * @see {@link IdSchema}
  * @property {string} name
  * @see {@link NameSchema}
- * @returns {ISubstance} {@link ISubstance} object
+ * @property {boolean} showCoin
+ * @see {@link BooleanSchema}
+ * @property {boolean} showCost
+ * @see {@link BooleanSchema}
+ * @property {boolean} showDecimals
+ * @see {@link BooleanSchema}
  */
 const SubstanceSchema = object({
   cost: CostSchema,
+  costType: CostTypeSchema,
   date: DateSchema,
   id: IdSchema,
-  name: NameSchema
+  name: NameSchema,
+  showCoin: BooleanSchema,
+  showCost: BooleanSchema,
+  showDecimals: BooleanSchema
 })
 
+/**
+ * SubstanceSchema type
+ * @type {SubstanceSchema}
+ * @see {@link SubstanceSchema}
+ */
 type SubstanceSchema = typeof SubstanceSchema
 
 /**
@@ -32,9 +57,20 @@ type SubstanceSchema = typeof SubstanceSchema
  */
 type ISubstance = InferInput<SubstanceSchema>
 
-const defaultSubstance = {
+/**
+ * Default SubstanceSchema values
+ * @constant {ISubstance}
+ * @see {@link ISubstance}
+ */
+const defaultSubstance: ISubstance = {
   cost: 0,
-  date: dayjs().format(DATE_FORMAT)
-} as ISubstance
+  costType: CostType.Day,
+  date: dayjs().format(DATE_FORMAT),
+  id: undefined,
+  name: "",
+  showCoin: false,
+  showCost: false,
+  showDecimals: true
+} satisfies ISubstance
 
 export { defaultSubstance, type ISubstance, SubstanceSchema }

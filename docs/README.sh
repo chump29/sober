@@ -54,7 +54,7 @@ for _env in frontend backend; do
     export _vite
     echo -e " • vite: $_vite"
 
-    echo -e "\n🧪 Running $_env tests..."
+    echo -e "\n🧪 Running $_env tests…"
     bun run --bun test:coverage
 
     _coverage=0
@@ -64,7 +64,7 @@ for _env in frontend backend; do
     export _coverage
     echo -e "\n☂️  Coverage: $_coverage%"
   else
-  _version=$(yq '.project.version // "❓"' pyproject.toml)
+    _version=$(yq '.project.version // "❓"' pyproject.toml)
     export _version
     echo -e " • Version: $_version"
 
@@ -124,7 +124,7 @@ for _env in frontend backend; do
     export _uv
     echo -e " • uv: $_uv"
 
-    echo -e "\n🧪 Running $_env tests..."
+    echo -e "\n🧪 Running $_env tests…"
     ./test.sh
 
     _coverage=0
@@ -139,12 +139,12 @@ for _env in frontend backend; do
 
   popd > /dev/null
 
-  echo -e "\n🛠️  Creating $_env README.md...\n"
+  echo -e "\n🛠️  Creating $_env README.md…\n"
 
   envsubst < README-$_env.template.md > ../$_env/README.md
 done
 
-echo -e "🛠️  Creating README.md...\n"
+echo -e "🛠️  Creating README.md…\n"
 
 envsubst < README.template.md > ../README.md
 

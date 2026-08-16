@@ -2,12 +2,16 @@ import { describe, expect, test } from "bun:test"
 
 import { fakerEN_US as fake } from "@faker-js/faker"
 import { default as dayjs } from "dayjs"
+import { expectTypeOf } from "expect-type"
 import { default as httpMethods } from "http-methods-constants"
 import { type SafeParseResult, safeParse } from "valibot"
 
 import {
   BooleanSchema,
+  CostInputSchema,
   CostSchema,
+  CostType,
+  CostTypeSchema,
   DATE_FORMAT,
   DateSchema,
   IdSchema,
@@ -85,10 +89,7 @@ describe("schemas", (): void => {
         `${fake.number.int({
           max: 5,
           min: 1
-        })}${fake.helpers.arrayElement<string>([
-          "s",
-          "m"
-        ])}`
+        })}${fake.helpers.arrayElement<string>(["s", "m"])}`
       ).success
     ).toBeTrue()
   })
@@ -106,6 +107,17 @@ describe("schemas", (): void => {
 
   test("CostSchema - fail", (): void => {
     const c: SafeParseResult<CostSchema> = safeParse(CostSchema, -1)
+
+    expect(c.success).toBeFalse()
+    expect(c.issues?.[0].message).toContain(">=0")
+  })
+
+  test("CostInputSchema", (): void => {
+    expect(safeParse(CostInputSchema, fake.commerce.price()).success).toBeTrue()
+  })
+
+  test("CostInputSchema - fail", (): void => {
+    const c: SafeParseResult<CostInputSchema> = safeParse(CostInputSchema, "-1")
 
     expect(c.success).toBeFalse()
     expect(c.issues?.[0].message).toContain(">=0")
@@ -178,5 +190,20 @@ describe("schemas", (): void => {
 
     expect(m.success).toBeFalse()
     expect(m.issues?.[0].message).toStartWith("Invalid type")
+  })
+
+  test("CostType", (): void => {
+    expectTypeOf(fake.helpers.objectValue(CostType)).toEqualTypeOf<CostType>()
+  })
+
+  test("CostTypeSchema", (): void => {
+    expect(safeParse(CostTypeSchema, fake.helpers.enumValue(CostType)).success).toBeTrue()
+  })
+
+  test("CostTypeSchema - fail", (): void => {
+    const c: SafeParseResult<CostTypeSchema> = safeParse(CostTypeSchema, -1)
+
+    expect(c.success).toBeFalse()
+    expect(c.issues?.[0].message).toStartWith("Invalid type")
   })
 })
