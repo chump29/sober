@@ -1,7 +1,7 @@
 import { type ChangeEvent, type JSX, type KeyboardEvent, type RefObject, useRef } from "react"
 
 import { type ComboboxData, Divider, Modal, NumberInput, Select, Stack, Switch, Tooltip } from "@mantine/core"
-import { useDebouncedCallback } from "@mantine/hooks"
+import { useDebouncedCallback, useForceUpdate } from "@mantine/hooks"
 
 import { default as httpMethods } from "http-methods-constants"
 import { default as ms } from "ms"
@@ -32,6 +32,8 @@ const Settings = ({
 }): JSX.Element => {
   const costTypeRef: RefObject<HTMLInputElement | null> = useRef<HTMLInputElement | null>(null)
   const costRef: RefObject<HTMLInputElement | null> = useRef<HTMLInputElement | null>(null)
+
+  const forceUpdate: () => void = useForceUpdate()
 
   const handleSave = async (
     substance: ISubstance,
@@ -143,6 +145,12 @@ const Settings = ({
     }
   }
 
+  const handleClose = (): void => {
+    closeSettings()
+
+    forceUpdate()
+  }
+
   const getData = (): ComboboxData<CostType> => {
     const types: ISelectDisplay[] = []
     for (const [k, v] of Object.entries(CostType)) {
@@ -157,7 +165,7 @@ const Settings = ({
   return (
     <Modal.Root
       centered={true}
-      onClose={closeSettings}
+      onClose={handleClose}
       opened={openedSettings}
       size="auto"
       transitionProps={{
