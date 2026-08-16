@@ -89,6 +89,10 @@ const Settings = ({
 
         substance.showCost = c
 
+        if (substance.cost === 0) {
+          return
+        }
+
         break
       }
       case SaveType.SHOW_DECIMALS: {
