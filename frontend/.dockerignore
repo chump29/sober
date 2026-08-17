@@ -1,13 +1,15 @@
+.dockerignore
 .env.*
 .htmlvalidate.json
 .husky/
 .npmrc
 .stylelintrc
-*.md
 *.sh
 biome.json
 coverage/
 dist/
+Dockerfile
 node_modules/
+README.md
 
 !healthcheck.sh

@@ -117,8 +117,4 @@ describe("Settings - index", (): void => {
 
     expect(fetch).toHaveBeenCalledTimes(++times)
   })
-
-  // ! TODO: costType
-
-  // ! TODO: cost
 })

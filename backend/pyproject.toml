@@ -26,7 +26,7 @@ dependencies = [
     "pydantic>=2.13.4",
     "pyjwt[crypto]>=2.13.0",
     "python-box>=7.4.1",
-    "python-dotenv>=1.2.2",
+    "python-dotenv>=1.2.3",
     "rich>=15.0.0",
     "semver>=3.0.4",
 ]
@@ -163,6 +163,7 @@ source-exclude = [
     ".python-version",
     ".venv/**/*",
     "*.sh",
+    "api.rest",
     "coverage/*",
     "db/*",
     "Dockerfile",

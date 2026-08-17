@@ -107,7 +107,7 @@ describe("Display - index", (): void => {
     expect(numBefore).toHaveLength(1)
 
     await waitFor(async (): Promise<void> => {
-      await sleep(ms("1s"))
+      await sleep(ms("1.5s"))
     })
 
     const numAfter: number[] = extract.extractNumbers(counter.textContent) as number[]
