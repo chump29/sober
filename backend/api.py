@@ -9,7 +9,7 @@ from datetime import UTC, date, datetime
 from decimal import Decimal
 from enum import IntEnum, auto
 from hashlib import sha256
-from os import getenv, getpid, kill
+from os import getenv, getpid, kill, path
 from pathlib import Path
 from signal import SIGINT, SIGKILL, SIGTERM, Signals, signal
 from typing import TYPE_CHECKING, Annotated, ClassVar, Final
@@ -76,7 +76,12 @@ except ValidationError:
 
 DB_PATH: Final[str] = "./db/"
 DB_FILE: Final[str] = getenv("DB_FILE", "sober.db")
-DB_STR: Final[str] = f"{DB_PATH}{DB_FILE}"
+DB_STR: Final[str] = "./" + path.normpath(f"{DB_PATH}/{DB_FILE}")
+
+if not DB_STR.startswith(DB_PATH):
+    MSG: Final[str] = "Invalid DB path"
+    raise ValueError(MSG)
+
 DB: Final[SqliteDatabase] = SqliteDatabase(
     DB_STR,
     pragmas={
