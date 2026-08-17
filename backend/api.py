@@ -263,12 +263,12 @@ def log(msg: str, info: str = "") -> None:
         CONSOLE.log(f"{s}: [cyan]{info}[/cyan]")
 
 
-if not Path(DB_PATH).exists():
+if not Path(DB_PATH).resolve().exists():
     if DEBUG:
         CONSOLE.print("📂 Creating path", DB_PATH)
     Path(DB_PATH).mkdir(parents=True)
 
-if not Path(DB_STR).exists():
+if not Path(DB_STR).resolve().exists():
     if DEBUG:
         CONSOLE.print("🛢️  Creating database", DB_FILE)
     User.create_table()
