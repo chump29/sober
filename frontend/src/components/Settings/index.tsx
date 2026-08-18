@@ -1,12 +1,13 @@
 import { type ChangeEvent, type JSX, type KeyboardEvent, type RefObject, useRef } from "react"
 
 import { type ComboboxData, Divider, Modal, NumberInput, Select, Stack, Switch, Tooltip } from "@mantine/core"
-import { useDebouncedCallback, useForceUpdate } from "@mantine/hooks"
+import { useDebouncedCallback } from "@mantine/hooks"
 
 import { default as httpMethods } from "http-methods-constants"
 import { default as ms } from "ms"
 import { TbCurrencyDollar as IconCurrencyDollar } from "react-icons/tb"
 import { type KeyedMutator } from "swr"
+import { match } from "ts-pattern"
 
 import { fetchClient } from "../../api/index.ts"
 import { getKeyByValue, handleError, SaveType, validate } from "../../utils/index.ts"
@@ -33,8 +34,6 @@ const Settings = ({
   const costTypeRef: RefObject<HTMLInputElement | null> = useRef<HTMLInputElement | null>(null)
   const costRef: RefObject<HTMLInputElement | null> = useRef<HTMLInputElement | null>(null)
 
-  const forceUpdate: () => void = useForceUpdate()
-
   const handleSave = async (
     substance: ISubstance,
     type: SaveType,
@@ -44,75 +43,67 @@ const Settings = ({
       return
     }
 
-    switch (type) {
-      case SaveType.COST: {
+    const res: string | undefined | null = match<SaveType, string | undefined | null>(type)
+      .returnType<string | undefined | null>()
+      .with(SaveType.COST, (): string | undefined | null => {
         const c: number | null = validate<number, CostSchema>(value as number, CostSchema)
-        if (c === null) {
-          handleError("Invalid Cost")
 
-          return
+        if (c === null) {
+          return "Invalid Cost"
         }
 
         substance.cost = c
-
-        break
-      }
-      case SaveType.COST_TYPE: {
+      })
+      .with(SaveType.COST_TYPE, (): string | undefined | null => {
         const c: CostType | null = validate<CostType, CostTypeSchema>(value as CostType, CostTypeSchema)
-        if (!c) {
-          handleError("Invalid CostType")
 
-          return
+        if (c === null) {
+          return "Invalid CostType"
         }
 
         substance.costType = c
-
-        break
-      }
-      case SaveType.SHOW_COIN: {
+      })
+      .with(SaveType.SHOW_COIN, (): string | undefined | null => {
         const c: boolean | null = validate<boolean, BooleanSchema>(value as boolean, BooleanSchema)
-        if (c === null) {
-          handleError("Invalid ShowCoin")
 
-          return
+        if (c === null) {
+          return "Invalid ShowCoin"
         }
 
         substance.showCoin = c
-
-        break
-      }
-      case SaveType.SHOW_COST: {
+      })
+      .with(SaveType.SHOW_COST, (): string | undefined | null => {
         const c: boolean | null = validate<boolean, BooleanSchema>(value as boolean, BooleanSchema)
-        if (c === null) {
-          handleError("Invalid ShowCost")
 
-          return
+        if (c === null) {
+          return "Invalid ShowCost"
         }
 
         substance.showCost = c
 
         if (substance.cost === 0) {
-          return
+          return null
         }
-
-        break
-      }
-      case SaveType.SHOW_DECIMALS: {
+      })
+      .with(SaveType.SHOW_DECIMALS, (): string | undefined | null => {
         const d: boolean | null = validate<boolean, BooleanSchema>(value as boolean, BooleanSchema)
-        if (d === null) {
-          handleError("Invalid ShowDecimals")
 
-          return
+        if (d === null) {
+          return "Invalid ShowDecimals"
         }
 
         substance.showDecimals = d
+      })
+      .otherwise((): string | undefined | null => "Invalid SaveType")
 
-        break
-      }
-      default:
-        handleError("Invalid SaveType")
+    if (res === null) {
+      return
+    }
 
-        return
+    if (res) {
+      handleError(res)
+
+      return
     }
 
     await fetchClient<ISubstance[]>({
@@ -145,12 +136,6 @@ const Settings = ({
     }
   }
 
-  const handleClose = (): void => {
-    closeSettings()
-
-    forceUpdate()
-  }
-
   const getData = (): ComboboxData<CostType> => {
     const types: ISelectDisplay[] = []
     for (const [k, v] of Object.entries(CostType)) {
@@ -165,7 +150,7 @@ const Settings = ({
   return (
     <Modal.Root
       centered={true}
-      onClose={handleClose}
+      onClose={closeSettings}
       opened={openedSettings}
       size="auto"
       transitionProps={{

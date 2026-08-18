@@ -23,7 +23,7 @@
   "type": "module",
   "scripts": {
     "build": "bun run --bun vite build",
-    "check": "bunx --bun depcheck --ignores=\"@types/*,bun:*,html-validate,lcov-total,rimraf,stylelint-config-standard\" || :",
+    "check": "bunx --bun depcheck --ignores=\"@types/*,bun,bun:*,html-validate,lcov-total,rimraf,stylelint-config-standard\" || :",
     "clean": "bun run --bun rimraf bun.lock dist tests/coverage",
     "dev": "bun run --bun vite",
     "preinstall": "bunx --bun only-allow bun",
@@ -94,7 +94,7 @@
     "@postfmly/config": "^1.4.44",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.2",
-    "@testing-library/user-event": "^14.6.4",
+    "@testing-library/user-event": "^14.6.5",
     "@types/big.js": "^7.0.0",
     "@types/ms": "^2.1.0",
     "@types/react": "^19.2.18",

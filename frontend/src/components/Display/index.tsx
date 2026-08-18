@@ -231,6 +231,8 @@ const Display = (): JSX.Element => {
           return
         }
 
+        handleSetCost(substance.cost)
+
         if (fastIsEqual(substance, selectedSubstance)) {
           if (DEBUG) {
             info("Found same substance… skipping")
@@ -240,8 +242,6 @@ const Display = (): JSX.Element => {
         }
 
         setSelectedSubstance(substance)
-
-        handleSetCost(substance.cost)
 
         if (DEBUG) {
           info(`Setting substance to: ${substance.name} on ${substance.date}`)
@@ -488,8 +488,7 @@ const Display = (): JSX.Element => {
     })
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies(init): not a dependency
-  // biome-ignore lint/correctness/useExhaustiveDependencies(setDisplay): not a dependency
+  // biome-ignore lint/correctness/useExhaustiveDependencies: only watching selectedSubstance
   useEffect((): ReturnType<EffectCallback> => {
     init()
 
@@ -498,7 +497,7 @@ const Display = (): JSX.Element => {
     }, INTERVAL_MS)
 
     return (): void => clearInterval(interval)
-  }, [selectedSubstanceDate])
+  }, [getSelectedSubstance()])
 
   return (
     <>
