@@ -1,4 +1,4 @@
-# ![Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ](../frontend/public/sober.webp) Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
+# ![Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ](./frontend/public/sober.webp) Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ
 
 ### Sobriety counter <!-- markdownlint-disable-line MD001 -->
 
