@@ -11,6 +11,7 @@ import {
   getKeyByValue,
   getVersion,
   handleError,
+  type Nullable,
   SaveType,
   UpdateType,
   validate
@@ -21,7 +22,7 @@ describe("utils - index", (): void => {
   test("findElement", (): void => {
     document.body.innerHTML = '<div id="test">TEST</div>'
 
-    const div: HTMLElement | null = findElement("#test")
+    const div: Nullable<HTMLElement> = findElement("#test")
 
     expect(div).not.toBeNull()
     expect(div?.textContent).toBe("TEST")
@@ -84,7 +85,7 @@ describe("utils - index", (): void => {
   })
 
   test("validate", (): void => {
-    const s: string | null = validate<string, StringSchema>("test", StringSchema)
+    const s: Nullable<string> = validate<string, StringSchema>("test", StringSchema)
 
     expect(s).not.toBeNull()
     expect(s).toBe("test")
@@ -93,20 +94,20 @@ describe("utils - index", (): void => {
   test("validate - array", (): void => {
     const arr: string[] = ["test"]
 
-    const s: string[] | null = validate<string[], StringSchema>(arr, StringSchema)
+    const s: Nullable<string[]> = validate<string[], StringSchema>(arr, StringSchema)
 
     expect(s).not.toBeNull()
     expect(s).toEqual(arr)
   })
 
   test("validate - null", (): void => {
-    const s: string | null = validate<string, StringSchema>(null, StringSchema)
+    const s: Nullable<string> = validate<string, StringSchema>(null, StringSchema)
 
     expect(s).toBeNull()
   })
 
   test("validate - fail", (): void => {
-    const s: string | null = validate<string, StringSchema>(" ", StringSchema)
+    const s: Nullable<string> = validate<string, StringSchema>(" ", StringSchema)
 
     expect(s).toBeNull()
   })

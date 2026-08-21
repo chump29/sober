@@ -6,13 +6,13 @@ import { SubstanceSchema } from "./ISubstance.ts"
 /**
  * Validate an {@link IFetchClient} object
  * @constant {FetchClientSchema}
- * @property {ISubstance | undefined} [body]
+ * @property {Optional<ISubstance>} [body]
  * @see {@link SubstanceSchema}
  * @property {string} endpoint
  * @see {@link StringSchema}
  * @property {string} method
  * @see {@link MethodSchema}
- * @property {string | undefined} [user]
+ * @property {Optional<string>} [user]
  * @see {@link StringSchema}
  */
 const FetchClientSchema = object({

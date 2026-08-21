@@ -15,7 +15,7 @@ import { titleCase } from "title-case"
 
 import { fetchClient } from "../../api/index.ts"
 import { displayStoreActions } from "../../utils/displayStore.ts"
-import { DEBUG, validate } from "../../utils/index.ts"
+import { DEBUG, type Nullable, type Optional, validate } from "../../utils/index.ts"
 import { type IFetchClient } from "../../utils/interfaces/IFetchClient.ts"
 import { defaultSubstance, type ISubstance, SubstanceSchema } from "../../utils/interfaces/ISubstance.ts"
 import { type ISubstanceDisplay } from "../../utils/interfaces/ISubstanceDisplay.ts"
@@ -29,12 +29,12 @@ const Substances = ({
   substances,
   user
 }: {
-  allSubstances: ISubstance[] | undefined
+  allSubstances: Optional<ISubstance[]>
   refreshSubstances: KeyedMutator<ISubstance[]>
   selectedSubstance: ISubstance
   setSelectedSubstance: (data: ISubstance) => void
   substances: ISubstanceDisplay[]
-  user: string | null
+  user: Nullable<string>
 }): JSX.Element => {
   const { getSelectedSubstance } = displayStoreActions()
 
@@ -43,7 +43,7 @@ const Substances = ({
   const substanceField = useField<string>({
     initialValue: "",
     validateOnChange: true,
-    validate: (s: string): string | null => (s.length > 0 ? null : "Must enter a substance")
+    validate: (s: string): Nullable<string> => (s.length > 0 ? null : "Must enter a substance")
   })
 
   const substanceValue: RefObject<string> = useRef<string>("")
@@ -66,8 +66,8 @@ const Substances = ({
         endpoint: "substances/add",
         method: httpMethods.POST,
         user
-      } satisfies IFetchClient).then((data: ISubstance | null): void => {
-        const s: ISubstance | null = validate<ISubstance, SubstanceSchema>(data, SubstanceSchema)
+      } satisfies IFetchClient).then((data: Nullable<ISubstance>): void => {
+        const s: Nullable<ISubstance> = validate<ISubstance, SubstanceSchema>(data, SubstanceSchema)
         if (!s) {
           return
         }
@@ -81,7 +81,7 @@ const Substances = ({
         resolve()
       })
     })
-      .then(async (): Promise<ISubstance[] | undefined> => await refreshSubstances())
+      .then(async (): Promise<Optional<ISubstance[]>> => await refreshSubstances())
       .then((): string =>
         showNotification({
           autoClose: ms("7.5s"),
@@ -97,7 +97,7 @@ const Substances = ({
   const handleSubstanceChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const substanceName: string = e.target.value
 
-    let s: string | null = ""
+    let s: Nullable<string> = ""
     if (substanceName.trim().length > 0) {
       s = validate<string, NameSchema>(substanceName, NameSchema)
     }
@@ -140,7 +140,7 @@ const Substances = ({
         })
       })
         .then((): string => hideNotification("setDate"))
-        .then(async (): Promise<ISubstance[] | undefined> => await refreshSubstances())
+        .then(async (): Promise<Optional<ISubstance[]>> => await refreshSubstances())
 
       handleClose()
 
@@ -191,7 +191,7 @@ const Substances = ({
   }
 
   const handleChange = (name: string): void => {
-    const substance: ISubstance | undefined = allSubstances?.find((s: ISubstance): boolean => s.name === name)
+    const substance: Optional<ISubstance> = allSubstances?.find((s: ISubstance): boolean => s.name === name)
     if (!substance) {
       return
     }
@@ -225,7 +225,7 @@ const Substances = ({
         endpoint: `substances/delete/${selectedSubstance.id}`,
         method: httpMethods.DELETE,
         user
-      } satisfies IFetchClient).then((data: boolean | null): void => {
+      } satisfies IFetchClient).then((data: Nullable<boolean>): void => {
         if (!data) {
           // * NOTE: catches false and null
           return
@@ -237,7 +237,7 @@ const Substances = ({
 
         resolve()
       })
-    }).then(async (): Promise<ISubstance[] | undefined> => await refreshSubstances())
+    }).then(async (): Promise<Optional<ISubstance[]>> => await refreshSubstances())
   }
 
   return (

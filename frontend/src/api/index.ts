@@ -1,16 +1,16 @@
 import { default as ms } from "ms"
 
-import { FetchError, handleError, validate } from "../utils/index.ts"
+import { default as env } from "../../env.config.ts"
+import { FetchError, handleError, type Nullable, type Optional, validate } from "../utils/index.ts"
 import { FetchClientSchema, type IFetchClient } from "../utils/interfaces/IFetchClient.ts"
 import { getHeaders } from "../utils/jwt.ts"
 import { TimeoutSchema, UrlSchema } from "../utils/schemas.ts"
 
-const API_URL: string = validate<string, UrlSchema>(import.meta.env.VITE_API_URL, UrlSchema) ?? ""
-const API_TIMEOUT: number =
-  validate<string, TimeoutSchema, number>(import.meta.env.VITE_API_TIMEOUT, TimeoutSchema) ?? ms("2s")
+const API_URL: string = validate<string, UrlSchema>(env.VITE_API_URL, UrlSchema) ?? ""
+const API_TIMEOUT: number = validate<Optional<number>, TimeoutSchema>(env.VITE_API_TIMEOUT, TimeoutSchema) ?? ms("2s")
 
-const fetchClient = async <R = null>(settings: IFetchClient): Promise<R | null> => {
-  const s: IFetchClient | null = validate<IFetchClient, FetchClientSchema>(settings, FetchClientSchema)
+const fetchClient = async <R = null>(settings: IFetchClient): Promise<Nullable<R>> => {
+  const s: Nullable<IFetchClient> = validate<IFetchClient, FetchClientSchema>(settings, FetchClientSchema)
   if (!s) {
     handleError("Invalid fetch settings")
     return null
@@ -30,7 +30,7 @@ const fetchClient = async <R = null>(settings: IFetchClient): Promise<R | null> 
   endpoint += s.endpoint
 
   return await fetch(endpoint, config)
-    .then(async (response: Response): Promise<R | null> => {
+    .then(async (response: Response): Promise<Nullable<R>> => {
       if (!response.ok) {
         throw new FetchError(response)
       }
@@ -38,7 +38,7 @@ const fetchClient = async <R = null>(settings: IFetchClient): Promise<R | null> 
       const text: string = await response.text()
       return text.length > 0 ? JSON.parse(text) : null
     })
-    .then((data: R | null): R | null => {
+    .then((data: Nullable<R>): Nullable<R> => {
       if (data === null) {
         return null
       }

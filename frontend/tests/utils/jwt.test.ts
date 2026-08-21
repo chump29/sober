@@ -4,14 +4,16 @@ import { fakerEN_US as fake } from "@faker-js/faker"
 import { default as dayjs } from "dayjs"
 import { UnsecuredJWT } from "jose"
 
+import { default as env } from "../../env.config.ts"
 import { name } from "../../package.json" with { type: "json" }
+import { type Optional } from "../../src/utils/index.ts"
 import { getHeaders } from "../../src/utils/jwt.ts"
 
 describe("jwt", (): void => {
   test("getHeaders", (): void => {
     const user: string = fake.person.firstName()
 
-    const headers: Headers | undefined = getHeaders(user)
+    const headers: Optional<Headers> = getHeaders(user)
 
     expect(headers).not.toBeUndefined()
 
@@ -25,11 +27,11 @@ describe("jwt", (): void => {
     expect(exp).toBeLessThanOrEqual(EXPIRE_TIME)
     expect(payload.sub).toBe(user)
     expect(payload.iss).toBe(name)
-    expect(payload.aud).toBe(import.meta.env.VITE_AUDIENCE)
+    expect(payload.aud).toBe(env.VITE_AUDIENCE)
   })
 
   test("getHeaders - fail", (): void => {
-    const headers: Headers | undefined = getHeaders("")
+    const headers: Optional<Headers> = getHeaders("")
 
     expect(headers).toBeUndefined()
   })

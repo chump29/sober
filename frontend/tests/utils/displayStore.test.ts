@@ -7,6 +7,7 @@ import { default as dayjs } from "dayjs"
 import { default as duration } from "dayjs/plugin/duration"
 
 import { displayStore, displayStoreActions, round } from "../../src/utils/displayStore.ts"
+import { type Nullable } from "../../src/utils/index.ts"
 import { type ICoin } from "../../src/utils/interfaces/ICoin.ts"
 import { type ICost } from "../../src/utils/interfaces/ICost.ts"
 import { type IDisplayActions } from "../../src/utils/interfaces/IDisplay.ts"
@@ -16,8 +17,8 @@ import { getCoin, getCost, getSubstance } from "./Helpers.ts"
 
 dayjs.extend(duration)
 
-let date: string | null = null
-let diff: duration.Duration | null = null
+let date: Nullable<string> = null
+let diff: Nullable<duration.Duration> = null
 
 const setDisplay = (): void => {
   displayStore.getState().actions.setDisplay(date)
@@ -47,7 +48,7 @@ describe("displayStore", (): void => {
 
     displayStore.getState().actions.setCost(c)
 
-    const cost: ICost | null = displayStore.getState().cost
+    const cost: Nullable<ICost> = displayStore.getState().cost
 
     expect(cost).toBe(c)
   })

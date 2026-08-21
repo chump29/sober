@@ -5,6 +5,7 @@ import { default as httpMethods } from "http-methods-constants"
 import { type FetchMock, default as fetchMock } from "jest-fetch-mock"
 
 import { fetchClient } from "../../src/api/index.ts"
+import { type Nullable } from "../../src/utils/index.ts"
 import { type IFetchClient } from "../../src/utils/interfaces/IFetchClient.ts"
 import { type ISubstance } from "../../src/utils/interfaces/ISubstance.ts"
 import { getSubstance } from "../utils/Helpers.ts"
@@ -21,7 +22,7 @@ const errorSpy: jest.Mock = spyOn(console, "error")
 
 describe("api - index", (): void => {
   test("fetchClient", async (): Promise<void> => {
-    const substance: ISubstance | null = await fetchClient<ISubstance>(settings)
+    const substance: Nullable<ISubstance> = await fetchClient<ISubstance>(settings)
 
     expect(fetch).toHaveBeenCalled()
     expect(substance).not.toBeNull()

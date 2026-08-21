@@ -27,14 +27,21 @@ import {
 } from "valibot"
 
 /**
+ * Validate string
+ * @function
+ * @summary Non-empty string
+ */
+const StringSchema = pipe(string(), trim(), nonEmpty())
+
+type StringSchema = typeof StringSchema
+
+/**
  * Validate against Semantic Versioning Specification
  * @function
  * @summary Non-empty string, valid {@link https://semver.org/ SemVer}
  */
 const VersionSchema = pipe(
-  string(),
-  trim(),
-  nonEmpty(),
+  StringSchema,
   transform((s: string): string => s.replaceAll('"', "")),
   check(
     (s: string): boolean => valid(s) !== null,
@@ -45,15 +52,6 @@ const VersionSchema = pipe(
 type VersionSchema = typeof VersionSchema
 
 /**
- * Validate string as boolean
- * @function
- * @summary Non-empty string, valid boolean {@link https://developer.mozilla.org/en-US/docs/Glossary/Truthy value}
- */
-const StringAsBooleanSchema = pipe(string(), trim(), nonEmpty(), toBoolean())
-
-type StringAsBooleanSchema = typeof StringAsBooleanSchema
-
-/**
  * Validate boolean
  * @function
  * @summary Valid boolean {@link https://developer.mozilla.org/en-US/docs/Glossary/Truthy value}
@@ -61,6 +59,16 @@ type StringAsBooleanSchema = typeof StringAsBooleanSchema
 const BooleanSchema = boolean()
 
 type BooleanSchema = typeof BooleanSchema
+
+/**
+ * Validate string as boolean
+ * @function
+ * @summary Non-empty string
+ * @returns {boolean} Valid boolean {@link https://developer.mozilla.org/en-US/docs/Glossary/Truthy value}
+ */
+const StringAsBooleanSchema = pipe(StringSchema, toBoolean())
+
+type StringAsBooleanSchema = typeof StringAsBooleanSchema
 
 /**
  * Custom date format
@@ -77,8 +85,7 @@ const DATE_FORMAT: string = "YYYY-MM-DD"
  * @summary Non-empty string, valid {@link https://www.iso.org/iso-8601-date-and-time-format.html ISO 8601} date format
  */
 const DateSchema = pipe(
-  string(),
-  trim(),
+  StringSchema,
   isoDate("Not a valid ISO 8601 date format"),
   check(
     (s: string): boolean => dayjs(s, DATE_FORMAT, true).isValid(),
@@ -93,7 +100,7 @@ type DateSchema = typeof DateSchema
  * @function
  * @summary Valid {@link https://datatracker.ietf.org/doc/html/rfc3986 URL}
  */
-const UrlSchema = pipe(string(), trim(), nonEmpty(), url())
+const UrlSchema = pipe(StringSchema, url())
 
 type UrlSchema = typeof UrlSchema
 
@@ -102,15 +109,15 @@ const MIN_TIMEOUT: number = 200
 /**
  * Validate API timeout
  * @function
- * @summary Converts string to milliseconds, min value = {@link MIN_TIMEOUT} ms
+ * @summary Optional<string>, min value = {@link MIN_TIMEOUT} ms
  */
-const TimeoutSchema = pipe(
-  string(),
-  trim(),
-  nonEmpty(),
-  regex(/^\d+\w+$/i),
-  transform((s: string): number => ms(s as StringValue)),
-  minValue(MIN_TIMEOUT)
+const TimeoutSchema = optional(
+  pipe(
+    StringSchema,
+    regex(/^\d+\w+$/i),
+    transform((s: string): number => ms(s as StringValue)),
+    minValue(MIN_TIMEOUT)
+  )
 )
 
 type TimeoutSchema = typeof TimeoutSchema
@@ -130,7 +137,7 @@ type CostSchema = typeof CostSchema
  * @summary Non-empty string, >= 0
  * @returns {number} number
  */
-const CostInputSchema = pipe(string(), trim(), nonEmpty(), toNumber(), minValue(0))
+const CostInputSchema = pipe(StringSchema, toNumber(), minValue(0))
 
 type CostInputSchema = typeof CostInputSchema
 
@@ -147,15 +154,16 @@ const MAX_LEN_STR: number = 64
  * @function
  * @summary Non-empty string, max length = {@link MAX_LEN_STR}
  */
-const NameSchema = pipe(string(), trim(), nonEmpty(), maxLength(MAX_LEN_STR))
+const NameSchema = pipe(StringSchema, maxLength(MAX_LEN_STR))
 
 type NameSchema = typeof NameSchema
 
 /**
  * Validate ID
  * @function
- * @summary undefined | integer, > 0
+ * @summary Optional<number>, > 0
  * @default undefined
+ * @returns {number} Integer
  */
 const IdSchema = optional(pipe(number(), integer(), gtValue(0)))
 
@@ -166,18 +174,9 @@ type IdSchema = typeof IdSchema
  * @function
  * @summary Non-empty string, exactly two words, US English locale
  */
-const TitleSchema = pipe(string(), trim(), nonEmpty(), words("en-US", 2))
+const TitleSchema = pipe(StringSchema, words("en-US", 2))
 
 type TitleSchema = typeof TitleSchema
-
-/**
- * Validate string
- * @function
- * @summary Non-empty string
- */
-const StringSchema = pipe(string(), trim(), nonEmpty())
-
-type StringSchema = typeof StringSchema
 
 /**
  * Validate HTTP method

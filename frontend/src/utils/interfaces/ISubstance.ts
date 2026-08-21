@@ -21,7 +21,7 @@ import {
  * @see {@link CostTypeSchema}
  * @property {string} date
  * @see {@link DateSchema}
- * @property {undefined | number} id
+ * @property {Optional<number>} id
  * @see {@link IdSchema}
  * @property {string} name
  * @see {@link NameSchema}

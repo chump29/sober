@@ -3,23 +3,24 @@ import { error } from "@postfmly/logger"
 import { match } from "ts-pattern"
 import { array, type GenericSchema, isValiError, parse, summarize, type ValiError } from "valibot"
 
-import { StringAsBooleanSchema } from "./schemas.ts"
+import { default as env } from "../../env.config.ts"
+import { BooleanSchema } from "./schemas.ts"
 
 /**
  * Find DOM element
  * @function
  * @param {string} element - Element identifier
- * @returns {HTMLElement | null} DOM element, or null
+ * @returns {Nullable<HTMLElement>} DOM element, or null
  */
-const findElement = (element: string): HTMLElement | null => document.querySelector(element)
+const findElement = (element: string): Nullable<HTMLElement> => document.querySelector(element)
 
 /**
  * Format version string
  * @function
- * @param {string | undefined} version - Version string
+ * @param {Optional<string>} version - Version string
  * @returns {string} v[version], or N/A
  */
-const getVersion = (version: string | undefined): string => (version && version.length > 0 ? `v${version}` : "N/A")
+const getVersion = (version: Optional<string>): string => (version && version.length > 0 ? `v${version}` : "N/A")
 
 /**
  * Show {@link https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API Fetch API} error message
@@ -99,8 +100,7 @@ type UpdateType = (typeof UpdateType)[keyof typeof UpdateType]
  * @constant {boolean}
  * @default false
  */
-const DEBUG: boolean =
-  validate<string, StringAsBooleanSchema, boolean>(import.meta.env.VITE_DEBUG, StringAsBooleanSchema) ?? false
+const DEBUG: boolean = validate<boolean, BooleanSchema>(env.VITE_DEBUG, BooleanSchema) ?? false
 
 /**
  * Get key by value
@@ -130,4 +130,35 @@ const SaveType = {
  */
 type SaveType = (typeof SaveType)[keyof typeof SaveType]
 
-export { DEBUG, FetchError, findElement, getKeyByValue, getVersion, handleError, SaveType, UpdateType, validate }
+/**
+ * Nullish type
+ * @type {Nullish}
+ */
+type Nullish<T> = T | null | undefined
+
+/**
+ * Optional type
+ * @type {Optional}
+ */
+type Optional<T> = T | undefined
+
+/**
+ * Nullable type
+ * @type {Nullable}
+ */
+type Nullable<T> = T | null
+
+export {
+  DEBUG,
+  FetchError,
+  findElement,
+  getKeyByValue,
+  getVersion,
+  handleError,
+  type Nullable,
+  type Nullish,
+  type Optional,
+  SaveType,
+  UpdateType,
+  validate
+}

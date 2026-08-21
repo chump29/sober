@@ -8,13 +8,13 @@ import { Notifications } from "@mantine/notifications"
 import { fakerEN_US as fake } from "@faker-js/faker"
 import { act, configure, render, screen, waitFor } from "@testing-library/react"
 import { default as ExtractNumbers } from "extract-numbers"
-//import { type UserEvent, userEvent } from "@testing-library/user-event"
 import { default as httpStatus } from "http-status-codes"
 import { type FetchMock, default as fetchMock } from "jest-fetch-mock"
 import { default as ms } from "ms"
 import { match } from "ts-pattern"
 
 import Display from "../../../src/components/Display/index.tsx"
+import { type Nullable } from "../../../src/utils/index.ts"
 import { type ISubstance } from "../../../src/utils/interfaces/ISubstance.ts"
 import { CostType } from "../../../src/utils/schemas.ts"
 import { getSubstance } from "../../utils/Helpers.ts"
@@ -27,7 +27,7 @@ mock.module("@mantine/hooks", (): unknown => ({
   useReducedMotion: () => true
 }))
 
-let substance: ISubstance | null = null
+let substance: Nullable<ISubstance> = null
 
 const fetch: FetchMock = fetchMock.enableMocks().mockResponse(
   (req: Request): Response =>
@@ -45,14 +45,10 @@ const fetch: FetchMock = fetchMock.enableMocks().mockResponse(
 
 const infoSpy: jest.Mock = spyOn(console, "info")
 
-//let user: UserEvent | null = null
-
 const extract: ExtractNumbers = new ExtractNumbers({ removeCommas: true, string: false })
 
 beforeEach(async (): Promise<void> => {
   infoSpy.mockReset()
-
-  //user = userEvent.setup()
 
   substance = getSubstance()
   substance.costType = CostType.Day
@@ -107,7 +103,7 @@ describe("Display - index", (): void => {
     expect(numBefore).toHaveLength(1)
 
     await waitFor(async (): Promise<void> => {
-      await sleep(ms("1.5s"))
+      await sleep(ms("2s"))
     })
 
     const numAfter: number[] = extract.extractNumbers(counter.textContent) as number[]

@@ -4,6 +4,7 @@ import { default as dayjs } from "dayjs"
 import { default as duration } from "dayjs/plugin/duration"
 import { create } from "zustand"
 
+import { type Nullable, type Nullish } from "./index.ts"
 import { type ICoin } from "./interfaces/ICoin.ts"
 import { type ICost } from "./interfaces/ICost.ts"
 import { defaultValues, type IDisplay, type IDisplayActions } from "./interfaces/IDisplay.ts"
@@ -18,19 +19,19 @@ const displayStore = create<IDisplay>()(
         getDaysInt: (): number => get().daysInt,
         getMonthsFloat: (): number => get().monthsFloat,
         getSelectedSubstance: (): ISubstance => get().selectedSubstance,
-        getUser: (): string | null => get().user,
+        getUser: (): Nullable<string> => get().user,
         getWeeksFloat: (): number => get().weeksFloat,
         getYearsFloat: (): number => get().yearsFloat,
 
-        setCoin: (data: ICoin | null): void =>
+        setCoin: (data: Nullable<ICoin>): void =>
           set({
             coin: data
           }),
-        setCost: (data: ICost | null): void =>
+        setCost: (data: Nullable<ICost>): void =>
           set({
             cost: data
           }),
-        setDisplay: (date: string | null | undefined): void =>
+        setDisplay: (date: Nullish<string>): void =>
           set((): IDisplay => {
             if (!date) {
               return defaultValues as IDisplay
@@ -66,7 +67,7 @@ const displayStore = create<IDisplay>()(
           set({
             selectedSubstance: data
           }),
-        setUser: (data: string | null): void =>
+        setUser: (data: Nullable<string>): void =>
           set({
             user: data
           })
@@ -92,8 +93,8 @@ const round = (num: number): number => {
   return Math.floor(num)
 }
 
-export const getCoin = (): ICoin | null => displayStore((state: IDisplay): ICoin | null => state.coin)
-export const getCost = (): ICost | null => displayStore((state: IDisplay): ICost | null => state.cost)
+export const getCoin = (): Nullable<ICoin> => displayStore((state: IDisplay): Nullable<ICoin> => state.coin)
+export const getCost = (): Nullable<ICost> => displayStore((state: IDisplay): Nullable<ICost> => state.cost)
 export const getDays = (): string => displayStore((state: IDisplay): string => state.days)
 export const getHours = (): string => displayStore((state: IDisplay): string => state.hours)
 export const getMinutes = (): string => displayStore((state: IDisplay): string => state.minutes)

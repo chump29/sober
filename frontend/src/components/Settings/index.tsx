@@ -10,7 +10,15 @@ import { type KeyedMutator } from "swr"
 import { match } from "ts-pattern"
 
 import { fetchClient } from "../../api/index.ts"
-import { getKeyByValue, handleError, SaveType, validate } from "../../utils/index.ts"
+import {
+  getKeyByValue,
+  handleError,
+  type Nullable,
+  type Nullish,
+  type Optional,
+  SaveType,
+  validate
+} from "../../utils/index.ts"
 import { type IFetchClient } from "../../utils/interfaces/IFetchClient.ts"
 import { type ISelectDisplay } from "../../utils/interfaces/ISelectDisplay.ts"
 import { type ISubstance } from "../../utils/interfaces/ISubstance.ts"
@@ -28,11 +36,11 @@ const Settings = ({
   closeSettings: () => void
   openedSettings: boolean
   refreshSubstances: KeyedMutator<ISubstance[]>
-  substances: ISubstance[] | undefined
-  user: string | null
+  substances: Optional<ISubstance[]>
+  user: Nullable<string>
 }): JSX.Element => {
-  const costTypeRef: RefObject<HTMLInputElement | null> = useRef<HTMLInputElement | null>(null)
-  const costRef: RefObject<HTMLInputElement | null> = useRef<HTMLInputElement | null>(null)
+  const costTypeRef: RefObject<Nullable<HTMLInputElement>> = useRef<Nullable<HTMLInputElement>>(null)
+  const costRef: RefObject<Nullable<HTMLInputElement>> = useRef<Nullable<HTMLInputElement>>(null)
 
   const handleSave = async (
     substance: ISubstance,
@@ -43,10 +51,10 @@ const Settings = ({
       return
     }
 
-    const res: string | undefined | null = match<SaveType, string | undefined | null>(type)
-      .returnType<string | undefined | null>()
-      .with(SaveType.COST, (): string | undefined | null => {
-        const c: number | null = validate<number, CostSchema>(value as number, CostSchema)
+    const res: Nullish<string> = match<SaveType, Nullish<string>>(type)
+      .returnType<Nullish<string>>()
+      .with(SaveType.COST, (): Nullish<string> => {
+        const c: Nullable<number> = validate<number, CostSchema>(value as number, CostSchema)
 
         if (c === null) {
           return "Invalid Cost"
@@ -54,8 +62,8 @@ const Settings = ({
 
         substance.cost = c
       })
-      .with(SaveType.COST_TYPE, (): string | undefined | null => {
-        const c: CostType | null = validate<CostType, CostTypeSchema>(value as CostType, CostTypeSchema)
+      .with(SaveType.COST_TYPE, (): Nullish<string> => {
+        const c: Nullable<CostType> = validate<CostType, CostTypeSchema>(value as CostType, CostTypeSchema)
 
         if (c === null) {
           return "Invalid CostType"
@@ -63,8 +71,8 @@ const Settings = ({
 
         substance.costType = c
       })
-      .with(SaveType.SHOW_COIN, (): string | undefined | null => {
-        const c: boolean | null = validate<boolean, BooleanSchema>(value as boolean, BooleanSchema)
+      .with(SaveType.SHOW_COIN, (): Nullish<string> => {
+        const c: Nullable<boolean> = validate<boolean, BooleanSchema>(value as boolean, BooleanSchema)
 
         if (c === null) {
           return "Invalid ShowCoin"
@@ -72,8 +80,8 @@ const Settings = ({
 
         substance.showCoin = c
       })
-      .with(SaveType.SHOW_COST, (): string | undefined | null => {
-        const c: boolean | null = validate<boolean, BooleanSchema>(value as boolean, BooleanSchema)
+      .with(SaveType.SHOW_COST, (): Nullish<string> => {
+        const c: Nullable<boolean> = validate<boolean, BooleanSchema>(value as boolean, BooleanSchema)
 
         if (c === null) {
           return "Invalid ShowCost"
@@ -85,8 +93,8 @@ const Settings = ({
           return null
         }
       })
-      .with(SaveType.SHOW_DECIMALS, (): string | undefined | null => {
-        const d: boolean | null = validate<boolean, BooleanSchema>(value as boolean, BooleanSchema)
+      .with(SaveType.SHOW_DECIMALS, (): Nullish<string> => {
+        const d: Nullable<boolean> = validate<boolean, BooleanSchema>(value as boolean, BooleanSchema)
 
         if (d === null) {
           return "Invalid ShowDecimals"
@@ -94,7 +102,7 @@ const Settings = ({
 
         substance.showDecimals = d
       })
-      .otherwise((): string | undefined | null => "Invalid SaveType")
+      .otherwise((): Nullish<string> => "Invalid SaveType")
 
     if (res === null) {
       return
@@ -111,7 +119,7 @@ const Settings = ({
       endpoint: `substances/update/${substance.id}`,
       method: httpMethods.PUT,
       user
-    } satisfies IFetchClient).then(async (): Promise<ISubstance[] | undefined> => await refreshSubstances())
+    } satisfies IFetchClient).then(async (): Promise<Optional<ISubstance[]>> => await refreshSubstances())
   }
 
   const setCost = (substance: ISubstance, value: string): void => {
@@ -121,7 +129,7 @@ const Settings = ({
       return
     }
 
-    const c: number | null = validate<string, CostInputSchema, number>(value, CostInputSchema)
+    const c: Nullable<number> = validate<string, CostInputSchema, number>(value, CostInputSchema)
 
     handleSave(substance, SaveType.COST, c ?? 0)
   }
@@ -234,7 +242,7 @@ const Settings = ({
                     data-testid="costType"
                     disabled={!substance.showCost}
                     label="Cost Frequency"
-                    onChange={async (val: CostType | null): Promise<void> =>
+                    onChange={async (val: Nullable<CostType>): Promise<void> =>
                       await handleSave(substance, SaveType.COST_TYPE, val as CostType).then((): void =>
                         costTypeRef.current?.blur()
                       )

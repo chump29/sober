@@ -55,7 +55,7 @@ import {
   getWeeks,
   getYears
 } from "../../utils/displayStore.ts"
-import { DEBUG, getKeyByValue, handleError, validate } from "../../utils/index.ts"
+import { DEBUG, getKeyByValue, handleError, type Nullable, type Optional, validate } from "../../utils/index.ts"
 import { type ICoin } from "../../utils/interfaces/ICoin.ts"
 import { type ICost } from "../../utils/interfaces/ICost.ts"
 import { type IFetchClient } from "../../utils/interfaces/IFetchClient.ts"
@@ -83,16 +83,16 @@ if (DEBUG) {
 const INTERVAL_MS: number = ms("1s")
 
 const Display = (): JSX.Element => {
-  const [soberUser, setSoberUser, resetSoberUser] = useLocalStorage<string | undefined>({
+  const [soberUser, setSoberUser, resetSoberUser] = useLocalStorage<Optional<string>>({
     defaultValue: undefined,
     getInitialValueInEffect: false,
     key: "soberUser",
-    deserialize: (data: string | undefined): string | undefined => {
+    deserialize: (data: Optional<string>): Optional<string> => {
       if (!data) {
         return // not set
       }
 
-      const u: string | null = validate<string, NameSchema>(data as string, NameSchema)
+      const u: Nullable<string> = validate<string, NameSchema>(data as string, NameSchema)
       if (!u) {
         resetSoberUser() // not valid
 
@@ -107,12 +107,12 @@ const Display = (): JSX.Element => {
 
       return u
     },
-    serialize: (data: string | undefined): string => {
+    serialize: (data: Optional<string>): string => {
       if (!data) {
         return "" // not set
       }
 
-      const u: string | null = validate<string, NameSchema>(data, NameSchema)
+      const u: Nullable<string> = validate<string, NameSchema>(data, NameSchema)
       if (!u) {
         return "" // not valid
       }
@@ -124,7 +124,7 @@ const Display = (): JSX.Element => {
   const nameField = useField<string>({
     initialValue: "",
     validateOnChange: true,
-    validate: (s: string): string | null => (s.length > 0 ? null : "Must enter a name")
+    validate: (s: string): Nullable<string> => (s.length > 0 ? null : "Must enter a name")
   })
 
   const [openedLogin, { open: openLogin, close: closeLogin }] = useDisclosure(false)
@@ -145,8 +145,8 @@ const Display = (): JSX.Element => {
     setUser
   } = displayStoreActions()
 
-  const coin: ICoin | null = getCoin()
-  const cost: ICost | null = getCost()
+  const coin: Nullable<ICoin> = getCoin()
+  const cost: Nullable<ICost> = getCost()
   const days: string = getDays()
   const hours: string = getHours()
   const minutes: string = getMinutes()
@@ -158,7 +158,7 @@ const Display = (): JSX.Element => {
   const selectedSubstanceDate: string = getSelectedSubstance().date
 
   const validateUser = async (): Promise<void> => {
-    const userValue: string | null = getUser()
+    const userValue: Nullable<string> = getUser()
     if (!userValue) {
       return
     }
@@ -172,7 +172,7 @@ const Display = (): JSX.Element => {
   }
 
   const fetchSubstances = async (endpoint: string): Promise<ISubstance[]> => {
-    const userValue: string | null = getUser()
+    const userValue: Nullable<string> = getUser()
     if (!userValue) {
       return [] as ISubstance[]
     }
@@ -181,8 +181,8 @@ const Display = (): JSX.Element => {
       endpoint,
       method: httpMethods.GET,
       user: userValue
-    } satisfies IFetchClient).then((data: ISubstance[] | null): ISubstance[] => {
-      const s: ISubstance[] | null = validate<ISubstance[], SubstanceSchema>(data, SubstanceSchema)
+    } satisfies IFetchClient).then((data: Nullable<ISubstance[]>): ISubstance[] => {
+      const s: Nullable<ISubstance[]> = validate<ISubstance[], SubstanceSchema>(data, SubstanceSchema)
       if (!s) {
         return [] as ISubstance[]
       }
@@ -200,7 +200,7 @@ const Display = (): JSX.Element => {
     fetchSubstances,
     {
       onSuccess: (s: ISubstance[]): void => {
-        const subs: ISubstance[] | null = validate<ISubstance[], SubstanceSchema>(s, SubstanceSchema)
+        const subs: Nullable<ISubstance[]> = validate<ISubstance[], SubstanceSchema>(s, SubstanceSchema)
         if (!subs || subs.length === 0) {
           setSelectedSubstance(defaultSubstance)
 
@@ -211,7 +211,7 @@ const Display = (): JSX.Element => {
 
         const selectedSubstance: ISubstance = getSelectedSubstance()
 
-        const foundSubstance: ISubstance | undefined = subs.find(
+        const foundSubstance: Optional<ISubstance> = subs.find(
           (sub: ISubstance): boolean => sub.name === selectedSubstance.name
         )
         if (!foundSubstance) {
@@ -220,8 +220,7 @@ const Display = (): JSX.Element => {
           handleSetCost(0)
         }
 
-        const substance: ISubstance | undefined =
-          !selectedSubstance.name || subs.length === 1 ? subs[0] : foundSubstance
+        const substance: Optional<ISubstance> = !selectedSubstance.name || subs.length === 1 ? subs[0] : foundSubstance
 
         if (!substance) {
           if (DEBUG) {
@@ -250,8 +249,8 @@ const Display = (): JSX.Element => {
     }
   )
 
-  const handleChangeDate = async (date: string | null): Promise<void> => {
-    const userValue: string | null = getUser()
+  const handleChangeDate = async (date: Nullable<string>): Promise<void> => {
+    const userValue: Nullable<string> = getUser()
 
     const selectedSubstance: ISubstance = getSelectedSubstance()
 
@@ -259,7 +258,7 @@ const Display = (): JSX.Element => {
       return
     }
 
-    const d: string | null = validate<string, DateSchema>(date, DateSchema)
+    const d: Nullable<string> = validate<string, DateSchema>(date, DateSchema)
     if (!d) {
       return
     }
@@ -273,8 +272,8 @@ const Display = (): JSX.Element => {
       method: httpMethods.PUT,
       user: userValue
     } satisfies IFetchClient)
-      .then((data: ISubstance | null): void => {
-        const s: ISubstance | null = validate<ISubstance, SubstanceSchema>(data, SubstanceSchema)
+      .then((data: Nullable<ISubstance>): void => {
+        const s: Nullable<ISubstance> = validate<ISubstance, SubstanceSchema>(data, SubstanceSchema)
         if (!s) {
           return
         }
@@ -327,7 +326,7 @@ const Display = (): JSX.Element => {
   }
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    const u: string | null = validate<string, NameSchema>(e.target.value, NameSchema)
+    const u: Nullable<string> = validate<string, NameSchema>(e.target.value, NameSchema)
     if (!u) {
       return
     }
@@ -401,8 +400,8 @@ const Display = (): JSX.Element => {
     </Tooltip>
   )
 
-  const handleSetCost = (c: number | undefined): void => {
-    const substanceCost: number | null = validate<number | undefined, CostSchema, number>(c, CostSchema)
+  const handleSetCost = (c: Optional<number>): void => {
+    const substanceCost: Nullable<number> = validate<Optional<number>, CostSchema, number>(c, CostSchema)
 
     // * NOTE: catches 0 or null
     if (!substanceCost) {
@@ -442,7 +441,7 @@ const Display = (): JSX.Element => {
       return
     }
 
-    await validateUser().then(async (): Promise<ISubstance[] | undefined> => await refreshSubstances())
+    await validateUser().then(async (): Promise<Optional<ISubstance[]>> => await refreshSubstances())
 
     const selectedSubstance: ISubstance = getSelectedSubstance()
 
@@ -454,7 +453,7 @@ const Display = (): JSX.Element => {
       resolve()
     }).then((): void => {
       let txt: string = "No milestones to show yet."
-      let img: string | undefined
+      let img: Optional<string>
 
       const m: number = Math.floor(getMonthsFloat())
 

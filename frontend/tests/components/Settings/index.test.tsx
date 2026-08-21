@@ -12,7 +12,7 @@ import { default as ms } from "ms"
 import { match, P } from "ts-pattern"
 
 import Settings from "../../../src/components/Settings/index.tsx"
-import { getKeyByValue } from "../../../src/utils/index.ts"
+import { getKeyByValue, type Nullable } from "../../../src/utils/index.ts"
 import { type ISubstance } from "../../../src/utils/interfaces/ISubstance.ts"
 import { CostType } from "../../../src/utils/schemas.ts"
 import { getSubstance } from "../../utils/Helpers.ts"
@@ -38,9 +38,9 @@ const fetch: FetchMock = fetchMock.enableMocks().mockResponse(
       )
 )
 
-let user: UserEvent | null = null
+let user: Nullable<UserEvent> = null
 
-let substance: ISubstance | null = null
+let substance: Nullable<ISubstance> = null
 
 let times: number = 0
 

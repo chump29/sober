@@ -1,6 +1,8 @@
 import { UnsecuredJWT } from "jose"
 
+import { default as env } from "../../env.config.ts"
 import { name } from "../../package.json" with { type: "json" }
+import { type Optional } from "./index.ts"
 
 const getJWT = (user: string): string =>
   new UnsecuredJWT()
@@ -8,7 +10,7 @@ const getJWT = (user: string): string =>
     .setIssuedAt()
     .setSubject(user)
     .setIssuer(name)
-    .setAudience(import.meta.env.VITE_AUDIENCE)
+    .setAudience(env.VITE_AUDIENCE)
     .encode()
 
 /**
@@ -18,7 +20,7 @@ const getJWT = (user: string): string =>
  * @param {string} user User
  * @returns {Headers} Request {@link https://developer.mozilla.org/en-US/docs/Web/API/Headers headers}
  */
-const getHeaders = (user: string | undefined): Headers | undefined => {
+const getHeaders = (user: Optional<string>): Optional<Headers> => {
   if (!user || user.length === 0) {
     return
   }

@@ -1,3 +1,4 @@
+import { type Nullable, type Nullish } from "../index.ts"
 import { type ICoin } from "./ICoin.ts"
 import { type ICost } from "./ICost.ts"
 import { type ISubstance } from "./ISubstance.ts"
@@ -6,21 +7,21 @@ interface IDisplayActions {
   getDaysInt: () => number
   getMonthsFloat: () => number
   getSelectedSubstance: () => ISubstance
-  getUser: () => string | null
+  getUser: () => Nullable<string>
   getWeeksFloat: () => number
   getYearsFloat: () => number
 
-  setCoin: (data: ICoin | null) => void
-  setCost: (data: ICost | null) => void
-  setDisplay: (date: string | null | undefined) => void
+  setCoin: (data: Nullable<ICoin>) => void
+  setCost: (data: Nullable<ICost>) => void
+  setDisplay: (date: Nullish<string>) => void
   setSelectedSubstance: (data: ISubstance) => void
-  setUser: (data: string | null) => void
+  setUser: (data: Nullable<string>) => void
 }
 
 interface IDisplay {
   actions: IDisplayActions
-  coin: ICoin | null
-  cost: ICost | null
+  coin: Nullable<ICoin>
+  cost: Nullable<ICost>
   days: string
   daysInt: number
   hours: string
@@ -29,7 +30,7 @@ interface IDisplay {
   monthsFloat: number
   seconds: string
   selectedSubstance: ISubstance
-  user: string | null
+  user: Nullable<string>
   weeks: string
   weeksFloat: number
   years: string

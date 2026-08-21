@@ -12,6 +12,7 @@ import { default as ms } from "ms"
 import { match, P } from "ts-pattern"
 
 import { default as Substances } from "../../../src/components/Substances/index.tsx"
+import { type Nullable } from "../../../src/utils/index.ts"
 import { type ISubstance } from "../../../src/utils/interfaces/ISubstance.ts"
 import { getSubstance, getSubstanceDisplay } from "../../utils/Helpers.ts"
 import { SUBSTANCES } from "../../utils/Substances.ts"
@@ -24,7 +25,7 @@ mock.module("@mantine/hooks", (): unknown => ({
   useReducedMotion: () => true
 }))
 
-let substance: ISubstance | null = null
+let substance: Nullable<ISubstance> = null
 
 const fetch: FetchMock = fetchMock.enableMocks().mockResponse(
   (req: Request): Response =>
@@ -43,7 +44,7 @@ const fetch: FetchMock = fetchMock.enableMocks().mockResponse(
 
 const infoSpy: jest.Mock = spyOn(console, "info")
 
-let user: UserEvent | null = null
+let user: Nullable<UserEvent> = null
 
 let times: number = 0
 

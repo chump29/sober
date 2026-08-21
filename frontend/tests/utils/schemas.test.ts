@@ -18,7 +18,6 @@ import {
   MAX_LEN_STR,
   MethodSchema,
   NameSchema,
-  StringAsBooleanSchema,
   StringSchema,
   TimeoutSchema,
   TitleSchema,
@@ -36,17 +35,6 @@ describe("schemas", (): void => {
 
     expect(v.success).toBeFalse()
     expect(v.issues?.[0].message).toStartWith("Invalid SemVer")
-  })
-
-  test("StringAsBooleanSchema", (): void => {
-    expect(safeParse(StringAsBooleanSchema, "true").success).toBeTrue()
-  })
-
-  test("StringAsBooleanSchema - fail", (): void => {
-    const s: SafeParseResult<StringAsBooleanSchema> = safeParse(StringAsBooleanSchema, null)
-
-    expect(s.success).toBeFalse()
-    expect(s.issues?.[0].message).toStartWith("Invalid type: Expected string")
   })
 
   test("BooleanSchema", (): void => {
