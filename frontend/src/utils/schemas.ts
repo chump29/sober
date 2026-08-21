@@ -6,6 +6,7 @@ import {
   boolean,
   type CheckIssue,
   check,
+  fallback,
   gtValue,
   integer,
   isoDate,
@@ -100,7 +101,7 @@ type DateSchema = typeof DateSchema
  * @function
  * @summary Valid {@link https://datatracker.ietf.org/doc/html/rfc3986 URL}
  */
-const UrlSchema = pipe(StringSchema, url())
+const UrlSchema = fallback(pipe(StringSchema, url()), "")
 
 type UrlSchema = typeof UrlSchema
 

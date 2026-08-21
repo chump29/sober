@@ -6,7 +6,7 @@ import { FetchClientSchema, type IFetchClient } from "../utils/interfaces/IFetch
 import { getHeaders } from "../utils/jwt.ts"
 import { TimeoutSchema, UrlSchema } from "../utils/schemas.ts"
 
-const API_URL: string = validate<string, UrlSchema>(env.VITE_API_URL, UrlSchema) ?? ""
+const API_URL: string = validate<string, UrlSchema>(env.VITE_API_URL, UrlSchema) as string
 const API_TIMEOUT: number = validate<Optional<number>, TimeoutSchema>(env.VITE_API_TIMEOUT, TimeoutSchema) ?? ms("2s")
 
 const fetchClient = async <R = null>(settings: IFetchClient): Promise<Nullable<R>> => {

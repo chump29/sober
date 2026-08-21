@@ -13,7 +13,7 @@ export default defineEnv({
   },
   shared: {
     VITE_API_TIMEOUT: TimeoutSchema,
-    VITE_API_URL: fallback(UrlSchema, ""),
+    VITE_API_URL: UrlSchema,
     VITE_DEBUG: fallback(StringAsBooleanSchema, false)
   }
 })
