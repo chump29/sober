@@ -1,12 +1,13 @@
 import { describe, expect, test } from "bun:test"
 
+import { type Optional } from "@postfmly/types"
+
 import { fakerEN_US as fake } from "@faker-js/faker"
 import { default as dayjs } from "dayjs"
 import { UnsecuredJWT } from "jose"
 
 import { default as env } from "../../env.config.ts"
 import { name } from "../../package.json" with { type: "json" }
-import { type Optional } from "../../src/utils/index.ts"
 import { getHeaders } from "../../src/utils/jwt.ts"
 
 describe("jwt", (): void => {

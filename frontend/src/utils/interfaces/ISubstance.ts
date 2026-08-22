@@ -6,8 +6,8 @@ import {
   CostSchema,
   CostType,
   CostTypeSchema,
-  DATE_FORMAT,
-  DateSchema,
+  DATETIME_FORMAT,
+  DateTimeSchema,
   IdSchema,
   NameSchema
 } from "../schemas.ts"
@@ -20,7 +20,7 @@ import {
  * @property {CostType} costType
  * @see {@link CostTypeSchema}
  * @property {string} date
- * @see {@link DateSchema}
+ * @see {@link DateTimeSchema}
  * @property {Optional<number>} id
  * @see {@link IdSchema}
  * @property {string} name
@@ -35,7 +35,7 @@ import {
 const SubstanceSchema = object({
   cost: CostSchema,
   costType: CostTypeSchema,
-  date: DateSchema,
+  date: DateTimeSchema,
   id: IdSchema,
   name: NameSchema,
   showCoin: BooleanSchema,
@@ -65,7 +65,7 @@ type ISubstance = InferInput<SubstanceSchema>
 const defaultSubstance: ISubstance = {
   cost: 0,
   costType: CostType.Day,
-  date: dayjs().format(DATE_FORMAT),
+  date: dayjs().format(DATETIME_FORMAT),
   id: undefined,
   name: "",
   showCoin: false,

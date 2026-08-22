@@ -1,6 +1,8 @@
 import { appendFile, readdir } from "node:fs/promises"
 import { default as process } from "node:process"
 
+import { type Nullish, type Optional } from "@postfmly/types"
+
 import { default as react } from "@vitejs/plugin-react"
 import { default as getDirSize } from "fdir-size"
 import { default as prettyBytes } from "pretty-bytes"
@@ -9,7 +11,7 @@ import { type ConfigEnv, defineConfig, loadEnv, type UserConfig } from "vite"
 import { ViteMinifyPlugin as minifyHtml } from "vite-plugin-minify"
 import { ViteWebfontDownload as webFontDownload } from "vite-plugin-webfont-dl"
 
-import { type Nullish, type Optional, validate } from "./src/utils/index.ts"
+import { validate } from "./src/utils/index.ts"
 import { TitleSchema } from "./src/utils/schemas.ts"
 
 export default defineConfig(({ mode }: ConfigEnv): UserConfig => {

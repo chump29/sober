@@ -1,5 +1,7 @@
 import { describe, expect, spyOn, test } from "bun:test"
 
+import { type Nullable } from "@postfmly/types"
+
 import { fakerEN_US as fake } from "@faker-js/faker"
 import { expectTypeOf } from "expect-type"
 import { ValiError } from "valibot"
@@ -11,7 +13,6 @@ import {
   getKeyByValue,
   getVersion,
   handleError,
-  type Nullable,
   SaveType,
   UpdateType,
   validate

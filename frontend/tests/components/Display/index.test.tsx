@@ -5,6 +5,8 @@ import { MantineProvider } from "@mantine/core"
 import { ModalsProvider } from "@mantine/modals"
 import { Notifications } from "@mantine/notifications"
 
+import { type Nullable } from "@postfmly/types"
+
 import { fakerEN_US as fake } from "@faker-js/faker"
 import { act, configure, render, screen, waitFor } from "@testing-library/react"
 import { default as ExtractNumbers } from "extract-numbers"
@@ -14,7 +16,6 @@ import { default as ms } from "ms"
 import { match } from "ts-pattern"
 
 import Display from "../../../src/components/Display/index.tsx"
-import { type Nullable } from "../../../src/utils/index.ts"
 import { type ISubstance } from "../../../src/utils/interfaces/ISubstance.ts"
 import { CostType } from "../../../src/utils/schemas.ts"
 import { getSubstance } from "../../utils/Helpers.ts"
@@ -85,7 +86,7 @@ describe("Display - index", (): void => {
 
     expect(await screen.findByTestId("settings")).toBeInTheDocument()
 
-    expect(await screen.findByTestId("datePicker")).toBeInTheDocument()
+    expect(await screen.findByTestId("dateTimePicker")).toBeInTheDocument()
 
     expect(await screen.findByTestId("counter")).toBeInTheDocument()
 

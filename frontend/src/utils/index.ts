@@ -1,4 +1,5 @@
 import { error } from "@postfmly/logger"
+import { type Nullable, type Optional } from "@postfmly/types"
 
 import { match } from "ts-pattern"
 import { array, type GenericSchema, isValiError, parse, summarize, type ValiError } from "valibot"
@@ -130,35 +131,4 @@ const SaveType = {
  */
 type SaveType = (typeof SaveType)[keyof typeof SaveType]
 
-/**
- * Nullish type
- * @type {Nullish}
- */
-type Nullish<T> = T | null | undefined
-
-/**
- * Optional type
- * @type {Optional}
- */
-type Optional<T> = T | undefined
-
-/**
- * Nullable type
- * @type {Nullable}
- */
-type Nullable<T> = T | null
-
-export {
-  DEBUG,
-  FetchError,
-  findElement,
-  getKeyByValue,
-  getVersion,
-  handleError,
-  type Nullable,
-  type Nullish,
-  type Optional,
-  SaveType,
-  UpdateType,
-  validate
-}
+export { DEBUG, FetchError, findElement, getKeyByValue, getVersion, handleError, SaveType, UpdateType, validate }

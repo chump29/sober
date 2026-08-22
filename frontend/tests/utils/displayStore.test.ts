@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, test } from "bun:test"
 
+import { type Nullable } from "@postfmly/types"
+
 import { fakerEN_US as fake } from "@faker-js/faker"
 import { default as pluralize } from "@jarrodek/pluralize"
 import { renderHook } from "@testing-library/react"
@@ -7,12 +9,11 @@ import { default as dayjs } from "dayjs"
 import { default as duration } from "dayjs/plugin/duration"
 
 import { displayStore, displayStoreActions, round } from "../../src/utils/displayStore.ts"
-import { type Nullable } from "../../src/utils/index.ts"
 import { type ICoin } from "../../src/utils/interfaces/ICoin.ts"
 import { type ICost } from "../../src/utils/interfaces/ICost.ts"
 import { type IDisplayActions } from "../../src/utils/interfaces/IDisplay.ts"
 import { type ISubstance } from "../../src/utils/interfaces/ISubstance.ts"
-import { DATE_FORMAT } from "../../src/utils/schemas.ts"
+import { DATETIME_FORMAT } from "../../src/utils/schemas.ts"
 import { getCoin, getCost, getSubstance } from "./Helpers.ts"
 
 dayjs.extend(duration)
@@ -27,7 +28,7 @@ const setDisplay = (): void => {
 beforeEach((): void => {
   displayStore.setState(displayStore.getInitialState(), true)
 
-  date = dayjs(fake.date.past({ years: { max: 10, min: 1 } })).format(DATE_FORMAT)
+  date = dayjs(fake.date.past({ years: { max: 10, min: 1 } })).format(DATETIME_FORMAT)
 
   diff = dayjs.duration(dayjs().diff(dayjs(date)))
 
@@ -112,7 +113,7 @@ describe("displayStore", (): void => {
   })
 
   test("Years - <1", (): void => {
-    date = dayjs().format(DATE_FORMAT)
+    date = dayjs().format(DATETIME_FORMAT)
 
     setDisplay()
 

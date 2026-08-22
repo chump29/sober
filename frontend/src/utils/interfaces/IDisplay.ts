@@ -1,4 +1,5 @@
-import { type Nullable, type Nullish } from "../index.ts"
+import { type Nullable, type Nullish } from "@postfmly/types"
+
 import { type ICoin } from "./ICoin.ts"
 import { type ICost } from "./ICost.ts"
 import { type ISubstance } from "./ISubstance.ts"

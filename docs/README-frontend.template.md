@@ -5,6 +5,8 @@
 ---
 
 <!-- cspell:disable -->
+![Frontend](https://img.shields.io/badge/Frontend-$_version-chocolate?style=plastic&logo=docker "Frontend")
+
 ![Bun](https://img.shields.io/badge/Bun-$_bun-informational?style=plastic&logo=bun "Bun") &nbsp;
 ![Mantine](https://img.shields.io/badge/Mantine-$_mantine-informational?style=plastic&logo=mantine "Mantine") &nbsp;
 ![React](https://img.shields.io/badge/React-$_react-informational?style=plastic&logo=react "React") &nbsp;

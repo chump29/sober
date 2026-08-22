@@ -16,11 +16,12 @@ import {
   TextInput,
   Tooltip
 } from "@mantine/core"
-import { DatePickerInput } from "@mantine/dates"
+import { DateTimePicker } from "@mantine/dates"
 import { useField } from "@mantine/form"
 import { useDisclosure, useLocalStorage } from "@mantine/hooks"
 
 import { info } from "@postfmly/logger"
+import { type Nullable, type Optional } from "@postfmly/types"
 
 import { default as pluralize } from "@jarrodek/pluralize"
 import { Big } from "big.js"
@@ -55,13 +56,21 @@ import {
   getWeeks,
   getYears
 } from "../../utils/displayStore.ts"
-import { DEBUG, getKeyByValue, handleError, type Nullable, type Optional, validate } from "../../utils/index.ts"
+import { DEBUG, getKeyByValue, handleError, validate } from "../../utils/index.ts"
 import { type ICoin } from "../../utils/interfaces/ICoin.ts"
 import { type ICost } from "../../utils/interfaces/ICost.ts"
 import { type IFetchClient } from "../../utils/interfaces/IFetchClient.ts"
 import { defaultSubstance, type ISubstance, SubstanceSchema } from "../../utils/interfaces/ISubstance.ts"
 import { type ISubstanceDisplay } from "../../utils/interfaces/ISubstanceDisplay.ts"
-import { CostSchema, CostType, DateSchema, MAX_LEN_STR, NameSchema } from "../../utils/schemas.ts"
+import {
+  CostSchema,
+  CostType,
+  DATETIME_FORMAT,
+  DATETIME_FORMAT_OUTPUT,
+  DateTimeSchema,
+  MAX_LEN_STR,
+  NameSchema
+} from "../../utils/schemas.ts"
 import { default as Settings } from "../Settings/index.tsx"
 import { default as Substances } from "../Substances/index.tsx"
 
@@ -258,7 +267,7 @@ const Display = (): JSX.Element => {
       return
     }
 
-    const d: Nullable<string> = validate<string, DateSchema>(date, DateSchema)
+    const d: Nullable<string> = validate<string, DateTimeSchema>(date, DateTimeSchema)
     if (!d) {
       return
     }
@@ -631,25 +640,32 @@ const Display = (): JSX.Element => {
               <Center>
                 <Box mb={20}>
                   <Tooltip label="Enter your sobriety date" withArrow>
-                    <DatePickerInput
+                    <DateTimePicker
                       c="var(--color-blue)"
                       className="sober-date"
-                      data-testid="datePicker"
+                      data-testid="dateTimePicker"
                       disabled={!getSelectedSubstance().name}
+                      highlightToday={true}
                       label="Sober since:"
                       leftSection={<IconCalendar color="var(--color-red)" size={16} />}
                       maxDate={dayjs().toDate()}
                       mb={20}
                       mt={50}
-                      onChange={handleChangeDate}
+                      onChange={async (val: Nullable<string>): Promise<void> =>
+                        await handleChangeDate(dayjs(val).format(DATETIME_FORMAT))
+                      }
                       pointer={true}
                       popoverProps={{
                         withinPortal: true
                       }}
                       ta="center"
+                      timePickerProps={{
+                        format: "12h",
+                        popoverProps: { withinPortal: false },
+                        withDropdown: true
+                      }}
                       value={getSelectedSubstance().date}
-                      valueFormat="dddd, MMMM Do, YYYY"
-                      w={250}
+                      valueFormat={DATETIME_FORMAT_OUTPUT}
                     />
                   </Tooltip>
                 </Box>

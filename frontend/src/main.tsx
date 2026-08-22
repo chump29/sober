@@ -3,6 +3,7 @@ import { ModalsProvider } from "@mantine/modals"
 import { Notifications } from "@mantine/notifications"
 
 import { error, info } from "@postfmly/logger"
+import { type Nullable } from "@postfmly/types"
 
 import { default as httpMethods } from "http-methods-constants"
 import { createRoot } from "react-dom/client"
@@ -10,7 +11,7 @@ import { createRoot } from "react-dom/client"
 import { version } from "../package.json" with { type: "json" }
 import { fetchClient } from "./api/index.ts"
 import { default as Display } from "./components/Display/index.tsx"
-import { DEBUG, findElement, getVersion, handleError, type Nullable, validate } from "./utils/index.ts"
+import { DEBUG, findElement, getVersion, handleError, validate } from "./utils/index.ts"
 import { type IFetchClient } from "./utils/interfaces/IFetchClient.ts"
 import { VersionSchema } from "./utils/schemas.ts"
 

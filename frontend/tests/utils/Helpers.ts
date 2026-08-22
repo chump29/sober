@@ -5,7 +5,7 @@ import { type ICoin } from "../../src/utils/interfaces/ICoin.ts"
 import { type ICost } from "../../src/utils/interfaces/ICost.ts"
 import { type ISubstance } from "../../src/utils/interfaces/ISubstance.ts"
 import { type ISubstanceDisplay } from "../../src/utils/interfaces/ISubstanceDisplay.ts"
-import { CostType, DATE_FORMAT } from "../../src/utils/schemas.ts"
+import { CostType, DATETIME_FORMAT } from "../../src/utils/schemas.ts"
 import { SUBSTANCES } from "./Substances.ts"
 
 const getCoin = (): ICoin =>
@@ -40,7 +40,7 @@ const getSubstance = (): ISubstance =>
   ({
     cost: Number(fake.commerce.price()),
     costType: fake.helpers.enumValue(CostType),
-    date: dayjs(fake.date.past()).format(DATE_FORMAT),
+    date: dayjs(fake.date.past()).format(DATETIME_FORMAT),
     id: fake.number.int({ max: 1000, min: 1 }),
     name: fake.helpers.arrayElement(SUBSTANCES),
     showCoin: fake.datatype.boolean(),

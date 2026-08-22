@@ -1,4 +1,7 @@
+// cSpell: ignore SSSZ
+
 import { default as dayjs } from "dayjs"
+import { default as utc } from "dayjs/plugin/utc"
 import { default as httpMethods } from "http-methods-constants"
 import { default as ms, type StringValue } from "ms"
 import { valid } from "semver"
@@ -9,7 +12,7 @@ import {
   fallback,
   gtValue,
   integer,
-  isoDate,
+  isoTimestamp,
   maxLength,
   minValue,
   nonEmpty,
@@ -26,6 +29,8 @@ import {
   enum as v_enum,
   words
 } from "valibot"
+
+dayjs.extend(utc)
 
 /**
  * Validate string
@@ -72,29 +77,37 @@ const StringAsBooleanSchema = pipe(StringSchema, toBoolean())
 type StringAsBooleanSchema = typeof StringAsBooleanSchema
 
 /**
- * Custom date format
+ * Custom datetime format
  * @constant {string}
- * @summary YYYY-MM-DD
+ * @summary YYYY-MM-DDThh:mm:ss.SSSZ
  * @type {string}
- * @example 2026-06-13
+ * @example 2026-08-22T04:20:45.720-05:00
  */
-const DATE_FORMAT: string = "YYYY-MM-DD"
+const DATETIME_FORMAT: string = "YYYY-MM-DDThh:mm:ss.SSSZ"
 
 /**
- * Validate date
+ * Validate datetime
  * @function
- * @summary Non-empty string, valid {@link https://www.iso.org/iso-8601-date-and-time-format.html ISO 8601} date format
+ * @summary Non-empty string, valid {@link https://www.iso.org/iso-8601-date-and-time-format.html ISO 8601} datetime format
+ * @returns {string} UTC datetime
  */
-const DateSchema = pipe(
+const DateTimeSchema = pipe(
   StringSchema,
-  isoDate("Not a valid ISO 8601 date format"),
+  isoTimestamp("Not a valid ISO 8601 datetime format"),
   check(
-    (s: string): boolean => dayjs(s, DATE_FORMAT, true).isValid(),
+    (s: string): boolean => dayjs(s, DATETIME_FORMAT, true).isValid(),
     (e: CheckIssue<string>): string => `Invalid date: ${e.input}`
-  )
+  ),
+  transform((d: string): string => dayjs(d).utc().format(DATETIME_FORMAT))
 )
 
-type DateSchema = typeof DateSchema
+type DateTimeSchema = typeof DateTimeSchema
+
+/**
+ * Datetime output format
+ * @constant {string}
+ */
+const DATETIME_FORMAT_OUTPUT: string = "dddd, MMMM Do, YYYY @ h:mm A"
 
 /**
  * Validate URL
@@ -220,8 +233,9 @@ export {
   CostSchema,
   CostType,
   CostTypeSchema,
-  DATE_FORMAT,
-  DateSchema,
+  DATETIME_FORMAT,
+  DATETIME_FORMAT_OUTPUT,
+  DateTimeSchema,
   IdSchema,
   MAX_LEN_STR,
   MethodSchema,

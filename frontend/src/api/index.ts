@@ -1,7 +1,9 @@
+import { type Nullable, type Optional } from "@postfmly/types"
+
 import { default as ms } from "ms"
 
 import { default as env } from "../../env.config.ts"
-import { FetchError, handleError, type Nullable, type Optional, validate } from "../utils/index.ts"
+import { FetchError, handleError, validate } from "../utils/index.ts"
 import { FetchClientSchema, type IFetchClient } from "../utils/interfaces/IFetchClient.ts"
 import { getHeaders } from "../utils/jwt.ts"
 import { TimeoutSchema, UrlSchema } from "../utils/schemas.ts"

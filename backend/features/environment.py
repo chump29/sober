@@ -2,6 +2,7 @@
 
 """Environment setup"""
 
+from datetime import UTC
 from decimal import Decimal
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
@@ -38,7 +39,7 @@ def get_new_substance() -> SubstanceDTO:
             else Decimal()
         ),
         costType=fake.enum(CostType),
-        date=fake.date_this_decade(),
+        date=fake.date_time_this_decade(tzinfo=UTC),
         id=fake.pyint(min_value=1, max_value=100),
         name=fake.random_element(SUBSTANCES),
         showCoin=fake.boolean(),

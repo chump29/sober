@@ -1,10 +1,11 @@
+import { type Nullable, type Nullish } from "@postfmly/types"
+
 import { default as pluralize } from "@jarrodek/pluralize"
 import { Big } from "big.js"
 import { default as dayjs } from "dayjs"
 import { default as duration } from "dayjs/plugin/duration"
 import { create } from "zustand"
 
-import { type Nullable, type Nullish } from "./index.ts"
 import { type ICoin } from "./interfaces/ICoin.ts"
 import { type ICost } from "./interfaces/ICost.ts"
 import { defaultValues, type IDisplay, type IDisplayActions } from "./interfaces/IDisplay.ts"

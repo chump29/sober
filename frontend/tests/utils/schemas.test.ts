@@ -12,8 +12,8 @@ import {
   CostSchema,
   CostType,
   CostTypeSchema,
-  DATE_FORMAT,
-  DateSchema,
+  DATETIME_FORMAT,
+  DateTimeSchema,
   IdSchema,
   MAX_LEN_STR,
   MethodSchema,
@@ -48,12 +48,12 @@ describe("schemas", (): void => {
     expect(b.issues?.[0].message).toStartWith("Invalid type: Expected boolean")
   })
 
-  test("DateSchema", (): void => {
-    expect(safeParse(DateSchema, dayjs(fake.date.soon()).format(DATE_FORMAT)).success).toBeTrue()
+  test("DateTimeSchema", (): void => {
+    expect(safeParse(DateTimeSchema, dayjs(fake.date.soon()).format(DATETIME_FORMAT)).success).toBeTrue()
   })
 
-  test("DateSchema - fail", (): void => {
-    const d: SafeParseResult<DateSchema> = safeParse(DateSchema, "TEST")
+  test("DateTimeSchema - fail", (): void => {
+    const d: SafeParseResult<DateTimeSchema> = safeParse(DateTimeSchema, "TEST")
 
     expect(d.success).toBeFalse()
     expect(d.issues?.[0].message).toStartWith("Not a valid ISO 8601 date")

@@ -3,6 +3,8 @@ import { beforeEach, describe, expect, jest, mock, test } from "bun:test"
 import { MantineProvider } from "@mantine/core"
 import { ModalsProvider } from "@mantine/modals"
 
+import { type Nullable } from "@postfmly/types"
+
 import { fakerEN_US as fake } from "@faker-js/faker"
 import { configure, render, screen, waitFor } from "@testing-library/react"
 import { type UserEvent, userEvent } from "@testing-library/user-event"
@@ -12,7 +14,7 @@ import { default as ms } from "ms"
 import { match, P } from "ts-pattern"
 
 import Settings from "../../../src/components/Settings/index.tsx"
-import { getKeyByValue, type Nullable } from "../../../src/utils/index.ts"
+import { getKeyByValue } from "../../../src/utils/index.ts"
 import { type ISubstance } from "../../../src/utils/interfaces/ISubstance.ts"
 import { CostType } from "../../../src/utils/schemas.ts"
 import { getSubstance } from "../../utils/Helpers.ts"

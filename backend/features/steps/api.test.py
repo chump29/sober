@@ -4,6 +4,7 @@
 
 """CRUD tests"""
 
+from datetime import UTC
 from json import dumps
 from pathlib import Path
 from tomllib import load
@@ -334,7 +335,7 @@ async def call_update_substance(context: Context) -> None:
     substance: Final[SubstanceDTO] = context.substances[0]
     assert substance, "Invalid substance"
     context.date = substance.date
-    substance.date = fake.future_date()
+    substance.date = fake.past_datetime(tzinfo=UTC)
     user: Final[User | None] = User.get_or_none(user=get_user_hash(context.user))
     assert user, "Invalid user"
     context.substance = await update_substance(pk=user.id, substance=substance, user=context.user)

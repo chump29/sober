@@ -3,10 +3,14 @@ import { type ChangeEvent, type JSX, type KeyboardEvent, type RefObject, useRef 
 import { ActionIcon, Box, Center, Modal, SegmentedControl, Stack, Text, TextInput, Tooltip } from "@mantine/core"
 import { useField } from "@mantine/form"
 import { useDisclosure } from "@mantine/hooks"
+import { modals } from "@mantine/modals"
 import { hideNotification, showNotification } from "@mantine/notifications"
 
 import { info } from "@postfmly/logger"
+import { type Nullable, type Optional } from "@postfmly/types"
 
+import { default as dayjs } from "dayjs"
+import { default as advancedFormat } from "dayjs/plugin/advancedFormat"
 import { default as httpMethods } from "http-methods-constants"
 import { default as ms } from "ms"
 import { TbCheck as IconCheck, TbMinus as IconMinus, TbPlus as IconPlus, TbX as IconX } from "react-icons/tb"
@@ -15,11 +19,13 @@ import { titleCase } from "title-case"
 
 import { fetchClient } from "../../api/index.ts"
 import { displayStoreActions } from "../../utils/displayStore.ts"
-import { DEBUG, type Nullable, type Optional, validate } from "../../utils/index.ts"
+import { DEBUG, validate } from "../../utils/index.ts"
 import { type IFetchClient } from "../../utils/interfaces/IFetchClient.ts"
 import { defaultSubstance, type ISubstance, SubstanceSchema } from "../../utils/interfaces/ISubstance.ts"
 import { type ISubstanceDisplay } from "../../utils/interfaces/ISubstanceDisplay.ts"
-import { MAX_LEN_STR, NameSchema } from "../../utils/schemas.ts"
+import { DATETIME_FORMAT_OUTPUT, MAX_LEN_STR, NameSchema } from "../../utils/schemas.ts"
+
+dayjs.extend(advancedFormat) // * NOTE: for Do format option
 
 const Substances = ({
   allSubstances,
@@ -215,7 +221,7 @@ const Substances = ({
     openSubstance()
   }
 
-  const handleDeleteAndRefresh = (): void => {
+  const doDeleteAndRefresh = (): void => {
     if (!(user && selectedSubstance)) {
       return
     }
@@ -238,6 +244,25 @@ const Substances = ({
         resolve()
       })
     }).then(async (): Promise<Optional<ISubstance[]>> => await refreshSubstances())
+  }
+
+  const handleDelete = (): void => {
+    const soberDate: string = dayjs(selectedSubstance.date).format(DATETIME_FORMAT_OUTPUT)
+
+    modals.openConfirmModal({
+      children: (
+        <Text fs="italic" fw="bold" size="sm">
+          {soberDate}
+        </Text>
+      ),
+      labels: { cancel: "No", confirm: "Yes" },
+      title: `Delete ${selectedSubstance.name}?`,
+      cancelProps: {
+        c: "var(--color-red)",
+        variant: "subtle"
+      },
+      onConfirm: (): void => doDeleteAndRefresh()
+    })
   }
 
   return (
@@ -313,7 +338,7 @@ const Substances = ({
                   value={selectedSubstance.name}
                 />
                 <Tooltip label="Delete Substance">
-                  <ActionIcon data-testid="removeButton" onClick={handleDeleteAndRefresh} variant="transparent">
+                  <ActionIcon data-testid="removeButton" onClick={handleDelete} variant="transparent">
                     <IconMinus color="var(--color-red)" size={16} />
                   </ActionIcon>
                 </Tooltip>

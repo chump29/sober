@@ -1,8 +1,9 @@
+import { type Optional } from "@postfmly/types"
+
 import { UnsecuredJWT } from "jose"
 
 import { default as env } from "../../env.config.ts"
 import { name } from "../../package.json" with { type: "json" }
-import { type Optional } from "./index.ts"
 
 const getJWT = (user: string): string =>
   new UnsecuredJWT()

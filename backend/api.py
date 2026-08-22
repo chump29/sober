@@ -5,7 +5,7 @@
 """API Service"""
 
 from dataclasses import dataclass
-from datetime import UTC, date, datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 from enum import IntEnum, auto
 from hashlib import sha256
@@ -27,7 +27,6 @@ from peewee import (
     BooleanField,
     CharField,
     Check,
-    DateField,
     DateTimeField,
     DecimalField,
     Default,
@@ -42,6 +41,7 @@ from playhouse.shortcuts import model_to_dict
 from pluralizer import Pluralizer
 from pydantic import BaseModel as ValidationModel
 from pydantic import (
+    AwareDatetime,
     ConfigDict,
     Field,
     PlainSerializer,
@@ -49,6 +49,7 @@ from pydantic import (
     StrictStr,
     TypeAdapter,
     ValidationError,
+    field_validator,
     model_validator,
 )
 from rich.console import Console
@@ -139,12 +140,7 @@ class CostType(IntEnum):
 
 def get_datetime_now() -> datetime:
     """Get current UTC datetime"""
-    return datetime.now(UTC).replace(microsecond=0, tzinfo=None)
-
-
-def get_date_now() -> date:
-    """Get current UTC date"""
-    return get_datetime_now().today()
+    return datetime.now(UTC)
 
 
 class User(BaseModel):
@@ -189,7 +185,7 @@ class Substance(BaseModel):
     )
     cost_type: IntegerField = IntegerField(default=CostType.DAY.value, constraints=[Default(CostType.DAY.value)])
     created_at: DateTimeField = DateTimeField(default=get_datetime_now, constraints=[Default("CURRENT_TIMESTAMP")])
-    date: DateField = DateField(default=get_date_now, constraints=[Default("CURRENT_DATE")])
+    date: DateTimeField = DateTimeField(default=get_datetime_now, constraints=[Default("CURRENT_TIMESTAMP")])
     id: AutoField = AutoField()
     name: CharField = CharField(max_length=MAX_LEN, unique=True)
     show_coin: BooleanField = BooleanField(default=False, constraints=[Default(False)])
@@ -231,12 +227,21 @@ class SubstanceDTO(BaseValidation):
 
     cost: DecimalToFloat = Field(decimal_places=2, ge=0.0)
     cost_type: StrictInt = Field(alias="costType", gt=0, le=len(CostType))
-    date: date
+    date: AwareDatetime  # UTC
     id: StrictInt | None = Field(gt=0, default=None)
     name: StrictStr = Field(max_length=MAX_LEN)
     show_coin: bool = Field(alias="showCoin")
     show_cost: bool = Field(alias="showCost")
     show_decimals: bool = Field(alias="showDecimals")
+
+    @field_validator("date")
+    @classmethod
+    def date_lte(cls, date: datetime) -> datetime:
+        """Check date"""
+        if date > get_datetime_now():
+            msg: Final[str] = "Date must be less than or equal to now"
+            raise ValueError(msg)
+        return date
 
     @model_validator(mode="after")
     def check_cost(self: SubstanceDTO) -> SubstanceDTO:
@@ -659,7 +664,7 @@ async def get_favicon() -> None:
 def validate_port(port: int) -> bool:
     """Validate port number"""
     try:
-        TypeAdapter(Annotated[int, Field(ge=1024, le=65535, strict=True)]).validate_python(port)
+        TypeAdapter(Annotated[int, Field(ge=1024, le=65_535, strict=True)]).validate_python(port)
     except ValidationError:
         CONSOLE.print("[bold][red]❌ Validation Error:[/bold] Port must be 1024-65535[/red]")
         return False
