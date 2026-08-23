@@ -44,7 +44,8 @@ const ISubstanceMatcher: ISubstance = {
   name: expect.any(String),
   showCoin: expect.any(Boolean),
   showCost: expect.any(Boolean),
-  showDecimals: expect.any(Boolean)
+  showDecimals: expect.any(Boolean),
+  showTime: expect.any(Boolean)
 } satisfies ISubstance
 
 const ISubstanceDisplayMatcher: ISubstanceDisplay = {

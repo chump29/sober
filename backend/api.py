@@ -191,6 +191,7 @@ class Substance(BaseModel):
     show_coin: BooleanField = BooleanField(default=False, constraints=[Default(False)])
     show_cost: BooleanField = BooleanField(default=False, constraints=[Default(False)])
     show_decimals: BooleanField = BooleanField(default=True, constraints=[Default(True)])
+    show_time: BooleanField = BooleanField(default=True, constraints=[Default(True)])
     updated_at: DateTimeField = DateTimeField(default=get_datetime_now, constraints=[Default("CURRENT_TIMESTAMP")])
     user: ForeignKeyField = ForeignKeyField(User, backref="substances", field=User.user, on_delete="CASCADE")
 
@@ -205,7 +206,7 @@ class Substance(BaseModel):
         return (
             f"name={self.name}, created_at={self.created_at}, updated_at={self.updated_at}, date={self.date}, "
             f"show_coin={self.show_coin}, show_cost={self.show_cost}, show_decimals={self.show_decimals}, "
-            f"cost={self.cost}, cost_type={CostType(self.cost_type)}"
+            f"show_time={self.show_time}, cost={self.cost}, cost_type={CostType(self.cost_type)}"
         )
 
     def __repr__(self: Substance) -> str:
@@ -233,6 +234,7 @@ class SubstanceDTO(BaseValidation):
     show_coin: bool = Field(alias="showCoin")
     show_cost: bool = Field(alias="showCost")
     show_decimals: bool = Field(alias="showDecimals")
+    show_time: bool = Field(alias="showTime")
 
     @field_validator("date")
     @classmethod
@@ -256,7 +258,7 @@ class SubstanceDTO(BaseValidation):
         return (
             f"name={self.name}, date={self.date}, "
             f"showCoin={self.show_coin}, showCost={self.show_cost}, showDecimals={self.show_decimals}, "
-            f"cost={self.cost}, costType={CostType(self.cost_type).name.title()}"
+            f"showTime={self.show_time}, cost={self.cost}, costType={CostType(self.cost_type).name.title()}"
         )
 
     def __repr__(self: SubstanceDTO) -> str:
@@ -635,6 +637,7 @@ async def update_substance(
                 show_coin=s.show_coin,
                 show_cost=s.show_cost,
                 show_decimals=s.show_decimals,
+                show_time=s.show_time,
                 updated_at=get_datetime_now(),
             )
             .where(Substance.id == s.id)

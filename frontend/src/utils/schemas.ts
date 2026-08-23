@@ -98,7 +98,7 @@ const DateTimeSchema = pipe(
     (s: string): boolean => dayjs(s, DATETIME_FORMAT, true).isValid(),
     (e: CheckIssue<string>): string => `Invalid date: ${e.input}`
   ),
-  transform((d: string): string => dayjs(d).utc().format(DATETIME_FORMAT))
+  transform((d: string): string => dayjs(d).utc().format())
 )
 
 type DateTimeSchema = typeof DateTimeSchema
@@ -106,8 +106,18 @@ type DateTimeSchema = typeof DateTimeSchema
 /**
  * Datetime output format
  * @constant {string}
+ * @summary YYYY, MMMM Do, YYYY @ h:mm A
+ * @example Saturday, August 22nd, 2026 @ 4:45 AM
  */
 const DATETIME_FORMAT_OUTPUT: string = "dddd, MMMM Do, YYYY @ h:mm A"
+
+/**
+ * Datetime short output format
+ * @constant {string}
+ * @summary YYYY, MMMM Do, YYYY
+ * @example Saturday, August 22nd, 2026
+ */
+const DATETIME_FORMAT_SHORT_OUTPUT: string = "dddd, MMMM Do, YYYY"
 
 /**
  * Validate URL
@@ -235,6 +245,7 @@ export {
   CostTypeSchema,
   DATETIME_FORMAT,
   DATETIME_FORMAT_OUTPUT,
+  DATETIME_FORMAT_SHORT_OUTPUT,
   DateTimeSchema,
   IdSchema,
   MAX_LEN_STR,

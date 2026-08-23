@@ -173,7 +173,7 @@ const Settings = ({
             }}>
             Settings
           </Modal.Title>
-          <Tooltip label="Close" withArrow>
+          <Tooltip label="Close" withArrow={true}>
             <Modal.CloseButton
               style={{
                 cursor: "pointer"
@@ -253,15 +253,15 @@ const Settings = ({
                     withScrollArea={false}
                   />
                   <NumberInput
-                    allowDecimal
+                    allowDecimal={true}
                     allowNegative={false}
-                    data-autofocus
+                    data-autofocus={true}
                     data-testid="cost"
                     decimalScale={2}
                     disabled={!substance.showCost}
                     error={substance.showCost && substance.cost === 0 ? "Must enter a cost" : null}
-                    fixedDecimalScale
-                    hideControls
+                    fixedDecimalScale={true}
+                    hideControls={true}
                     label={`Cost Per ${getKeyByValue(CostType, substance.costType)}`}
                     leftSection={<IconCurrencyDollar color="var(--color-red)" size={16} />}
                     min={0}

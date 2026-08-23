@@ -45,7 +45,8 @@ const getSubstance = (): ISubstance =>
     name: fake.helpers.arrayElement(SUBSTANCES),
     showCoin: fake.datatype.boolean(),
     showCost: fake.datatype.boolean(),
-    showDecimals: fake.datatype.boolean()
+    showDecimals: fake.datatype.boolean(),
+    showTime: fake.datatype.boolean()
   }) satisfies ISubstance
 
 export { getCoin, getCost, getSubstance, getSubstanceDisplay }

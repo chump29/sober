@@ -45,6 +45,7 @@ def get_new_substance() -> SubstanceDTO:
         showCoin=fake.boolean(),
         showCost=show_cost,
         showDecimals=fake.boolean(),
+        showTime=fake.boolean()
     )
 
 

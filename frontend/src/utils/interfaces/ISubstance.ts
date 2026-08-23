@@ -31,6 +31,8 @@ import {
  * @see {@link BooleanSchema}
  * @property {boolean} showDecimals
  * @see {@link BooleanSchema}
+ * @property {boolean} showTime
+ * @see {@link BooleanSchema}
  */
 const SubstanceSchema = object({
   cost: CostSchema,
@@ -40,7 +42,8 @@ const SubstanceSchema = object({
   name: NameSchema,
   showCoin: BooleanSchema,
   showCost: BooleanSchema,
-  showDecimals: BooleanSchema
+  showDecimals: BooleanSchema,
+  showTime: BooleanSchema
 })
 
 /**
@@ -70,7 +73,8 @@ const defaultSubstance: ISubstance = {
   name: "",
   showCoin: false,
   showCost: false,
-  showDecimals: true
+  showDecimals: true,
+  showTime: true
 } satisfies ISubstance
 
 export { defaultSubstance, type ISubstance, SubstanceSchema }

@@ -6,6 +6,7 @@ import {
   Box,
   Button,
   Center,
+  Checkbox,
   EmptyState,
   Group,
   Image,
@@ -67,6 +68,7 @@ import {
   CostType,
   DATETIME_FORMAT,
   DATETIME_FORMAT_OUTPUT,
+  DATETIME_FORMAT_SHORT_OUTPUT,
   DateTimeSchema,
   MAX_LEN_STR,
   NameSchema
@@ -386,7 +388,7 @@ const Display = (): JSX.Element => {
               cost: s.cost ?? 0,
               id: s.id as number,
               label: (
-                <Tooltip label={s.name} withArrow>
+                <Tooltip label={s.name} withArrow={true}>
                   <Text size="sm">{s.name}</Text>
                 </Tooltip>
               ),
@@ -442,6 +444,18 @@ const Display = (): JSX.Element => {
       // * NOTE: Handles NonExhaustiveError
       handleError(e)
     }
+  }
+
+  const handleSetTime = (e: ChangeEvent<HTMLInputElement>): void => {
+    const checked: boolean = e.currentTarget.checked
+
+    if (!checked) {
+      getSelectedSubstance().date = dayjs(selectedSubstanceDate).startOf("day").format(DATETIME_FORMAT)
+    }
+
+    getSelectedSubstance().showTime = checked
+
+    handleChangeDate(selectedSubstanceDate)
   }
 
   const init = async (): Promise<void> => {
@@ -532,7 +546,7 @@ const Display = (): JSX.Element => {
               }}>
               Login
             </Modal.Title>
-            <Tooltip label="Close" withArrow>
+            <Tooltip label="Close" withArrow={true}>
               <Modal.CloseButton
                 style={{
                   cursor: "pointer"
@@ -544,7 +558,7 @@ const Display = (): JSX.Element => {
             <Tooltip label="Name" withArrow={true}>
               <TextInput
                 {...nameField.getInputProps()}
-                data-autofocus
+                data-autofocus={true}
                 label="Name"
                 maxLength={MAX_LEN_STR}
                 onChange={handleNameChange}
@@ -612,7 +626,7 @@ const Display = (): JSX.Element => {
       />
       {getUser() ? (
         <>
-          <Tooltip label="Settings" withArrow>
+          <Tooltip label="Settings" withArrow={true}>
             <ActionIcon
               data-testid="settings"
               disabled={getSelectedSubstance().name.length === 0}
@@ -639,12 +653,13 @@ const Display = (): JSX.Element => {
             <Stack>
               <Center>
                 <Box mb={20}>
-                  <Tooltip label="Enter your sobriety date" withArrow>
+                  <Tooltip label="Enter your sobriety date" withArrow={true}>
                     <DateTimePicker
                       c="var(--color-blue)"
                       className="sober-date"
                       data-testid="dateTimePicker"
                       disabled={!getSelectedSubstance().name}
+                      dropdownType="modal"
                       highlightToday={true}
                       label="Sober since:"
                       leftSection={<IconCalendar color="var(--color-red)" size={16} />}
@@ -655,17 +670,22 @@ const Display = (): JSX.Element => {
                         await handleChangeDate(dayjs(val).format(DATETIME_FORMAT))
                       }
                       pointer={true}
-                      popoverProps={{
-                        withinPortal: true
-                      }}
                       ta="center"
                       timePickerProps={{
+                        clearable: true,
+                        disabled: !getSelectedSubstance().showTime,
                         format: "12h",
-                        popoverProps: { withinPortal: false },
+                        leftSection: (
+                          <Tooltip label="Set time?" withArrow={true}>
+                            <Checkbox checked={getSelectedSubstance().showTime} onChange={handleSetTime} />
+                          </Tooltip>
+                        ),
                         withDropdown: true
                       }}
                       value={getSelectedSubstance().date}
-                      valueFormat={DATETIME_FORMAT_OUTPUT}
+                      valueFormat={
+                        getSelectedSubstance().showTime ? DATETIME_FORMAT_OUTPUT : DATETIME_FORMAT_SHORT_OUTPUT
+                      }
                     />
                   </Tooltip>
                 </Box>
@@ -688,7 +708,7 @@ const Display = (): JSX.Element => {
               </Stack>
               {getSelectedSubstance().showCost && cost ? (
                 <Center mt={20}>
-                  <Text c="var(--color-red)" fw="bold" inline mr={10} size="xl">
+                  <Text c="var(--color-red)" fw="bold" inline={true} mr={10} size="xl">
                     Savings:
                   </Text>
                   <Tooltip
@@ -697,12 +717,12 @@ const Display = (): JSX.Element => {
                         {cost.costPer}
                       </Text>
                     }
-                    withArrow>
+                    withArrow={true}>
                     <Text
                       c="var(--color-green)"
                       ff="var(--font-counters)"
                       fw="bold"
-                      inline
+                      inline={true}
                       size="xl"
                       style={{
                         cursor: "pointer"
@@ -723,7 +743,7 @@ const Display = (): JSX.Element => {
                 <>
                   {/* biome-ignore lint/correctness/useUniqueElementIds: needed for CSS */}
                   <Modal
-                    centered
+                    centered={true}
                     id="coin"
                     onClose={closeCoin}
                     opened={openedCoin}
@@ -742,7 +762,7 @@ const Display = (): JSX.Element => {
                       {coin.image ? <Image src={coin.image} title={coin.text} /> : null}
                     </Stack>
                   </Modal>
-                  <Tooltip label="Show Coin" withArrow>
+                  <Tooltip label="Show Coin" withArrow={true}>
                     <Button
                       c="var(--color-black)"
                       data-testid="coinButton"

@@ -16,23 +16,12 @@
 }
 
 div#title {
-  margin-top: 10px;
-  font-size: 72px;
-  font-weight: bold;
-  color: var(--color-red);
+  margin-top: 40px;
   text-align: center;
-  text-shadow: 3px 3px 6px var(--color-black2);
-}
 
-@media (width <= 640px) {
-  div#title img.title {
-    display: flex;
+  img.title {
+    max-width: 100%;
   }
-}
-
-div#title img.title {
-  margin-inline: auto;
-  margin-top: 15px;
 }
 
 footer {
