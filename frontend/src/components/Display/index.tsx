@@ -612,7 +612,7 @@ const Display = (): JSX.Element => {
       <Group
         style={{
           left: "10px",
-          position: "fixed",
+          position: "absolute",
           top: "10px"
         }}>
         {soberUser ? (

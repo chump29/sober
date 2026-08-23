@@ -100,14 +100,15 @@ describe("Substances - index", (): void => {
     expect(nameInput).not.toBeVisible()
   })
 
-  // ! TODO
-  /*test("remove", async (): Promise<void> => {
+  test("remove", async (): Promise<void> => {
     await user?.click(await screen.findByTestId("removeButton"))
+
+    await user?.click(await screen.findByTestId("confirmDelete"))
 
     expect(infoSpy).toHaveBeenCalledTimes(2)
 
     expect(fetch).toHaveBeenCalledTimes(++times)
-  })*/
+  })
 
   test("edit", async (): Promise<void> => {
     await user?.dblClick(await screen.findByTestId(`segment-${substance?.name}`))

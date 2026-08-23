@@ -263,6 +263,9 @@ const Substances = ({
         c: "var(--color-red)",
         variant: "subtle"
       },
+      confirmProps: {
+        "data-testid": "confirmDelete"
+      },
       onConfirm: (): void => doDeleteAndRefresh()
     })
   }
