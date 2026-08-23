@@ -79,11 +79,11 @@ type StringAsBooleanSchema = typeof StringAsBooleanSchema
 /**
  * Custom datetime format
  * @constant {string}
- * @summary YYYY-MM-DDThh:mm:ss.SSSZ
+ * @summary YYYY-MM-DDTHH:mm:ss.SSSZ
  * @type {string}
  * @example 2026-08-22T04:20:45.720-05:00
  */
-const DATETIME_FORMAT: string = "YYYY-MM-DDThh:mm:ss.SSSZ"
+const DATETIME_FORMAT: string = "YYYY-MM-DDTHH:mm:ss.SSSZ"
 
 /**
  * Validate datetime
@@ -104,20 +104,20 @@ const DateTimeSchema = pipe(
 type DateTimeSchema = typeof DateTimeSchema
 
 /**
- * Datetime output format
- * @constant {string}
- * @summary YYYY, MMMM Do, YYYY @ h:mm A
- * @example Saturday, August 22nd, 2026 @ 4:45 AM
- */
-const DATETIME_FORMAT_OUTPUT: string = "dddd, MMMM Do, YYYY @ h:mm A"
-
-/**
  * Datetime short output format
  * @constant {string}
  * @summary YYYY, MMMM Do, YYYY
  * @example Saturday, August 22nd, 2026
  */
 const DATETIME_FORMAT_SHORT_OUTPUT: string = "dddd, MMMM Do, YYYY"
+
+/**
+ * Datetime output format
+ * @constant {string}
+ * @summary YYYY, MMMM Do, YYYY @ h:mm A
+ * @example Saturday, August 22nd, 2026 @ 4:20 AM
+ */
+const DATETIME_FORMAT_OUTPUT: string = `${DATETIME_FORMAT_SHORT_OUTPUT} @ h:mm A`
 
 /**
  * Validate URL

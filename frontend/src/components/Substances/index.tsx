@@ -23,7 +23,7 @@ import { DEBUG, validate } from "../../utils/index.ts"
 import { type IFetchClient } from "../../utils/interfaces/IFetchClient.ts"
 import { defaultSubstance, type ISubstance, SubstanceSchema } from "../../utils/interfaces/ISubstance.ts"
 import { type ISubstanceDisplay } from "../../utils/interfaces/ISubstanceDisplay.ts"
-import { DATETIME_FORMAT_OUTPUT, MAX_LEN_STR, NameSchema } from "../../utils/schemas.ts"
+import { DATETIME_FORMAT_OUTPUT, DATETIME_FORMAT_SHORT_OUTPUT, MAX_LEN_STR, NameSchema } from "../../utils/schemas.ts"
 
 dayjs.extend(advancedFormat) // * NOTE: for Do format option
 
@@ -247,7 +247,9 @@ const Substances = ({
   }
 
   const handleDelete = (): void => {
-    const soberDate: string = dayjs(selectedSubstance.date).format(DATETIME_FORMAT_OUTPUT)
+    const soberDate: string = dayjs(selectedSubstance.date).format(
+      selectedSubstance.showTime ? DATETIME_FORMAT_OUTPUT : DATETIME_FORMAT_SHORT_OUTPUT
+    )
 
     modals.openConfirmModal({
       children: (

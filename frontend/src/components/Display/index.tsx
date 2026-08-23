@@ -166,8 +166,6 @@ const Display = (): JSX.Element => {
   const weeks: string = getWeeks()
   const years: string = getYears()
 
-  const selectedSubstanceDate: string = getSelectedSubstance().date
-
   const validateUser = async (): Promise<void> => {
     const userValue: Nullable<string> = getUser()
     if (!userValue) {
@@ -269,7 +267,9 @@ const Display = (): JSX.Element => {
       return
     }
 
-    const d: Nullable<string> = validate<string, DateTimeSchema>(date, DateTimeSchema)
+    const formattedDate: string = dayjs(date).format(DATETIME_FORMAT) // convert from output format
+
+    const d: Nullable<string> = validate<string, DateTimeSchema>(formattedDate, DateTimeSchema)
     if (!d) {
       return
     }
@@ -449,13 +449,24 @@ const Display = (): JSX.Element => {
   const handleSetTime = (e: ChangeEvent<HTMLInputElement>): void => {
     const checked: boolean = e.currentTarget.checked
 
-    if (!checked) {
-      getSelectedSubstance().date = dayjs(selectedSubstanceDate).startOf("day").format(DATETIME_FORMAT)
+    if (checked) {
+      const now: dayjs.Dayjs = dayjs()
+
+      getSelectedSubstance().date = dayjs(getSelectedSubstance().date)
+        .set("hour", now.hour())
+        .set("minute", now.minute())
+        .set("second", now.second())
+        .set("millisecond", now.millisecond())
+        .format(DATETIME_FORMAT)
+    } else {
+      getSelectedSubstance().date = dayjs(getSelectedSubstance().date)
+        .startOf("day")
+        .format(DATETIME_FORMAT.replace("hh", "HH"))
     }
 
     getSelectedSubstance().showTime = checked
 
-    handleChangeDate(selectedSubstanceDate)
+    handleChangeDate(getSelectedSubstance().date)
   }
 
   const init = async (): Promise<void> => {
@@ -515,7 +526,7 @@ const Display = (): JSX.Element => {
     init()
 
     const interval: NodeJS.Timeout = setInterval((): void => {
-      setDisplay(selectedSubstanceDate)
+      setDisplay(getSelectedSubstance().date)
     }, INTERVAL_MS)
 
     return (): void => clearInterval(interval)

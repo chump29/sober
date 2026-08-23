@@ -64,6 +64,10 @@ const Settings = ({
         }
 
         substance.costType = c
+
+        if (substance.cost === 0) {
+          return null
+        }
       })
       .with(SaveType.SHOW_COIN, (): Nullish<string> => {
         const c: Nullable<boolean> = validate<boolean, BooleanSchema>(value as boolean, BooleanSchema)

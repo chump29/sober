@@ -5,7 +5,7 @@
 - CSS
 - Vite
 
-- [ ] Cannot change `Cost Frequency` when `Cost`=0
+- [x] Cannot change `Cost Frequency` when `Cost`=0
 
 - [x] `No time` button in DateTimePicker
 - Set datetime to 00:00:00.000Z
