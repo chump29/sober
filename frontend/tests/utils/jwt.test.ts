@@ -11,7 +11,7 @@ import { name } from "../../package.json" with { type: "json" }
 import { getHeaders } from "../../src/utils/jwt.ts"
 
 // biome-ignore lint/nursery/useExplicitType: inferred
-const { VITE_AUDIENCE } = env
+const { _AUDIENCE } = env
 
 describe("jwt", (): void => {
   test("getHeaders", (): void => {
@@ -31,7 +31,7 @@ describe("jwt", (): void => {
     expect(exp).toBeLessThanOrEqual(EXPIRE_TIME)
     expect(payload.sub).toBe(user)
     expect(payload.iss).toBe(name)
-    expect(payload.aud).toBe(VITE_AUDIENCE)
+    expect(payload.aud).toBe(_AUDIENCE)
   })
 
   test("getHeaders - fail", (): void => {

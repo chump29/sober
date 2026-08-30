@@ -6,7 +6,7 @@ import { env } from "../../env.ts"
 import { name } from "../../package.json" with { type: "json" }
 
 // biome-ignore lint/nursery/useExplicitType: inferred
-const { VITE_AUDIENCE } = env
+const { _AUDIENCE } = env
 
 const getJWT = (user: string): string =>
   new UnsecuredJWT()
@@ -14,7 +14,7 @@ const getJWT = (user: string): string =>
     .setIssuedAt()
     .setSubject(user)
     .setIssuer(name)
-    .setAudience(VITE_AUDIENCE)
+    .setAudience(_AUDIENCE)
     .encode()
 
 /**

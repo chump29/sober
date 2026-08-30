@@ -105,6 +105,7 @@ port@{shape: comment, label: "&nbsp; Nginx exposes port 80"}
 |      Build/Run PROD       |        `bun run prod`        |     `bun prod`     |
 |        Build PROD         |       `bun run build`        |      &mdash;       |
 |           Test            |        `bun run test`        |      &mdash;       |
+|      Test (verbose)       |     `bun run test:full`      |      &mdash;       |
 |      Test w/Coverage      |   `bun run test:coverage`    |      &mdash;       |
 | Test w/Coverage (verbose) | `bun run test:coverage:full` |      &mdash;       |
 

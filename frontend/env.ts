@@ -14,10 +14,10 @@ const timeoutValidator: ExactValidator<number> = makeExactValidator<number>((s: 
 const urlValidator: ExactValidator<string> = makeExactValidator<string>((s: string): string => parse(UrlSchema, s))
 
 const env = cleanEnv(import.meta.env, {
-  VITE_API_TIMEOUT: timeoutValidator({ default: ms("2s") }),
-  VITE_API_URL: urlValidator({ default: "", testDefault: "http://localhost:5560" }),
-  VITE_AUDIENCE: stringValidator({ default: "sober-backend" }),
-  VITE_DEBUG: bool({ default: false, testDefault: true }),
+  _API_TIMEOUT: timeoutValidator({ default: ms("2s") }),
+  _API_URL: urlValidator({ default: "", testDefault: "http://localhost:5560" }),
+  _AUDIENCE: stringValidator({ default: "sober-backend" }),
+  _DEBUG: bool({ default: false, testDefault: true }),
   VITE_TITLE: titleValidator({ default: "Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" })
 })
 

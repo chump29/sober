@@ -8,7 +8,7 @@ import { env } from "../../env.ts"
 import { BooleanSchema } from "./schemas.ts"
 
 // biome-ignore lint/nursery/useExplicitType: inferred
-const { VITE_DEBUG } = env
+const { _DEBUG } = env
 
 /**
  * Find DOM element
@@ -104,7 +104,7 @@ type UpdateType = (typeof UpdateType)[keyof typeof UpdateType]
  * @constant {boolean}
  * @default false
  */
-const DEBUG: boolean = validate<boolean, BooleanSchema>(VITE_DEBUG, BooleanSchema) ?? false
+const DEBUG: boolean = validate<boolean, BooleanSchema>(_DEBUG, BooleanSchema) ?? false
 
 /**
  * Get key by value

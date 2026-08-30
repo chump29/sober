@@ -40,9 +40,10 @@
     "prepare": "cd .. && bun run --bun husky frontend/.husky",
     "prod": "bun run build && cd dist && bunx --bun serve --no-clipboard",
     "scan": "bun audit && bun run --bun cve-lite --check-overrides",
-    "test": "bun test --isolate --preload ./tests/dom-setup.ts --preload ./tests/setup.ts --bail",
+    "test": "bun test --isolate --dots --preload ./tests/dom-setup.ts --preload ./tests/setup.ts --bail",
     "test:coverage": "bun test --isolate --dots --coverage --coverage-dir ./tests/coverage --coverage-reporter=text --coverage-reporter=lcov --preload ./tests/dom-setup.ts --preload ./tests/setup.ts --bail",
     "test:coverage:full": "bun test --isolate --coverage --coverage-dir ./tests/coverage --coverage-reporter=text --coverage-reporter=lcov --preload ./tests/dom-setup.ts --preload ./tests/setup.ts --bail",
+    "test:full": "bun test --isolate --preload ./tests/dom-setup.ts --preload ./tests/setup.ts --bail",
     "updates": "bunx --bun npm-check-updates --dep overrides,prod,dev --cooldown 0 --install never --packageManager bun --peer"
   },
   "lint-staged": {

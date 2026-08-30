@@ -7,10 +7,10 @@ import { getHeaders } from "../utils/jwt.ts"
 import { TimeoutSchema, UrlSchema } from "../utils/schemas.ts"
 
 // biome-ignore lint/nursery/useExplicitType: inferred
-const { VITE_API_TIMEOUT, VITE_API_URL } = env
+const { _API_TIMEOUT, _API_URL } = env
 
-const API_URL: string = validate<string, UrlSchema>(VITE_API_URL, UrlSchema) as string
-const API_TIMEOUT: number = validate<number, TimeoutSchema>(VITE_API_TIMEOUT, TimeoutSchema) as number
+const API_URL: string = validate<string, UrlSchema>(_API_URL, UrlSchema) as string
+const API_TIMEOUT: number = validate<number, TimeoutSchema>(_API_TIMEOUT, TimeoutSchema) as number
 
 const fetchClient = async <R = null>(settings: IFetchClient): Promise<Nullable<R>> => {
   const s: Nullable<IFetchClient> = validate<IFetchClient, FetchClientSchema>(settings, FetchClientSchema)
