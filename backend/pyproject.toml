@@ -20,10 +20,10 @@ classifiers = [
 dependencies = [
     "cachetools>=7.1.7",
     "fastapi[standard-no-fastapi-cloud-cli]>=0.141.1",
-    "nh3>=0.3.6",
-    "peewee>=4.3.0",
+    "nh3>=0.3.7",
+    "peewee>=4.4.0",
     "pluralizer>=2.0.0",
-    "pydantic>=2.13.4",
+    "pydantic>=2.13.5",
     "pyjwt[crypto]>=2.13.0",
     "python-box>=7.4.1",
     "python-dotenv>=1.2.3",
@@ -43,12 +43,12 @@ GitHub = "https://github.com/chump29/sober"
 [project.optional-dependencies]
 dev = [
     "behave>=1.3.3",
-    "coverage>=7.15.4",
+    "coverage>=7.16.0",
     "faker>=40.37.0",
     "pre-commit>=4.6.2",
-    "pylint>=4.0.7",
+    "pylint>=4.0.8",
     "types-behave>=1.3.0.20260408",
-    "types-peewee>=4.3.0.20260807",
+    "types-peewee>=4.4.0.20260827",
 ]
 
 [tool.coverage.json]
@@ -152,7 +152,7 @@ convention = "google"
 
 [tool.uv]
 python-downloads = "manual"
-required-version = ">=0.12.5"
+required-version = ">=0.12.7"
 
 [tool.uv.build-backend]
 namespace = true

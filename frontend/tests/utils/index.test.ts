@@ -118,7 +118,7 @@ describe("utils - index", (): void => {
   })
 
   test("DEBUG", (): void => {
-    expect(DEBUG).toBeTrue() // * NOTE: set from .env.test
+    expect(DEBUG).toBeTrue()
   })
 
   test("getKeyByValue", (): void => {

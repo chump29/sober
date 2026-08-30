@@ -2,8 +2,11 @@ import { type Optional } from "@postfmly/types"
 
 import { UnsecuredJWT } from "jose"
 
-import { default as env } from "../../env.config.ts"
+import { env } from "../../env.ts"
 import { name } from "../../package.json" with { type: "json" }
+
+// biome-ignore lint/nursery/useExplicitType: inferred
+const { VITE_AUDIENCE } = env
 
 const getJWT = (user: string): string =>
   new UnsecuredJWT()
@@ -11,7 +14,7 @@ const getJWT = (user: string): string =>
     .setIssuedAt()
     .setSubject(user)
     .setIssuer(name)
-    .setAudience(env.VITE_AUDIENCE)
+    .setAudience(VITE_AUDIENCE)
     .encode()
 
 /**

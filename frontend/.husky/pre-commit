@@ -2,7 +2,7 @@
 
 cd frontend
 
-bun run lint-staged
+bun run --bun lint-staged
 
 cd ../backend
 

@@ -15,9 +15,6 @@
 ![Vite](https://img.shields.io/badge/Vite-$_vite-informational?style=plastic&logo=vite "Vite")
 
 ![Coverage](https://img.shields.io/badge/Coverage-$_coverage%25-success?style=plastic&logo=v8 "Coverage")
-
-![CodeQL](https://github.com/$_user/$_repo/workflows/CodeQL/badge.svg "CodeQL") &nbsp;
-![License](https://img.shields.io/github/license/$_user/$_repo?style=plastic&color=blueviolet&label=License&logo=gplv3 "GPLv3")
 <!-- cspell:enable -->
 
 ---
@@ -95,20 +92,21 @@ port@{shape: comment, label: "&nbsp; Nginx exposes port 80"}
 
 #### Scripts:
 
-|     📋 Task     |    🔧 Command (Full)    | 🔧 Command (Short) |
-|:---------------:|:-----------------------:|:------------------:|
-| Lint All (DEV)  |     `bun run lint`      |     `bun lint`     |
-|  Lint All (CI)  |    `bun run lint:ci`    |   `bun lint:ci`    |
-|   Lint Biome    |  `bun run lint:biome`   |  `bun lint:biome`  |
-|    Lint CSS     |   `bun run lint:css`    |   `bun lint:css`   |
-|    Lint ENV     |   `bun run lint:env`    |   `bun lint:env`   |
-|    Lint HTML    |   `bun run lint:html`   |  `bun lint:html`   |
-|  Lint Spelling  |  `bun run lint:spell`   |  `bun lint:spell`  |
-|     Run DEV     |      `bun run dev`      |     `bun dev`      |
-| Build/Run PROD  |     `bun run prod`      |     `bun prod`     |
-|   Build PROD    |     `bun run build`     |      &mdash;       |
-|      Test       |     `bun run test`      |      &mdash;       |
-| Test w/Coverage | `bun run test:coverage` |      &mdash;       |
+|          📋 Task          |      🔧 Command (Full)       | 🔧 Command (Short) |
+|:-------------------------:|:----------------------------:|:------------------:|
+|      Lint All (DEV)       |        `bun run lint`        |     `bun lint`     |
+|       Lint All (CI)       |      `bun run lint:ci`       |   `bun lint:ci`    |
+|        Lint Biome         |     `bun run lint:biome`     |  `bun lint:biome`  |
+|         Lint CSS          |      `bun run lint:css`      |   `bun lint:css`   |
+|         Lint ENV          |      `bun run lint:env`      |   `bun lint:env`   |
+|         Lint HTML         |     `bun run lint:html`      |  `bun lint:html`   |
+|       Lint Spelling       |     `bun run lint:spell`     |  `bun lint:spell`  |
+|          Run DEV          |        `bun run dev`         |     `bun dev`      |
+|      Build/Run PROD       |        `bun run prod`        |     `bun prod`     |
+|        Build PROD         |       `bun run build`        |      &mdash;       |
+|           Test            |        `bun run test`        |      &mdash;       |
+|      Test w/Coverage      |   `bun run test:coverage`    |      &mdash;       |
+| Test w/Coverage (verbose) | `bun run test:coverage:full` |      &mdash;       |
 
 #### Docker Deployment:
 

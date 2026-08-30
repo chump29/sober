@@ -9,12 +9,12 @@
 
 ![Behave](https://img.shields.io/badge/Behave->=1.3.3-informational?style=plastic "Behave") &nbsp;
 ![FastAPI](https://img.shields.io/badge/FastAPI->=0.141.1-informational?style=plastic&logo=fastapi "FastAPI") &nbsp;
-![Peewee](https://img.shields.io/badge/Peewee->=4.3.0-informational?style=plastic "Peewee") &nbsp;
-![Pydantic](https://img.shields.io/badge/Pydantic->=2.13.4-informational?style=plastic&logo=pydantic "Pydantic") &nbsp;
+![Peewee](https://img.shields.io/badge/Peewee->=4.4.0-informational?style=plastic "Peewee") &nbsp;
+![Pydantic](https://img.shields.io/badge/Pydantic->=2.13.5-informational?style=plastic&logo=pydantic "Pydantic") &nbsp;
 ![SQLite](https://img.shields.io/badge/SQLite-3.53.4-informational?style=plastic&logo=sqlite "SQLite") &nbsp;
-![uv](https://img.shields.io/badge/uv->=0.12.5-informational?style=plastic&logo=uv "uv")
+![uv](https://img.shields.io/badge/uv->=0.12.7-informational?style=plastic&logo=uv "uv")
 
-![Coverage](https://img.shields.io/badge/Coverage-87.71%25-success?style=plastic "Coverage")
+![Coverage](https://img.shields.io/badge/Coverage-86.92%25-success?style=plastic "Coverage")
 <!-- cspell:enable -->
 
 ---

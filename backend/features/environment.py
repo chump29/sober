@@ -51,7 +51,7 @@ def get_new_substance() -> SubstanceDTO:
 
 def before_feature(context: Context, _: Feature) -> None:
     """Run before features"""
-    User.delete().execute(None)
+    User.delete().execute()  # pylint: disable=no-value-for-parameter
     context.user = fake.first_name()
     assert context.user, "Could not set user"
     if context.config.wip:

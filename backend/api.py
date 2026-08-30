@@ -39,9 +39,11 @@ from peewee import (
 )
 from playhouse.shortcuts import model_to_dict
 from pluralizer import Pluralizer
-from pydantic import BaseModel as ValidationModel
 from pydantic import (
     AwareDatetime,
+)
+from pydantic import BaseModel as ValidationModel
+from pydantic import (
     ConfigDict,
     Field,
     PlainSerializer,
@@ -236,9 +238,9 @@ class SubstanceDTO(BaseValidation):
     show_decimals: bool = Field(alias="showDecimals")
     show_time: bool = Field(alias="showTime")
 
-    @field_validator("date")
     @classmethod
-    def date_lte(cls, date: datetime) -> datetime:
+    @field_validator("date")
+    def date_lte(cls: type[SubstanceDTO], date: datetime) -> datetime:
         """Check date"""
         if date > get_datetime_now():
             msg: Final[str] = "Date must be less than or equal to now"
@@ -413,7 +415,7 @@ def verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(HTTP
             algorithms=["none"],
             leeway=5,
             audience=getenv("_NAME", NA),
-            issuer=getenv("ISSUER", NA),
+            issuer="sober-frontend",
         )
         user = payload.get("sub")
     except InvalidTokenError as e:

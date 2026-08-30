@@ -3,7 +3,6 @@
 import { default as dayjs } from "dayjs"
 import { default as utc } from "dayjs/plugin/utc"
 import { default as httpMethods } from "http-methods-constants"
-import { default as ms, type StringValue } from "ms"
 import { valid } from "semver"
 import {
   boolean,
@@ -19,7 +18,6 @@ import {
   number,
   optional,
   pipe,
-  regex,
   string,
   toBoolean,
   toNumber,
@@ -133,16 +131,9 @@ const MIN_TIMEOUT: number = 200
 /**
  * Validate API timeout
  * @function
- * @summary Optional<string>, min value = {@link MIN_TIMEOUT} ms
+ * @summary number, min value = {@link MIN_TIMEOUT} ms
  */
-const TimeoutSchema = optional(
-  pipe(
-    StringSchema,
-    regex(/^\d+\w+$/i),
-    transform((s: string): number => ms(s as StringValue)),
-    minValue(MIN_TIMEOUT)
-  )
-)
+const TimeoutSchema = pipe(number(), integer(), minValue(MIN_TIMEOUT))
 
 type TimeoutSchema = typeof TimeoutSchema
 

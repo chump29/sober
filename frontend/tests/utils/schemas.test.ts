@@ -74,16 +74,16 @@ describe("schemas", (): void => {
     expect(
       safeParse(
         TimeoutSchema,
-        `${fake.number.int({
-          max: 5,
-          min: 1
-        })}${fake.helpers.arrayElement<string>(["s", "m"])}`
+        fake.number.int({
+          max: 5000,
+          min: 1000
+        })
       ).success
     ).toBeTrue()
   })
 
   test("TimeoutSchema - fail", (): void => {
-    const t: SafeParseResult<TimeoutSchema> = safeParse(TimeoutSchema, "1ms")
+    const t: SafeParseResult<TimeoutSchema> = safeParse(TimeoutSchema, 0)
 
     expect(t.success).toBeFalse()
     expect(t.issues?.[0].message).toContain(">=200") // MIN_TIMEOUT
