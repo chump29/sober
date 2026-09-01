@@ -25,7 +25,7 @@ repos:
     rev: v10.1.0
     hooks:
       - id: cspell
-        args: [--no-must-file-files]
+        args: [--no-must-find-files]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.16.5
     hooks:
