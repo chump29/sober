@@ -56,6 +56,7 @@ jobs:
       - name: Check out cSpell config
         uses: actions/checkout@v7
         with:
+          clean: false
           repository: admin/config
           sparse-checkout: .vscode/cspell.json
 
