@@ -7,8 +7,8 @@
 from datetime import UTC
 from json import dumps
 from pathlib import Path
-from tomllib import load
-from typing import TYPE_CHECKING, Final
+from tomllib import loads
+from typing import TYPE_CHECKING, Any, Final
 
 # pylint: disable-next=import-error
 from api import (
@@ -30,7 +30,6 @@ from api import (
     update_substance,
 )
 from behave import given, then, when
-from box import Box
 from environment import fake, get_new_substance, log  # pylint: disable=import-error
 
 if TYPE_CHECKING:
@@ -120,8 +119,8 @@ def return_cache_cleared(context: Context) -> None:
 @given("a request for the version")
 def request_version(context: Context) -> None:
     """Request version"""
-    with Path("pyproject.toml").open("rb") as pyproject:
-        context.real_version = str(Box(load(pyproject), frozen_box=True).project.version)
+    pyproject: Final[dict[str, Any]] = loads(Path("pyproject.toml").read_text(encoding="utf-8"))
+    context.real_version = pyproject["project"]["version"]
 
 
 @when("/version API endpoint is called")

@@ -15,7 +15,7 @@ import { type FetchMock, default as fetchMock } from "jest-fetch-mock"
 import { default as ms } from "ms"
 import { match } from "ts-pattern"
 
-import Display from "../../../src/components/Display/index.tsx"
+import { Display } from "../../../src/components/Display/index.tsx"
 import { type ISubstance } from "../../../src/utils/interfaces/ISubstance.ts"
 import { CostType } from "../../../src/utils/schemas.ts"
 import { getSubstance } from "../../utils/Helpers.ts"
@@ -35,13 +35,8 @@ const fetch: FetchMock = fetchMock.enableMocks().mockResponse(
     match<string, Response>(new URL(req.url).pathname)
       .returnType<Response>()
       .with("/api/substances", (): Response => Response.json([substance]))
-      .with("/api/user", (): Response => new Response())
-      .otherwise(
-        (): Response =>
-          new Response(null, {
-            status: httpStatus.IM_A_TEAPOT
-          })
-      )
+      .with("/api/user", (): Response => new Response(null, { status: httpStatus.NO_CONTENT }))
+      .otherwise((): Response => new Response(null, { status: httpStatus.IM_A_TEAPOT }))
 )
 
 const infoSpy: jest.Mock = spyOn(console, "info")

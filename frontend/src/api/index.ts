@@ -1,16 +1,12 @@
 import { type Nullable } from "@postfmly/types"
 
-import { env } from "../../env.ts"
+import { env } from "../env.ts"
 import { FetchError, handleError, validate } from "../utils/index.ts"
 import { FetchClientSchema, type IFetchClient } from "../utils/interfaces/IFetchClient.ts"
 import { getHeaders } from "../utils/jwt.ts"
-import { TimeoutSchema, UrlSchema } from "../utils/schemas.ts"
 
 // biome-ignore lint/nursery/useExplicitType: inferred
-const { _API_TIMEOUT, _API_URL } = env
-
-const API_URL: string = validate<string, UrlSchema>(_API_URL, UrlSchema) as string
-const API_TIMEOUT: number = validate<number, TimeoutSchema>(_API_TIMEOUT, TimeoutSchema) as number
+const { SOBER_API_TIMEOUT: API_TIMEOUT, SOBER_API_URL: API_URL } = env
 
 const fetchClient = async <R = null>(settings: IFetchClient): Promise<Nullable<R>> => {
   const s: Nullable<IFetchClient> = validate<IFetchClient, FetchClientSchema>(settings, FetchClientSchema)
@@ -55,4 +51,4 @@ const fetchClient = async <R = null>(settings: IFetchClient): Promise<Nullable<R
     })
 }
 
-export { API_TIMEOUT, API_URL, fetchClient }
+export { fetchClient }

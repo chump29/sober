@@ -13,7 +13,7 @@ import { type FetchMock, default as fetchMock } from "jest-fetch-mock"
 import { default as ms } from "ms"
 import { match, P } from "ts-pattern"
 
-import Settings from "../../../src/components/Settings/index.tsx"
+import { Settings } from "../../../src/components/Settings/index.tsx"
 import { getKeyByValue } from "../../../src/utils/index.ts"
 import { type ISubstance } from "../../../src/utils/interfaces/ISubstance.ts"
 import { CostType } from "../../../src/utils/schemas.ts"

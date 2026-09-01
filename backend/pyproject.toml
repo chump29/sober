@@ -18,17 +18,16 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "cachetools>=7.1.7",
+    "cachetools>=7.1.8",
     "fastapi[standard-no-fastapi-cloud-cli]>=0.141.1",
     "nh3>=0.3.7",
     "peewee>=4.4.0",
     "pluralizer>=2.0.0",
     "pydantic>=2.13.5",
     "pyjwt[crypto]>=2.13.0",
-    "python-box>=7.4.1",
-    "python-dotenv>=1.2.3",
     "rich>=15.0.0",
     "semver>=3.0.4",
+    "venvalid>=0.3.0",
 ]
 description = "Sobriety counter (Backend)"
 keywords = ["sober", "sobriety", "time", "tracker", "counter"]
@@ -152,7 +151,7 @@ convention = "google"
 
 [tool.uv]
 python-downloads = "manual"
-required-version = ">=0.12.7"
+required-version = ">=0.12.8"
 
 [tool.uv.build-backend]
 namespace = true

@@ -4,12 +4,6 @@ import { type Nullable, type Optional } from "@postfmly/types"
 import { match } from "ts-pattern"
 import { array, type GenericSchema, isValiError, parse, summarize, type ValiError } from "valibot"
 
-import { env } from "../../env.ts"
-import { BooleanSchema } from "./schemas.ts"
-
-// biome-ignore lint/nursery/useExplicitType: inferred
-const { _DEBUG } = env
-
 /**
  * Find DOM element
  * @function
@@ -100,13 +94,6 @@ const UpdateType = {
 type UpdateType = (typeof UpdateType)[keyof typeof UpdateType]
 
 /**
- * Debug mode
- * @constant {boolean}
- * @default false
- */
-const DEBUG: boolean = validate<boolean, BooleanSchema>(_DEBUG, BooleanSchema) ?? false
-
-/**
  * Get key by value
  * @function
  * @param {T} obj Const literal
@@ -134,4 +121,4 @@ const SaveType = {
  */
 type SaveType = (typeof SaveType)[keyof typeof SaveType]
 
-export { DEBUG, FetchError, findElement, getKeyByValue, getVersion, handleError, SaveType, UpdateType, validate }
+export { FetchError, findElement, getKeyByValue, getVersion, handleError, SaveType, UpdateType, validate }

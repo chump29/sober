@@ -9,14 +9,13 @@ from datetime import UTC, datetime
 from decimal import Decimal
 from enum import IntEnum, auto
 from hashlib import sha256
-from os import getenv, getpid, kill, path
+from os import getpid, kill, path
 from pathlib import Path
 from signal import SIGINT, SIGKILL, SIGTERM, Signals, signal
 from typing import TYPE_CHECKING, Annotated, ClassVar, Final
 
 from cachetools import LRUCache, _CacheInfo, cached
-from dotenv import load_dotenv
-from env import set_env_vars  # pyright: ignore[reportMissingImports]
+from env import MAX_PORT, MIN_PORT, env
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -64,21 +63,13 @@ if TYPE_CHECKING:
 
     from cachetools import _cached_wrapper_info
 
-
-load_dotenv()
-load_dotenv(".env.local")
-
 CONSOLE: Final[Console] = Console()
 catch_exceptions()
 
-try:
-    DEBUG: bool = TypeAdapter(bool).validate_python(getenv("DEBUG", default="False"))
-except ValidationError:
-    CONSOLE.print("[bold][red]❌ Validation Error:[/bold] Invalid DEBUG value[/red]")
-    DEBUG: bool = False
+DEBUG: Final[bool] = env["SOBER_DEBUG"]
 
-DB_PATH: Final[str] = "./db/"
-DB_FILE: Final[str] = getenv("DB_FILE", "sober.db")
+DB_PATH: Final[str] = env["SOBER_DB_PATH"]
+DB_FILE: Final[str] = env["SOBER_DB_FILE"]
 DB_STR: Final[str] = "./" + path.normpath(f"{DB_PATH}/{DB_FILE}")
 
 if not DB_STR.startswith(DB_PATH):
@@ -363,8 +354,6 @@ async def clear_cache_stats() -> str:
     return "Cache cleared"
 
 
-set_env_vars()
-
 NA: Final[str] = "N/A"
 
 
@@ -379,7 +368,7 @@ def get_version() -> str | None:
         raise ValueError(msg)
 
     try:
-        version: Final[str] = getenv("_VERSION", NA)
+        version: Final[str] = env["SOBER_VERSION"]
         if not Version.is_valid(version):
             invalid_version(version)
         if DEBUG:
@@ -414,8 +403,8 @@ def verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(HTTP
             },
             algorithms=["none"],
             leeway=5,
-            audience=getenv("_NAME", NA),
-            issuer="sober-frontend",
+            audience=env["SOBER_NAME"],
+            issuer=env["SOBER_JWT_AUDIENCE"],
         )
         user = payload.get("sub")
     except InvalidTokenError as e:
@@ -558,7 +547,17 @@ async def add_substance(substance: SubstanceDTO, user: Annotated[str, Depends(ve
             log(f"Adding substance for {shorten(user_hash)}:", str(s))
         get_substances.cache_clear()
         return to_substance_dto(
-            Substance.create(cost=s.cost, name=s.name, user=user_hash, cost_type=s.cost_type, date=s.date)
+            Substance.create(
+                cost_type=s.cost_type,
+                cost=s.cost,
+                date=s.date,
+                name=s.name,
+                show_coin=s.show_coin,
+                show_cost=s.show_cost,
+                show_decimals=s.show_decimals,
+                show_time=s.show_time,
+                user=user_hash,
+            )
         )
     except Exception:
         CONSOLE.print_exception()
@@ -669,7 +668,7 @@ async def get_favicon() -> None:
 def validate_port(port: int) -> bool:
     """Validate port number"""
     try:
-        TypeAdapter(Annotated[int, Field(ge=1024, le=65_535, strict=True)]).validate_python(port)
+        TypeAdapter(Annotated[int, Field(ge=MIN_PORT, le=MAX_PORT, strict=True)]).validate_python(port)
     except ValidationError:
         CONSOLE.print("[bold][red]❌ Validation Error:[/bold] Port must be 1024-65535[/red]")
         return False
@@ -683,7 +682,7 @@ def invalid_port(port: int) -> None:
 
 
 try:
-    PORT: Final[int] = int(getenv("API_PORT", "5560"))
+    PORT: Final[int] = env["SOBER_API_PORT"]
     if not validate_port(PORT):
         invalid_port(PORT)
     elif DEBUG:

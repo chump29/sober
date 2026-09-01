@@ -12,9 +12,9 @@
 ![Peewee](https://img.shields.io/badge/Peewee->=4.4.0-informational?style=plastic "Peewee") &nbsp;
 ![Pydantic](https://img.shields.io/badge/Pydantic->=2.13.5-informational?style=plastic&logo=pydantic "Pydantic") &nbsp;
 ![SQLite](https://img.shields.io/badge/SQLite-3.53.4-informational?style=plastic&logo=sqlite "SQLite") &nbsp;
-![uv](https://img.shields.io/badge/uv->=0.12.7-informational?style=plastic&logo=uv "uv")
+![uv](https://img.shields.io/badge/uv->=0.12.8-informational?style=plastic&logo=uv "uv")
 
-![Coverage](https://img.shields.io/badge/Coverage-86.92%25-success?style=plastic "Coverage")
+![Coverage](https://img.shields.io/badge/Coverage-86.70%25-success?style=plastic "Coverage")
 <!-- cspell:enable -->
 
 ---
@@ -49,80 +49,9 @@ get_cache_stats-->clear_cache_stats
 
 ---
 
-### 🛠️ Environment Management
-
-#### Python ([uv](https://github.com/astral-sh/uv "uv") manager):
-
-|        📋 Task         |           🔧 Command            |
-|:----------------------:|:-------------------------------:|
-|         Update         |        `uv self update`         |
-|        Install         |  `uv python install [version]`  |
-|       Uninstall        | `uv python uninstall [version]` |
-|          Pin           |    `uv python pin [version]`    |
-| Create/Update Lockfile |            `uv lock`            |
-|   Create/Update venv   |            `uv sync`            |
-| Create/Update env venv |     `uv sync --extra [env]`     |
-|   Installed Versions   |        `uv python list`         |
-
-### 📦 Dependency Management
-
-#### Installation & Removal:
-
-|        📋 Task        |               🔧 Command               |
-|:---------------------:|:--------------------------------------:|
-|    Add Dependency     |           `uv add [package]`           |
-|  Add env Dependency   |  `uv add --optional [env] [package]`   |
-|   Remove Dependency   |         `uv remove [package]`          |
-| Remove env Dependency | `uv remove --optional [env] [package]` |
-
-#### Maintenance & Quality:
-
-|     📋 Task      |               🔧 Command               |
-|:----------------:|:--------------------------------------:|
-|  Check Updates   |        `uv pip list --outdated`        |
-|   Upgrade All    |          `uv lock --upgrade`           |
-|       List       |             `uv pip list`              |
-|    List Tree     |               `uv tree`                |
-|    Hierarchy     |     `uv tree --package [package]`      |
-| Hierarchy Parent | `uv tree --package [package] --invert` |
-|   Clean Cache    |            `uv cache clean`            |
-|  Security Audit  |               `uv audit`               |
-
-### 🧪 Development
-
-#### Scripts:
-
- | 📋 Task / 📜 Script |      🔧 Command (Full)      | 🔧 Command (Short) |
- |:-------------------:|:---------------------------:|:------------------:|
- |        Lint         | `uv run pylint --verbose .` |    `./lint.sh`     |
- |        Test         |   `uv run behave --stop`    |    `./test.sh`     |
-
-#### API Deployment:
-
-| 📋 Task / 📜 Script |             🔧 Command (Full)             | 🔧 Command (Short) |
-|:-------------------:|:-----------------------------------------:|:------------------:|
-|         DEV         | `uv run fastapi dev api.py --port ` |     `./api.py`     |
-|        PROD         | `uv run fastapi run api.py --port ` |      &mdash;       |
-
-#### API Documentation:
+### API Documentation
 
 |  📄 UI  |  🌐 URL  |
 |:-------:|:--------:|
 | Swagger | `/docs`  |
 |  ReDoc  | `/redoc` |
-
-#### Docker Deployment:
-
-| 📜 Script  |   🔧 Command   |
-|:----------:|:--------------:|
-|    Full    |  `./build.sh`  |
-| Image Only | `./Dockerfile` |
-
-#### Virtual Environment:
-
-|     📋 Task     |         🔧 Command          |
-|:---------------:|:---------------------------:|
-|     Create      |          `uv venv`          |
-| Create Specific |   `uv venv -p [version]`    |
-|    Activate     | `source .venv/bin/activate` |
-|   Deactivate    |        `deactivate`         |

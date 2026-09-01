@@ -1,6 +1,6 @@
 #!/usr/bin/env -S bash -e
 
-export DB_FILE=sober.test.db
+export SOBER_DB_FILE=sober.test.db
 
 rm -f .coverage* && \
 uv run coverage run --module behave --stop && \

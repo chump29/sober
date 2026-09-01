@@ -10,10 +10,14 @@ import { createRoot } from "react-dom/client"
 
 import { version } from "../package.json" with { type: "json" }
 import { fetchClient } from "./api/index.ts"
-import { default as Display } from "./components/Display/index.tsx"
-import { DEBUG, findElement, getVersion, handleError, validate } from "./utils/index.ts"
+import { Display } from "./components/Display/index.tsx"
+import { env } from "./env.ts"
+import { findElement, getVersion, handleError, validate } from "./utils/index.ts"
 import { type IFetchClient } from "./utils/interfaces/IFetchClient.ts"
 import { VersionSchema } from "./utils/schemas.ts"
+
+// biome-ignore lint/nursery/useExplicitType: inferred
+const { SOBER_DEBUG: DEBUG } = env
 
 const uiVersion: string = getVersion(validate<string, VersionSchema>(version, VersionSchema) ?? "")
 

@@ -6,12 +6,12 @@ import { fakerEN_US as fake } from "@faker-js/faker"
 import { default as dayjs } from "dayjs"
 import { UnsecuredJWT } from "jose"
 
-import { env } from "../../env.ts"
 import { name } from "../../package.json" with { type: "json" }
+import { env } from "../../src/env.ts"
 import { getHeaders } from "../../src/utils/jwt.ts"
 
 // biome-ignore lint/nursery/useExplicitType: inferred
-const { _AUDIENCE } = env
+const { SOBER_JWT_AUDIENCE: AUDIENCE } = env
 
 describe("jwt", (): void => {
   test("getHeaders", (): void => {
@@ -31,7 +31,7 @@ describe("jwt", (): void => {
     expect(exp).toBeLessThanOrEqual(EXPIRE_TIME)
     expect(payload.sub).toBe(user)
     expect(payload.iss).toBe(name)
-    expect(payload.aud).toBe(_AUDIENCE)
+    expect(payload.aud).toBe(AUDIENCE)
   })
 
   test("getHeaders - fail", (): void => {

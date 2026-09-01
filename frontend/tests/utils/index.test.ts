@@ -7,7 +7,6 @@ import { expectTypeOf } from "expect-type"
 import { ValiError } from "valibot"
 
 import {
-  DEBUG,
   FetchError,
   findElement,
   getKeyByValue,
@@ -115,10 +114,6 @@ describe("utils - index", (): void => {
 
   test("UpdateType", (): void => {
     expectTypeOf(fake.helpers.objectValue(UpdateType)).toEqualTypeOf<UpdateType>()
-  })
-
-  test("DEBUG", (): void => {
-    expect(DEBUG).toBeTrue()
   })
 
   test("getKeyByValue", (): void => {

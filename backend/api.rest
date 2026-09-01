@@ -1,5 +1,50 @@
-# @prompt user
+# @prompt user User name
 
-@port = 5560
+@url = http://localhost:5560/api
 
-DELETE http://localhost:{{port}}/api/user/delete/{{user}}
+DELETE {{url}}/user/delete/{{user}}
+
+###
+
+# @prompt token JWT Token
+
+GET {{url}}/user
+Authorization: Bearer {{token}}
+
+###
+
+# @prompt token JWT Token
+
+POST {{url}}/substances/add
+Authorization: Bearer {{token}}
+content-type: application/json
+
+{
+  "cost": 90,
+  "cost_type": 2,
+  "date": "2025-10-11T00:00Z",
+  "name": "Alcohol",
+  "showCoin": true,
+  "showCost": true,
+  "showDecimals": true,
+  "showTime": false
+}
+
+###
+
+# @prompt token JWT Token
+
+POST {{url}}/substances/add
+Authorization: Bearer {{token}}
+content-type: application/json
+
+{
+  "cost": 14,
+  "cost_type": 1,
+  "date": "2026-03-10T00:00Z",
+  "name": "Cigarettes",
+  "showCoin": false,
+  "showCost": true,
+  "showDecimals": true,
+  "showTime": false
+}

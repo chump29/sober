@@ -28,23 +28,9 @@ frontend-->frontendPort
 backend-->backendPort
 ```
 
-#### Building Images:
-
-```bash
-./build.sh
-```
-
 ---
 
-### 📄 Documentation
-
-#### Building:
-
-```bash
-./docs.sh
-```
-
-#### Links:
+### Links
 
 - [Frontend](./frontend/README.md "Frontend")
 - [Backend](./backend/README.md "Backend")

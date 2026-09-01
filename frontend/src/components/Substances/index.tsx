@@ -18,12 +18,16 @@ import { type KeyedMutator } from "swr"
 import { titleCase } from "title-case"
 
 import { fetchClient } from "../../api/index.ts"
+import { env } from "../../env.ts"
 import { displayStoreActions } from "../../utils/displayStore.ts"
-import { DEBUG, validate } from "../../utils/index.ts"
+import { validate } from "../../utils/index.ts"
 import { type IFetchClient } from "../../utils/interfaces/IFetchClient.ts"
 import { defaultSubstance, type ISubstance, SubstanceSchema } from "../../utils/interfaces/ISubstance.ts"
 import { type ISubstanceDisplay } from "../../utils/interfaces/ISubstanceDisplay.ts"
 import { DATETIME_FORMAT_OUTPUT, DATETIME_FORMAT_SHORT_OUTPUT, MAX_LEN_STR, NameSchema } from "../../utils/schemas.ts"
+
+// biome-ignore lint/nursery/useExplicitType: inferred
+const { SOBER_DEBUG: DEBUG } = env
 
 dayjs.extend(advancedFormat) // * NOTE: for Do format option
 
@@ -63,16 +67,19 @@ const Substances = ({
 
     const n: string = titleCase(name)
 
-    new Promise<void>((resolve): void => {
-      fetchClient<ISubstance>({
-        body: {
-          ...defaultSubstance,
-          name: n
-        } satisfies ISubstance,
-        endpoint: "substances/add",
-        method: httpMethods.POST,
-        user
-      } satisfies IFetchClient).then((data: Nullable<ISubstance>): void => {
+    Promise.resolve()
+      .then(() =>
+        fetchClient<ISubstance>({
+          body: {
+            ...defaultSubstance,
+            name: n
+          } satisfies ISubstance,
+          endpoint: "substances/add",
+          method: httpMethods.POST,
+          user
+        } satisfies IFetchClient)
+      )
+      .then((data: Nullable<ISubstance>) => {
         const s: Nullable<ISubstance> = validate<ISubstance, SubstanceSchema>(data, SubstanceSchema)
         if (!s) {
           return
@@ -83,12 +90,9 @@ const Substances = ({
         if (DEBUG) {
           info(`Substance added: ${s.name}`)
         }
-
-        resolve()
       })
-    })
-      .then(async (): Promise<Optional<ISubstance[]>> => await refreshSubstances())
-      .then((): string =>
+      .then(() => refreshSubstances())
+      .then(() =>
         showNotification({
           autoClose: ms("7.5s"),
           className: "var(--color-blue)",
@@ -131,22 +135,22 @@ const Substances = ({
 
       selectedSubstance.name = substanceValue.current
 
-      new Promise<void>((resolve): void => {
-        fetchClient<void>({
-          body: selectedSubstance,
-          endpoint: `substances/update/${selectedSubstance.id}`,
-          method: httpMethods.PUT,
-          user
-        } satisfies IFetchClient).then((): void => {
+      Promise.resolve()
+        .then(() =>
+          fetchClient<void>({
+            body: selectedSubstance,
+            endpoint: `substances/update/${selectedSubstance.id}`,
+            method: httpMethods.PUT,
+            user
+          } satisfies IFetchClient)
+        )
+        .then((): void => {
           if (DEBUG) {
             info(`Updated ID ${selectedSubstance.id} to ${selectedSubstance.name}`)
           }
-
-          resolve()
         })
-      })
-        .then((): string => hideNotification("setDate"))
-        .then(async (): Promise<Optional<ISubstance[]>> => await refreshSubstances())
+        .then(() => hideNotification("setDate"))
+        .then(() => refreshSubstances())
 
       handleClose()
 
@@ -226,12 +230,15 @@ const Substances = ({
       return
     }
 
-    new Promise<void>((resolve): void => {
-      fetchClient<boolean>({
-        endpoint: `substances/delete/${selectedSubstance.id}`,
-        method: httpMethods.DELETE,
-        user
-      } satisfies IFetchClient).then((data: Nullable<boolean>): void => {
+    Promise.resolve()
+      .then(() =>
+        fetchClient<boolean>({
+          endpoint: `substances/delete/${selectedSubstance.id}`,
+          method: httpMethods.DELETE,
+          user
+        } satisfies IFetchClient)
+      )
+      .then((data: Nullable<boolean>) => {
         if (!data) {
           // * NOTE: catches false and null
           return
@@ -240,10 +247,8 @@ const Substances = ({
         if (DEBUG) {
           info(`Deleted ID ${selectedSubstance.id}`)
         }
-
-        resolve()
       })
-    }).then(async (): Promise<Optional<ISubstance[]>> => await refreshSubstances())
+      .then(() => refreshSubstances())
   }
 
   const handleDelete = (): void => {
@@ -360,4 +365,4 @@ const Substances = ({
   )
 }
 
-export default Substances
+export { Substances }

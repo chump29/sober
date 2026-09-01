@@ -45,6 +45,7 @@ import { titleCase } from "title-case"
 import { match, P } from "ts-pattern"
 
 import { fetchClient } from "../../api/index.ts"
+import { env } from "../../env.ts"
 import {
   displayStoreActions,
   getCoin,
@@ -57,7 +58,7 @@ import {
   getWeeks,
   getYears
 } from "../../utils/displayStore.ts"
-import { DEBUG, getKeyByValue, handleError, validate } from "../../utils/index.ts"
+import { getKeyByValue, handleError, validate } from "../../utils/index.ts"
 import { type ICoin } from "../../utils/interfaces/ICoin.ts"
 import { type ICost } from "../../utils/interfaces/ICost.ts"
 import { type IFetchClient } from "../../utils/interfaces/IFetchClient.ts"
@@ -73,10 +74,13 @@ import {
   MAX_LEN_STR,
   NameSchema
 } from "../../utils/schemas.ts"
-import { default as Settings } from "../Settings/index.tsx"
-import { default as Substances } from "../Substances/index.tsx"
+import { Settings } from "../Settings/index.tsx"
+import { Substances } from "../Substances/index.tsx"
 
 import "./index.css"
+
+// biome-ignore lint/nursery/useExplicitType: inferred
+const { SOBER_DEBUG: DEBUG } = env
 
 dayjs.extend(utc) // * NOTE: required for timezone
 dayjs.extend(timezone)
@@ -301,39 +305,32 @@ const Display = (): JSX.Element => {
   }
 
   const setUserAndRefresh = (): void => {
-    new Promise<void>((resolve): void => {
-      const user: string = getUser() as string
+    Promise.resolve()
+      .then(() => {
+        const user: string = getUser() as string
 
-      setSoberUser(user)
+        setSoberUser(user)
 
-      if (DEBUG) {
-        info(`User logged in as: ${user}`)
-      }
-
-      resolve()
-    })
-      .then(async (): Promise<void> => {
-        await validateUser()
+        if (DEBUG) {
+          info(`User logged in as: ${user}`)
+        }
       })
-      .then(async (): Promise<void> => {
-        await refreshSubstances()
-      })
+      .then(() => validateUser())
+      .then(() => refreshSubstances())
   }
 
   const resetUserAndRefresh = (): void => {
-    new Promise<void>((resolve): void => {
-      setUser(null)
+    Promise.resolve()
+      .then(() => {
+        setUser(null)
 
-      resetSoberUser()
+        resetSoberUser()
 
-      if (DEBUG) {
-        info("User logged out")
-      }
-
-      resolve()
-    }).then(async (): Promise<void> => {
-      await refreshSubstances() // clear
-    })
+        if (DEBUG) {
+          info("User logged out")
+        }
+      })
+      .then(() => refreshSubstances()) // clear
   }
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -479,46 +476,46 @@ const Display = (): JSX.Element => {
 
     const selectedSubstance: ISubstance = getSelectedSubstance()
 
-    new Promise<void>((resolve): void => {
-      setDisplay(selectedSubstance.date)
+    Promise.resolve()
+      .then(() => {
+        setDisplay(selectedSubstance.date)
 
-      handleSetCost(selectedSubstance.cost)
+        handleSetCost(selectedSubstance.cost)
+      })
+      .then(() => {
+        let txt: string = "No milestones to show yet."
+        let img: Optional<string>
 
-      resolve()
-    }).then((): void => {
-      let txt: string = "No milestones to show yet."
-      let img: Optional<string>
+        const m: number = Math.floor(getMonthsFloat())
 
-      const m: number = Math.floor(getMonthsFloat())
+        if (m > 0) {
+          const EighteenMonths: number = 18
+          const MaxYears: number = 5 // TODO: more images
 
-      if (m > 0) {
-        const EighteenMonths: number = 18
-        const MaxYears: number = 5 // TODO: more images
+          const y: number = Math.floor(getYearsFloat())
 
-        const y: number = Math.floor(getYearsFloat())
+          txt = titleCase(y > 0 ? pluralize("year", y, true) : pluralize("month", m, true))
 
-        txt = titleCase(y > 0 ? pluralize("year", y, true) : pluralize("month", m, true))
+          img = "/coins/"
 
-        img = "/coins/"
-
-        // biome-ignore format: don't expand braces
-        img += match<object, string>({ m, y })
+          // biome-ignore format: don't expand braces
+          img += match<object, string>({ m, y })
           .returnType<string>()
           .with({ m: EighteenMonths }, (): string => "18m.png")
           .with({ y: P.number.gt(0) }, (): string => `${y}y.png`)
           .otherwise((): string => `${m}m.png`)
 
-        if (y > MaxYears) {
-          img = undefined
-          txt = `${txt} (No image)`
+          if (y > MaxYears) {
+            img = undefined
+            txt = `${txt} (No image)`
+          }
         }
-      }
 
-      setCoin({
-        image: img,
-        text: txt
-      } satisfies ICoin)
-    })
+        setCoin({
+          image: img,
+          text: txt
+        } satisfies ICoin)
+      })
   }
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: only watching selectedSubstance
@@ -810,4 +807,4 @@ const Display = (): JSX.Element => {
   )
 }
 
-export default Display
+export { Display }

@@ -13,7 +13,7 @@ import { type FetchMock, default as fetchMock } from "jest-fetch-mock"
 import { default as ms } from "ms"
 import { match, P } from "ts-pattern"
 
-import { default as Substances } from "../../../src/components/Substances/index.tsx"
+import { Substances } from "../../../src/components/Substances/index.tsx"
 import { type ISubstance } from "../../../src/utils/interfaces/ISubstance.ts"
 import { getSubstance, getSubstanceDisplay } from "../../utils/Helpers.ts"
 import { SUBSTANCES } from "../../utils/Substances.ts"

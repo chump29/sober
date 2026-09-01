@@ -4,23 +4,31 @@
 
 from os import environ
 from pathlib import Path
-from tomllib import load
-from typing import Final
+from tomllib import loads
+from typing import Any, Final
 
-from box import Box
-from rich.console import Console
-from rich.traceback import install as catch_exceptions
+from venvalid import bool_, int_, str_, venvalid
+from venvalid.dotenv import load_env_file
 
-CONSOLE: Final[Console] = Console()
-catch_exceptions()
+load_env_file(".env")
+load_env_file(".env.local", override=True)
 
+pyproject: Final[dict[str, Any]] = loads(Path("pyproject.toml").read_text(encoding="utf-8"))
+environ["SOBER_NAME"] = pyproject["project"]["name"]
+environ["SOBER_VERSION"] = pyproject["project"]["version"]
 
-def set_env_vars() -> None:
-    """Set environment variables"""
-    try:
-        with Path("pyproject.toml").open("rb") as pyproject:
-            fields: Final[Box] = Box(load(pyproject), frozen_box=True)
-            environ["_NAME"] = str(fields.project.name)
-            environ["_VERSION"] = str(fields.project.version)
-    except Exception:  # pylint: disable=broad-exception-caught
-        CONSOLE.print_exception()
+MIN_PORT: Final[int] = 1024
+MAX_PORT: Final[int] = 65_535
+
+env: Final[dict[str, Any]] = venvalid(
+    {
+        "SOBER_API_PORT": int_(default=5560, validate=lambda i: MIN_PORT <= i <= MAX_PORT),
+        "SOBER_DB_FILE": str_(default="sober.db"),
+        "SOBER_DB_PATH": str_(default="./db"),
+        "SOBER_DEBUG": bool_(default=False),
+        "SOBER_JWT_AUDIENCE": str_(default="sober-frontend"),
+        "SOBER_NAME": str_(),
+        "SOBER_VERSION": str_(),
+    },
+    pretty=True,
+)
