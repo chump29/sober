@@ -122,17 +122,8 @@ const DATETIME_FORMAT_OUTPUT: string = `${DATETIME_FORMAT_SHORT_OUTPUT} @ h:mm A
  * Validate URL
  * @function
  * @summary Empty string | valid {@link https://datatracker.ietf.org/doc/html/rfc3986 URL}
- * @returns {undefined | string} undefined or URL
  */
-const UrlSchema = optional(
-  union([
-    pipe(
-      literal(""),
-      transform((): undefined => undefined)
-    ),
-    pipe(StringSchema, url())
-  ])
-)
+const UrlSchema = union([literal(""), pipe(StringSchema, url())])
 
 type UrlSchema = typeof UrlSchema
 
