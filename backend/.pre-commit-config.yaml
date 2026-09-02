@@ -25,7 +25,12 @@ repos:
     rev: v10.1.0
     hooks:
       - id: cspell
-        args: [--no-must-find-files, --no-config-search, --config ../.vscode/cspell.json]
+        args:
+          [
+            --no-must-find-files,
+            --no-config-search,
+            "--config ../.vscode/cspell.json",
+          ]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.16.5
     hooks:
