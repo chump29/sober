@@ -69,12 +69,6 @@ jobs:
           mv ${{ env.VSCODE_DIR }}/.vscode ${{ github.workspace }}/
           rm -rf ${{ env.VSCODE_DIR }}
 
-      - name: test
-        run: |
-          pwd
-          ls -a
-          ls .vscode
-
       - name: Install Python
         uses: actions/setup-python@v7
         with:
