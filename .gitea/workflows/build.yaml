@@ -65,7 +65,10 @@ jobs:
             .vscode/cspell.json
           sparse-checkout-code-mode: false
 
-      - name: Copy cSpell config
+      - name: ls
+        run: ls -la
+
+      - name: Move cSpell config
         run: |
           mv ${{ github.workspace }}/.vscode/cspell.json .
           rm -rf ${{ github.workspace }}/.vscode
