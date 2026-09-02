@@ -8,7 +8,7 @@ repos:
         language: unsupported
         types: [python]
         require_serial: true
-        args: ["--rcfile=backend/pyproject.toml"]
+        args: [--rcfile=backend/pyproject.toml]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
@@ -25,7 +25,7 @@ repos:
     rev: v10.1.0
     hooks:
       - id: cspell
-        args: [--no-must-find-files]
+        args: [--no-must-find-files, --no-config-search, --config ../.vscode/cspell.json]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.16.5
     hooks:
