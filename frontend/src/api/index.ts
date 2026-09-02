@@ -6,7 +6,7 @@ import { FetchClientSchema, type IFetchClient } from "../utils/interfaces/IFetch
 import { getHeaders } from "../utils/jwt.ts"
 
 // biome-ignore lint/nursery/useExplicitType: inferred
-const { SOBER_API_TIMEOUT: API_TIMEOUT, SOBER_API_URL: API_URL } = env
+const { SOBER_API_TIMEOUT: API_TIMEOUT, VITE_API_URL: API_URL } = env
 
 const fetchClient = async <R = null>(settings: IFetchClient): Promise<Nullable<R>> => {
   const s: Nullable<IFetchClient> = validate<IFetchClient, FetchClientSchema>(settings, FetchClientSchema)

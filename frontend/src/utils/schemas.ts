@@ -11,7 +11,6 @@ import {
   gtValue,
   integer,
   isoTimestamp,
-  literal,
   maxLength,
   minValue,
   nonEmpty,
@@ -23,7 +22,6 @@ import {
   toNumber,
   transform,
   trim,
-  union,
   url,
   enum as v_enum,
   words
@@ -121,9 +119,9 @@ const DATETIME_FORMAT_OUTPUT: string = `${DATETIME_FORMAT_SHORT_OUTPUT} @ h:mm A
 /**
  * Validate URL
  * @function
- * @summary Empty string | valid {@link https://datatracker.ietf.org/doc/html/rfc3986 URL}
+ * @summary Non-empty string, valid {@link https://datatracker.ietf.org/doc/html/rfc3986 URL}
  */
-const UrlSchema = union([literal(""), pipe(StringSchema, url())])
+const UrlSchema = pipe(StringSchema, url())
 
 type UrlSchema = typeof UrlSchema
 

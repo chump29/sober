@@ -15,9 +15,9 @@ const urlValidator: ExactValidator<string> = makeExactValidator<string>((s: stri
 
 const env = cleanEnv(import.meta.env, {
   SOBER_API_TIMEOUT: timeoutValidator({ default: ms("2s") }),
-  SOBER_API_URL: urlValidator({ default: "http://localhost:5560" }),
   SOBER_DEBUG: bool({ default: false, testDefault: true }),
   SOBER_JWT_AUDIENCE: stringValidator({ default: "sober-backend" }),
+  VITE_API_URL: urlValidator({ default: "" }),
   VITE_TITLE: titleValidator({ default: "Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" })
 })
 
