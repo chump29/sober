@@ -54,27 +54,34 @@ jobs:
         uses: actions/checkout@v7
 
       - name: ls
-        run: ls -la
+        run: |
+          pwd
+          ls -la
 
       - name: Check out cSpell config
         uses: actions/checkout@v7
         with:
           clean: false
+          path: backend/.vscode
           repository: admin/config
           sparse-checkout: |
             .vscode/cspell.json
           sparse-checkout-code-mode: false
 
       - name: ls
-        run: ls -la
+        run: |
+          pwd
+          ls -la
 
       - name: Move cSpell config
         run: |
-          mv ${{ github.workspace }}/.vscode/cspell.json .
-          rm -rf ${{ github.workspace }}/.vscode
+          mv .vscode/.vscode/cspell.json .
+          rm -rf .vscode
 
       - name: ls
-        run: ls -la
+        run: |
+          pwd
+          ls -la
 
       - name: Install Python
         uses: actions/setup-python@v7
