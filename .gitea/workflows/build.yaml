@@ -54,7 +54,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: ls
-        run: ls -ad
+        run: ls -la
 
       - name: Check out cSpell config
         uses: actions/checkout@v7
@@ -67,11 +67,11 @@ jobs:
 
       - name: Copy cSpell config
         run: |
-          mv .vscode/cspell.json backend/
-          rm -rf .vscode
+          mv ${{ github.workspace }}/.vscode/cspell.json .
+          rm -rf ${{ github.workspace }}/.vscode
 
       - name: ls
-        run: ls -ad
+        run: ls -la
 
       - name: Install Python
         uses: actions/setup-python@v7
