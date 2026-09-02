@@ -53,12 +53,17 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
 
+      - name: ls
+        run: ls -a
+
       - name: Check out cSpell config
         uses: actions/checkout@v7
         with:
           clean: false
+          path: ./backend
           repository: admin/config
           sparse-checkout: .vscode/cspell.json
+          sparse-checkout-code-mode: false
 
       - name: ls
         run: ls -a
