@@ -66,8 +66,14 @@ jobs:
 
       - name: Move .vscode
         run: |
-          mv ${{ env.VSCODE_DIR }}/.vscode .
+          mv ${{ env.VSCODE_DIR }}/.vscode ${{ env.VSCODE_DIR }}/
           rm -rf ${{ env.VSCODE_DIR }}
+
+      - name: test
+        run: |
+          pwd
+          ls -a
+          ls .vscode
 
       - name: Install Python
         uses: actions/setup-python@v7
