@@ -60,10 +60,16 @@ jobs:
         uses: actions/checkout@v7
         with:
           clean: false
-          path: ./backend
+          path: /tmp
           repository: admin/config
-          sparse-checkout: .vscode/cspell.json
+          sparse-checkout: |
+            .vscode/cspell.json
           sparse-checkout-code-mode: false
+
+      - name: Copy cSpell config
+        run: |
+          mv /tmp/.vscode/cspell.json ./backend
+          rm -rf /tmp/.vscode
 
       - name: ls
         run: ls -a
