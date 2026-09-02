@@ -1,5 +1,5 @@
 .dockerignore
-.env.*
+.env.local
 .htmlvalidate.json
 .husky/
 .npmrc

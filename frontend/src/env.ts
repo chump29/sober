@@ -11,7 +11,9 @@ const titleValidator: ExactValidator<string> = makeExactValidator<string>((s: st
 const timeoutValidator: ExactValidator<number> = makeExactValidator<number>((s: string): number =>
   parse(pipe(StringSchema, toNumber(), TimeoutSchema), s)
 )
-const urlValidator: ExactValidator<string> = makeExactValidator<string>((s: string): string => parse(UrlSchema, s))
+const urlValidator: ExactValidator<string | undefined> = makeExactValidator<string | undefined>(
+  (s: string): string | undefined => parse(UrlSchema, s)
+)
 
 const env = cleanEnv(import.meta.env, {
   SOBER_API_TIMEOUT: timeoutValidator({ default: ms("2s") }),

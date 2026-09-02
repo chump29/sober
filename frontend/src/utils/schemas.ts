@@ -8,10 +8,10 @@ import {
   boolean,
   type CheckIssue,
   check,
-  fallback,
   gtValue,
   integer,
   isoTimestamp,
+  literal,
   maxLength,
   minValue,
   nonEmpty,
@@ -23,6 +23,7 @@ import {
   toNumber,
   transform,
   trim,
+  union,
   url,
   enum as v_enum,
   words
@@ -120,9 +121,18 @@ const DATETIME_FORMAT_OUTPUT: string = `${DATETIME_FORMAT_SHORT_OUTPUT} @ h:mm A
 /**
  * Validate URL
  * @function
- * @summary Valid {@link https://datatracker.ietf.org/doc/html/rfc3986 URL}
+ * @summary Empty string | valid {@link https://datatracker.ietf.org/doc/html/rfc3986 URL}
+ * @returns {undefined | string} undefined or URL
  */
-const UrlSchema = fallback(pipe(StringSchema, url()), "")
+const UrlSchema = optional(
+  union([
+    pipe(
+      literal(""),
+      transform((): undefined => undefined)
+    ),
+    pipe(StringSchema, url())
+  ])
+)
 
 type UrlSchema = typeof UrlSchema
 
@@ -150,7 +160,7 @@ type CostSchema = typeof CostSchema
  * Validate cost input
  * @function
  * @summary Non-empty string, >= 0
- * @returns {number} number
+ * @returns {number} Number
  */
 const CostInputSchema = pipe(StringSchema, toNumber(), minValue(0))
 

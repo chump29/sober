@@ -157,12 +157,13 @@ required-version = ">=0.12.9"
 namespace = true
 source-exclude = [
     ".dockerignore",
-    ".env*",
+    ".env.local",
     ".pre-commit-config.yaml",
     ".python-version",
     ".venv/**/*",
     "*.sh",
     "api.rest",
+    "api.jwt.py",
     "coverage/*",
     "db/*",
     "Dockerfile",

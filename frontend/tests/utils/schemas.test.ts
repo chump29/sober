@@ -66,8 +66,8 @@ describe("schemas", (): void => {
   test("UrlSchema - fail", (): void => {
     const u: SafeParseResult<UrlSchema> = safeParse(UrlSchema, "test")
 
-    expect(u.success).toBeTrue() // uses fallback
-    expect(u.output).toHaveLength(0)
+    expect(u.success).toBeFalse()
+    expect(u.issues?.[0].message).toStartWith("Invalid URL")
   })
 
   test("TimeoutSchema", (): void => {
