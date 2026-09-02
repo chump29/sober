@@ -12,7 +12,7 @@ env:
   PRE_COMMIT_HOME: /tmp/.pre-commit-cache
   RUFF_CACHE_DIR: /tmp/.ruff-cache
   UV_CACHE_DIR: /tmp/.uv-cache
-  VSCODE_DIR: ${{ github.workspace }}/.vscode_tmp
+  VSCODE_DIR: ${{ github.workspace }}/backend/.vscode_tmp
 
 jobs:
   check-frontend:
@@ -66,7 +66,7 @@ jobs:
 
       - name: Move .vscode
         run: |
-          mv ${{ env.VSCODE_DIR }}/.vscode ${{ github.workspace }}/
+          mv ${{ env.VSCODE_DIR }}/.vscode .
           rm -rf ${{ env.VSCODE_DIR }}
 
       - name: Install Python
