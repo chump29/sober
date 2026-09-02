@@ -18,7 +18,7 @@ jobs:
     runs-on: amd64
     defaults:
       run:
-        working-directory: ./frontend
+        working-directory: frontend
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -29,7 +29,7 @@ jobs:
       - name: Get Bun cache
         uses: actions/cache@v6
         with:
-          key: bun-${{ github.event.repository.name }}-${{ hashFiles('./frontend/bun.lock') }}
+          key: bun-${{ github.event.repository.name }}-${{ hashFiles('frontend/bun.lock') }}
           path: ${{ env.BUN_INSTALL_CACHE_DIR }}
 
       - name: Install dependencies
@@ -48,13 +48,13 @@ jobs:
     runs-on: amd64
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: backend
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
 
       - name: ls
-        run: ls -a
+        run: ls -ad
 
       - name: Check out cSpell config
         uses: actions/checkout@v7
@@ -67,16 +67,16 @@ jobs:
 
       - name: Copy cSpell config
         run: |
-          mv .vscode/cspell.json ./backend
+          mv .vscode/cspell.json backend/
           rm -rf .vscode
 
       - name: ls
-        run: ls -a
+        run: ls -ad
 
       - name: Install Python
         uses: actions/setup-python@v7
         with:
-          python-version-file: ./backend/.python-version
+          python-version-file: backend/.python-version
 
       - name: Install uv
         uses: astral-sh/setup-uv@v10.0.1
@@ -84,10 +84,10 @@ jobs:
       - name: Get uv cache
         uses: actions/cache@v6
         with:
-          key: uv-${{ github.event.repository.name }}-${{ hashFiles('./backend/uv.lock') }}
+          key: uv-${{ github.event.repository.name }}-${{ hashFiles('backend/uv.lock') }}
           path: |
             ${{ env.UV_CACHE_DIR }}
-            ./backend/.venv
+            backend/.venv
 
       - name: Install dependencies
         run: uv sync --frozen --extra dev
@@ -95,7 +95,7 @@ jobs:
       - name: Get pre-commit cache
         uses: actions/cache@v6
         with:
-          key: pre-commit-${{ github.event.repository.name }}-${{ hashFiles('./backend/.pre-commit-config.yaml')}}
+          key: pre-commit-${{ github.event.repository.name }}-${{ hashFiles('backend/.pre-commit-config.yaml')}}
           path: |
             ${{ env.PRE_COMMIT_HOME }}
             ${{ env.RUFF_CACHE_DIR }}
