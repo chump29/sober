@@ -163,11 +163,11 @@ source-exclude = [
     ".venv/**/*",
     "*.sh",
     "api.rest",
-    "api.jwt.py",
     "coverage/*",
     "db/*",
     "Dockerfile",
     "features/**/*",
+    "gen_jwt.py",
     "README.md",
     "uv.lock",
 ]

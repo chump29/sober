@@ -13,6 +13,10 @@ Authorization: Bearer {{token}}
 
 ###
 
+# NOTE: Use ./gen_jwt.py to generate JWT token
+
+###
+
 # @prompt token JWT Token
 
 POST {{url}}/substances/add

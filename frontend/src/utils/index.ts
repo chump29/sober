@@ -1,5 +1,5 @@
 import { error } from "@postfmly/logger"
-import { type Nullable, type Optional } from "@postfmly/types"
+import { type Nullable } from "@postfmly/types"
 
 import { match } from "ts-pattern"
 import { array, type GenericSchema, isValiError, parse, summarize, type ValiError } from "valibot"
@@ -11,14 +11,6 @@ import { array, type GenericSchema, isValiError, parse, summarize, type ValiErro
  * @returns {Nullable<HTMLElement>} DOM element, or null
  */
 const findElement = (element: string): Nullable<HTMLElement> => document.querySelector(element)
-
-/**
- * Format version string
- * @function
- * @param {Optional<string>} version - Version string
- * @returns {string} v[version], or N/A
- */
-const getVersion = (version: Optional<string>): string => (version && version.length > 0 ? `v${version}` : "N/A")
 
 /**
  * Show {@link https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API Fetch API} error message
@@ -121,4 +113,4 @@ const SaveType = {
  */
 type SaveType = (typeof SaveType)[keyof typeof SaveType]
 
-export { FetchError, findElement, getKeyByValue, getVersion, handleError, SaveType, UpdateType, validate }
+export { FetchError, findElement, getKeyByValue, handleError, SaveType, UpdateType, validate }

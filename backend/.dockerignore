@@ -6,11 +6,11 @@ __pycache__/
 .venv/
 *.sh
 api.rest
-api.jwt.py
 coverage/
 db/
 Dockerfile
 features/
+gen_jwt.py
 README.md
 
 !healthcheck.sh

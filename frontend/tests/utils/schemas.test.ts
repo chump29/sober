@@ -21,22 +21,10 @@ import {
   StringSchema,
   TimeoutSchema,
   TitleSchema,
-  UrlSchema,
-  VersionSchema
+  UrlSchema
 } from "../../src/utils/schemas.ts"
 
 describe("schemas", (): void => {
-  test("VersionSchema", (): void => {
-    expect(safeParse(VersionSchema, fake.system.semver()).success).toBeTrue()
-  })
-
-  test("VersionSchema - fail", (): void => {
-    const v: SafeParseResult<VersionSchema> = safeParse(VersionSchema, "v0")
-
-    expect(v.success).toBeFalse()
-    expect(v.issues?.[0].message).toStartWith("Invalid SemVer")
-  })
-
   test("BooleanSchema", (): void => {
     expect(safeParse(BooleanSchema, true).success).toBeTrue()
   })
@@ -71,19 +59,11 @@ describe("schemas", (): void => {
   })
 
   test("TimeoutSchema", (): void => {
-    expect(
-      safeParse(
-        TimeoutSchema,
-        fake.number.int({
-          max: 5000,
-          min: 1000
-        })
-      ).success
-    ).toBeTrue()
+    expect(safeParse(TimeoutSchema, fake.string.numeric({ allowLeadingZeros: false, length: 4 })).success).toBeTrue()
   })
 
   test("TimeoutSchema - fail", (): void => {
-    const t: SafeParseResult<TimeoutSchema> = safeParse(TimeoutSchema, 0)
+    const t: SafeParseResult<TimeoutSchema> = safeParse(TimeoutSchema, "0")
 
     expect(t.success).toBeFalse()
     expect(t.issues?.[0].message).toContain(">=200") // MIN_TIMEOUT

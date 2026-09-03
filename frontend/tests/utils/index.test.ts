@@ -10,7 +10,6 @@ import {
   FetchError,
   findElement,
   getKeyByValue,
-  getVersion,
   handleError,
   SaveType,
   UpdateType,
@@ -30,16 +29,6 @@ describe("utils - index", (): void => {
 
   test("findElement - fail", (): void => {
     expect(findElement("#nop")).toBeNull()
-  })
-
-  test("getVersion", (): void => {
-    const version: string = fake.system.semver()
-
-    expect(getVersion(version)).toBe(`v${version}`)
-  })
-
-  test("getVersion - fail", (): void => {
-    expect(getVersion(undefined)).toBe("N/A")
   })
 
   test("FetchError", (): void => {

@@ -3,7 +3,6 @@
 import { default as dayjs } from "dayjs"
 import { default as utc } from "dayjs/plugin/utc"
 import { default as httpMethods } from "http-methods-constants"
-import { valid } from "semver"
 import {
   boolean,
   type CheckIssue,
@@ -37,22 +36,6 @@ dayjs.extend(utc)
 const StringSchema = pipe(string(), trim(), nonEmpty())
 
 type StringSchema = typeof StringSchema
-
-/**
- * Validate against Semantic Versioning Specification
- * @function
- * @summary Non-empty string, valid {@link https://semver.org/ SemVer}
- */
-const VersionSchema = pipe(
-  StringSchema,
-  transform((s: string): string => s.replaceAll('"', "")),
-  check(
-    (s: string): boolean => valid(s) !== null,
-    (e: CheckIssue<string>): string => `Invalid SemVer: ${e.input}`
-  )
-)
-
-type VersionSchema = typeof VersionSchema
 
 /**
  * Validate boolean
@@ -130,9 +113,10 @@ const MIN_TIMEOUT: number = 200
 /**
  * Validate API timeout
  * @function
- * @summary number, min value = {@link MIN_TIMEOUT} ms
+ * @summary string, min value = {@link MIN_TIMEOUT} ms
+ * @returns {number} Integer
  */
-const TimeoutSchema = pipe(number(), integer(), minValue(MIN_TIMEOUT))
+const TimeoutSchema = pipe(StringSchema, toNumber(), integer(), minValue(MIN_TIMEOUT))
 
 type TimeoutSchema = typeof TimeoutSchema
 
@@ -245,6 +229,5 @@ export {
   StringSchema,
   TimeoutSchema,
   TitleSchema,
-  UrlSchema,
-  VersionSchema
+  UrlSchema
 }

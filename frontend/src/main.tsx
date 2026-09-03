@@ -3,7 +3,7 @@ import { ModalsProvider } from "@mantine/modals"
 import { Notifications } from "@mantine/notifications"
 
 import { error, info } from "@postfmly/logger"
-import { type Nullable } from "@postfmly/types"
+import { type Nullable, type Optional } from "@postfmly/types"
 
 import { default as httpMethods } from "http-methods-constants"
 import { createRoot } from "react-dom/client"
@@ -12,25 +12,22 @@ import { version } from "../package.json" with { type: "json" }
 import { fetchClient } from "./api/index.ts"
 import { Display } from "./components/Display/index.tsx"
 import { env } from "./env.ts"
-import { findElement, getVersion, handleError, validate } from "./utils/index.ts"
+import { findElement, handleError } from "./utils/index.ts"
 import { type IFetchClient } from "./utils/interfaces/IFetchClient.ts"
-import { VersionSchema } from "./utils/schemas.ts"
 
 // biome-ignore lint/nursery/useExplicitType: inferred
 const { SOBER_DEBUG: DEBUG } = env
 
-const uiVersion: string = getVersion(validate<string, VersionSchema>(version, VersionSchema) ?? "")
-
 if (DEBUG) {
-  info(`Got UI version: ${uiVersion}`)
+  info(`Got UI version: ${version}`)
 }
+
+const getVersion = (v: Optional<string>): string => (v && v.length > 0 ? `v${v}` : "N/A")
 
 const frontend: Nullable<HTMLElement> = findElement("#frontend")
 if (frontend) {
-  frontend.innerHTML = `<sup>UI</sup> ${uiVersion}`
+  frontend.innerHTML = `<sup>UI</sup> ${version}`
 }
-
-let apiVersion: string = ""
 
 // * NOTE: not using await, don't hold up page render
 fetchClient<string>({
@@ -38,13 +35,11 @@ fetchClient<string>({
   method: httpMethods.GET
 } satisfies IFetchClient)
   .then((data: Nullable<string>): void => {
-    apiVersion = validate<string, VersionSchema>(data, VersionSchema) ?? ""
-  })
-  .catch((e: Error): void => {
-    handleError(e)
-  })
-  .finally((): void => {
-    apiVersion = getVersion(apiVersion)
+    if (data === null) {
+      throw new Error("Could not get API version")
+    }
+
+    const apiVersion: string = getVersion(data)
 
     if (DEBUG) {
       info(`Got API version: ${apiVersion}`)
@@ -54,6 +49,9 @@ fetchClient<string>({
     if (backend) {
       backend.innerHTML = `<sup>API</sup> ${apiVersion}`
     }
+  })
+  .catch((e: Error): void => {
+    handleError(e)
   })
 
 const root: Nullable<HTMLElement> = findElement("#root")
