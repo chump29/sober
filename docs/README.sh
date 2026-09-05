@@ -28,7 +28,7 @@ for _env in frontend backend; do
 
     echo -e "\n📌 Packages:\n"
 
-    _bun=$(jq -r '.engines.bun // "❓"' package.json)
+    _bun=$(bun -v)
     export _bun
     echo -e " • Bun: $_bun"
 
@@ -118,7 +118,7 @@ for _env in frontend backend; do
     export _sqlite
     echo -e " • SQLite: $_sqlite$_static"
 
-    _uv=$(yq '.tool.uv.required-version // "❓"' pyproject.toml)
+    _uv=$(uv self version | grep -Po "[0-9]+\.[0-9]+\.[0-9]+")
     export _uv
     echo -e " • uv: $_uv"
 

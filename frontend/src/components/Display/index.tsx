@@ -30,7 +30,7 @@ import { default as dayjs } from "dayjs"
 import { default as advancedFormat } from "dayjs/plugin/advancedFormat"
 import { default as timezone } from "dayjs/plugin/timezone"
 import { default as utc } from "dayjs/plugin/utc"
-import { fastIsEqual } from "fast-is-equal"
+import { fastIsEqual as isEqual } from "fast-is-equal"
 import { default as httpMethods } from "http-methods-constants"
 import { default as ms } from "ms"
 import {
@@ -245,7 +245,7 @@ const Display = (): JSX.Element => {
 
         handleSetCost(substance.cost)
 
-        if (fastIsEqual(substance, selectedSubstance)) {
+        if (isEqual(substance, selectedSubstance)) {
           if (DEBUG) {
             info("Found same substance… skipping")
           }

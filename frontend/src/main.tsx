@@ -22,7 +22,7 @@ if (DEBUG) {
   info(`Got UI version: ${version}`)
 }
 
-const getVersion = (v: Optional<string>): string => (v && v.length > 0 ? `v${v}` : "N/A")
+const getVersion = (v: Optional<string>): string => (v ? `v${v}` : "N/A")
 
 const frontend: Nullable<HTMLElement> = findElement("#frontend")
 if (frontend) {

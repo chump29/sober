@@ -7,7 +7,7 @@
 <!-- cspell:disable -->
 ![Frontend](https://img.shields.io/badge/Frontend-3.2.0-chocolate?style=plastic&logo=docker "Frontend")
 
-![Bun](https://img.shields.io/badge/Bun-^1.4.0-informational?style=plastic&logo=bun "Bun") &nbsp;
+![Bun](https://img.shields.io/badge/Bun-1.4.1-informational?style=plastic&logo=bun "Bun") &nbsp;
 ![Mantine](https://img.shields.io/badge/Mantine-^9.6.0-informational?style=plastic&logo=mantine "Mantine") &nbsp;
 ![React](https://img.shields.io/badge/React-^19.2.8-informational?style=plastic&logo=react "React") &nbsp;
 ![TypeScript](https://img.shields.io/badge/TypeScript-7.0.2-informational?style=plastic&logo=typescript "TypeScript") &nbsp; <!-- markdownlint-disable-line MD013 -->
