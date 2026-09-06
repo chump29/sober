@@ -144,7 +144,7 @@ const Substances = ({
             user
           } satisfies IFetchClient)
         )
-        .then((): void => {
+        .then(() => {
           if (DEBUG) {
             info(`Updated ID ${selectedSubstance.id} to ${selectedSubstance.name}`)
           }

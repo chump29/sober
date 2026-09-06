@@ -1,3 +1,5 @@
+import { default as assert } from "node:assert/strict"
+
 import { beforeEach, describe, expect, jest, mock, test } from "bun:test"
 
 import { MantineProvider } from "@mantine/core"
@@ -97,25 +99,31 @@ describe("Settings - index", (): void => {
   })
 
   test("showDecimals", async (): Promise<void> => {
+    assert(user)
+
     const showDecimals: HTMLInputElement = await screen.findByTestId("showDecimals")
 
-    await user?.click(showDecimals)
+    await user.click(showDecimals)
 
     expect(fetch).toHaveBeenCalledTimes(++times)
   })
 
   test("showCoin", async (): Promise<void> => {
+    assert(user)
+
     const showCoin: HTMLInputElement = await screen.findByTestId("showCoin")
 
-    await user?.click(showCoin)
+    await user.click(showCoin)
 
     expect(fetch).toHaveBeenCalledTimes(++times)
   })
 
   test("showCost", async (): Promise<void> => {
+    assert(user)
+
     const showCost: HTMLInputElement = await screen.findByTestId("showCost")
 
-    await user?.click(showCost)
+    await user.click(showCost)
 
     expect(fetch).toHaveBeenCalledTimes(++times)
   })

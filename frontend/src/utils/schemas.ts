@@ -17,7 +17,6 @@ import {
   optional,
   pipe,
   string,
-  toBoolean,
   toNumber,
   transform,
   trim,
@@ -45,16 +44,6 @@ type StringSchema = typeof StringSchema
 const BooleanSchema = boolean()
 
 type BooleanSchema = typeof BooleanSchema
-
-/**
- * Validate string as boolean
- * @function
- * @summary Non-empty string
- * @returns {boolean} Valid boolean {@link https://developer.mozilla.org/en-US/docs/Glossary/Truthy value}
- */
-const StringAsBooleanSchema = pipe(StringSchema, toBoolean())
-
-type StringAsBooleanSchema = typeof StringAsBooleanSchema
 
 /**
  * Custom datetime format
@@ -225,7 +214,6 @@ export {
   MAX_LEN_STR,
   MethodSchema,
   NameSchema,
-  StringAsBooleanSchema,
   StringSchema,
   TimeoutSchema,
   TitleSchema,

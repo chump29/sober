@@ -1,3 +1,5 @@
+import { default as assert } from "node:assert/strict"
+
 import { beforeEach, describe, expect, jest, mock, spyOn, test } from "bun:test"
 
 import { MantineProvider } from "@mantine/core"
@@ -78,7 +80,9 @@ describe("Substances - index", (): void => {
   })
 
   test("add", async (): Promise<void> => {
-    await user?.click(await screen.findByTestId("addButton"))
+    assert(user)
+
+    await user.click(await screen.findByTestId("addButton"))
 
     const nameInput: HTMLInputElement = await screen.findByTestId("substanceName")
 
@@ -87,13 +91,13 @@ describe("Substances - index", (): void => {
     // * NOTE: userEvent.type() doesn't like spaces
     const name: string = fake.helpers.arrayElement(SUBSTANCES).replaceAll(" ", "-")
 
-    await user?.type(nameInput, name)
+    await user.type(nameInput, name)
 
     expect(nameInput).toHaveValue(name)
 
-    await user?.click(await screen.findByTestId("confirmSubstance"))
+    await user.click(await screen.findByTestId("confirmSubstance"))
 
-    expect(infoSpy).toHaveBeenCalledTimes(2)
+    expect(infoSpy).toHaveBeenCalledTimes(2) // ! NOTE: sometimes fails here, haven't found root cause
 
     expect(fetch).toHaveBeenCalledTimes(++times)
 
@@ -101,9 +105,11 @@ describe("Substances - index", (): void => {
   })
 
   test("remove", async (): Promise<void> => {
-    await user?.click(await screen.findByTestId("removeButton"))
+    assert(user)
 
-    await user?.click(await screen.findByTestId("confirmDelete"))
+    await user.click(await screen.findByTestId("removeButton"))
+
+    await user.click(await screen.findByTestId("confirmDelete"))
 
     expect(infoSpy).toHaveBeenCalledTimes(2)
 
@@ -111,24 +117,26 @@ describe("Substances - index", (): void => {
   })
 
   test("edit", async (): Promise<void> => {
-    await user?.dblClick(await screen.findByTestId(`segment-${substance?.name}`))
+    assert(user)
+
+    await user.dblClick(await screen.findByTestId(`segment-${substance?.name}`))
 
     const nameInput: HTMLInputElement = await screen.findByTestId("substanceName")
 
     expect(nameInput).toBeVisible()
 
-    await user?.clear(nameInput)
+    await user.clear(nameInput)
 
     expect(nameInput).not.toHaveValue()
 
     // * NOTE: userEvent.type() doesn't like spaces
     const name: string = fake.helpers.arrayElement(SUBSTANCES).replaceAll(" ", "-")
 
-    await user?.type(nameInput, name)
+    await user.type(nameInput, name)
 
     expect(nameInput).toHaveValue(name)
 
-    await user?.click(await screen.findByTestId("confirmSubstance"))
+    await user.click(await screen.findByTestId("confirmSubstance"))
 
     expect(fetch).toHaveBeenCalledTimes(++times)
 
@@ -138,13 +146,15 @@ describe("Substances - index", (): void => {
   })
 
   test("add - cancel", async (): Promise<void> => {
-    await user?.click(await screen.findByTestId("addButton"))
+    assert(user)
+
+    await user.click(await screen.findByTestId("addButton"))
 
     const nameInput: HTMLInputElement = await screen.findByTestId("substanceName")
 
     expect(nameInput).toBeVisible()
 
-    await user?.click(await screen.findByTestId("cancelSubstance"))
+    await user.click(await screen.findByTestId("cancelSubstance"))
 
     expect(fetch).toHaveBeenCalledTimes(times) // not incremented
 
