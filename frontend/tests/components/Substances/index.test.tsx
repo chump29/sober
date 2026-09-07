@@ -79,30 +79,34 @@ describe("Substances - index", (): void => {
     expect(await screen.findByTestId(`segment-${substance?.name}`)).toBeInTheDocument()
   })
 
-  test("add", async (): Promise<void> => {
-    assert(user)
+  test(
+    "add",
+    async (): Promise<void> => {
+      assert(user)
 
-    await user.click(await screen.findByTestId("addButton"))
+      await user.click(await screen.findByTestId("addButton"))
 
-    const nameInput: HTMLInputElement = await screen.findByTestId("substanceName")
+      const nameInput: HTMLInputElement = await screen.findByTestId("substanceName")
 
-    expect(nameInput).toBeVisible()
+      expect(nameInput).toBeVisible()
 
-    // * NOTE: userEvent.type() doesn't like spaces
-    const name: string = fake.helpers.arrayElement(SUBSTANCES).replaceAll(" ", "-")
+      // * NOTE: userEvent.type() doesn't like spaces
+      const name: string = fake.helpers.arrayElement(SUBSTANCES).replaceAll(" ", "-")
 
-    await user.type(nameInput, name)
+      await user.type(nameInput, name)
 
-    expect(nameInput).toHaveValue(name)
+      expect(nameInput).toHaveValue(name)
 
-    await user.click(await screen.findByTestId("confirmSubstance"))
+      await user.click(await screen.findByTestId("confirmSubstance"))
 
-    expect(infoSpy).toHaveBeenCalledTimes(2) // ! NOTE: sometimes fails here, haven't found root cause
+      expect(infoSpy).toHaveBeenCalledTimes(2) // ! NOTE: sometimes fails here, haven't found root cause
 
-    expect(fetch).toHaveBeenCalledTimes(++times)
+      expect(fetch).toHaveBeenCalledTimes(++times)
 
-    expect(nameInput).not.toBeVisible()
-  })
+      expect(nameInput).not.toBeVisible()
+    },
+    { retry: 3 }
+  )
 
   test("remove", async (): Promise<void> => {
     assert(user)
