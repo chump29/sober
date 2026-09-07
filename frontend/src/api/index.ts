@@ -2,11 +2,11 @@ import { type Nullable } from "@postfmly/types"
 
 import { env } from "../env.ts"
 import { FetchError, handleError, validate } from "../utils/index.ts"
+import { type IEnv } from "../utils/interfaces/IEnv.ts"
 import { FetchClientSchema, type IFetchClient } from "../utils/interfaces/IFetchClient.ts"
 import { getHeaders } from "../utils/jwt.ts"
 
-// biome-ignore lint/nursery/useExplicitType: inferred
-const { SOBER_API_TIMEOUT: API_TIMEOUT, VITE_API_URL: API_URL } = env
+const { SOBER_API_TIMEOUT: API_TIMEOUT, VITE_API_URL: API_URL }: IEnv = env
 
 const fetchClient = async <R = null>(settings: IFetchClient): Promise<Nullable<R>> => {
   const s: Nullable<IFetchClient> = validate<IFetchClient, FetchClientSchema>(settings, FetchClientSchema)

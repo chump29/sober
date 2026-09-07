@@ -7,6 +7,7 @@ import {
   boolean,
   type CheckIssue,
   check,
+  date,
   gtValue,
   integer,
   isoTimestamp,
@@ -16,10 +17,12 @@ import {
   number,
   optional,
   pipe,
+  regex,
   string,
   toNumber,
   transform,
   trim,
+  union,
   url,
   enum as v_enum,
   words
@@ -200,6 +203,20 @@ const CostTypeSchema = v_enum(CostType)
 
 type CostTypeSchema = typeof CostTypeSchema
 
+/**
+ * Validate JWT expiration time
+ * @function
+ * @summary Non-empty string | Unix timestamp (seconds) | Date
+ * @see {@link https://github.com/panva/jose/blob/main/docs/jwt/sign/classes/SignJWT.md#setexpirationtime setExpirationTime}
+ */
+const ExpireTimeSchema = union([
+  pipe(StringSchema, regex(/^\d+[a-z]+$/i)),
+  pipe(number(), integer(), gtValue(dayjs().unix())),
+  pipe(date(), gtValue(dayjs().toDate()))
+])
+
+type ExpireTimeSchema = typeof TitleSchema
+
 export {
   BooleanSchema,
   CostInputSchema,
@@ -210,6 +227,7 @@ export {
   DATETIME_FORMAT_OUTPUT,
   DATETIME_FORMAT_SHORT_OUTPUT,
   DateTimeSchema,
+  ExpireTimeSchema,
   IdSchema,
   MAX_LEN_STR,
   MethodSchema,

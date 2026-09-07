@@ -1,17 +1,20 @@
+import { default as assert } from "node:assert/strict"
+
 import { describe, expect, test } from "bun:test"
 
 import { type Optional } from "@postfmly/types"
 
 import { fakerEN_US as fake } from "@faker-js/faker"
 import { default as dayjs } from "dayjs"
+import { default as ExtractNumbers } from "extract-numbers"
 import { UnsecuredJWT } from "jose"
 
 import { name } from "../../package.json" with { type: "json" }
 import { env } from "../../src/env.ts"
+import { type IEnv } from "../../src/utils/interfaces/IEnv.ts"
 import { getHeaders } from "../../src/utils/jwt.ts"
 
-// biome-ignore lint/nursery/useExplicitType: inferred
-const { SOBER_JWT_AUDIENCE: AUDIENCE } = env
+const { SOBER_JWT_AUDIENCE: AUDIENCE, SOBER_JWT_EXPIRE_TIME: EXPIRE_TIME }: IEnv = env
 
 describe("jwt", (): void => {
   test("getHeaders", (): void => {
@@ -26,9 +29,12 @@ describe("jwt", (): void => {
     const { payload } = UnsecuredJWT.decode(jwt)
 
     const exp: number = Math.abs(dayjs().diff(dayjs.unix(payload.exp ?? 0), "seconds"))
-    const EXPIRE_TIME: number = 30
 
-    expect(exp).toBeLessThanOrEqual(EXPIRE_TIME)
+    const extract: ExtractNumbers = new ExtractNumbers({ removeCommas: true, string: false })
+    const expires: number[] = extract.extractNumbers(EXPIRE_TIME as string) as number[]
+    assert(expires[0])
+
+    expect(exp).toBeLessThanOrEqual(expires[0])
     expect(payload.sub).toBe(user)
     expect(payload.iss).toBe(name)
     expect(payload.aud).toBe(AUDIENCE)

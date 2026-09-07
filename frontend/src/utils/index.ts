@@ -34,15 +34,14 @@ class FetchError extends Error {
  * @param {unknown} e The error object
  */
 const handleError = (e: unknown): void => {
-  // biome-ignore format: don't expand braces
   match<object, void>({
     isTimeoutError: e instanceof DOMException && e.name === "TimeoutError",
     isValiError: isValiError(e)
   })
-  .returnType<void>()
-  .with({ isTimeoutError: true }, () => error("Request timed out"))
-  .with({ isValiError: true }, (): void => error(summarize((e as ValiError<GenericSchema>).issues)))
-  .otherwise((): void => error(e))
+    .returnType<void>()
+    .with({ isTimeoutError: true }, () => error("Request timed out"))
+    .with({ isValiError: true }, (): void => error(summarize((e as ValiError<GenericSchema>).issues)))
+    .otherwise((): void => error(e))
 }
 
 /**

@@ -9,7 +9,8 @@ COPY . .
 
 RUN --mount=type=cache,target=/.bun-cache \
     bun install --frozen-lockfile --ignore-scripts && \
-    bun run build
+    bun run build && \
+    rm -f dist/bundles.html
 
 # -=-
 

@@ -3,6 +3,7 @@ import { expect } from "bun:test"
 import { type ICoin } from "../../src/utils/interfaces/ICoin.ts"
 import { type ICost } from "../../src/utils/interfaces/ICost.ts"
 import { type IDisplay } from "../../src/utils/interfaces/IDisplay.ts"
+import { type IEnv } from "../../src/utils/interfaces/IEnv.ts"
 import { type ISelectDisplay } from "../../src/utils/interfaces/ISelectDisplay.ts"
 import { type ISubstance } from "../../src/utils/interfaces/ISubstance.ts"
 import { type ISubstanceDisplay } from "../../src/utils/interfaces/ISubstanceDisplay.ts"
@@ -55,10 +56,20 @@ const ISubstanceDisplayMatcher: ISubstanceDisplay = {
   value: expect.any(String)
 } satisfies ISubstanceDisplay
 
+const IEnvMatcher: IEnv = {
+  SOBER_API_TIMEOUT: expect.any(Number),
+  SOBER_DEBUG: expect.any(Boolean),
+  SOBER_JWT_AUDIENCE: expect.any(String),
+  SOBER_JWT_EXPIRE_TIME: expect.any(String), // string|number|Date
+  VITE_API_URL: expect.any(String),
+  VITE_TITLE: expect.any(String)
+}
+
 export {
   ICoinMatcher,
   ICostMatcher,
   IDisplayMatcher,
+  IEnvMatcher,
   ISelectDisplayMatcher,
   ISubstanceDisplayMatcher,
   ISubstanceMatcher

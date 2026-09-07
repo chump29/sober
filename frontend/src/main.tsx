@@ -2,7 +2,7 @@ import { MantineProvider } from "@mantine/core"
 import { ModalsProvider } from "@mantine/modals"
 import { Notifications } from "@mantine/notifications"
 
-import { error, info } from "@postfmly/logger"
+import { info } from "@postfmly/logger"
 import { type Nullable, type Optional } from "@postfmly/types"
 
 import { default as httpMethods } from "http-methods-constants"
@@ -13,10 +13,10 @@ import { fetchClient } from "./api/index.ts"
 import { Display } from "./components/Display/index.tsx"
 import { env } from "./env.ts"
 import { findElement, handleError } from "./utils/index.ts"
+import { type IEnv } from "./utils/interfaces/IEnv.ts"
 import { type IFetchClient } from "./utils/interfaces/IFetchClient.ts"
 
-// biome-ignore lint/nursery/useExplicitType: inferred
-const { SOBER_DEBUG: DEBUG } = env
+const { SOBER_DEBUG: DEBUG }: IEnv = env
 
 if (DEBUG) {
   info(`Got UI version: ${version}`)
@@ -65,5 +65,5 @@ if (root) {
     </MantineProvider>
   )
 } else {
-  error("Could not find root element")
+  handleError("Could not find root element")
 }

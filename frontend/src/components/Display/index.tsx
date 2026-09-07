@@ -61,6 +61,7 @@ import {
 import { getKeyByValue, handleError, validate } from "../../utils/index.ts"
 import { type ICoin } from "../../utils/interfaces/ICoin.ts"
 import { type ICost } from "../../utils/interfaces/ICost.ts"
+import { type IEnv } from "../../utils/interfaces/IEnv.ts"
 import { type IFetchClient } from "../../utils/interfaces/IFetchClient.ts"
 import { defaultSubstance, type ISubstance, SubstanceSchema } from "../../utils/interfaces/ISubstance.ts"
 import { type ISubstanceDisplay } from "../../utils/interfaces/ISubstanceDisplay.ts"
@@ -79,8 +80,7 @@ import { Substances } from "../Substances/index.tsx"
 
 import "./index.css"
 
-// biome-ignore lint/nursery/useExplicitType: inferred
-const { SOBER_DEBUG: DEBUG } = env
+const { SOBER_DEBUG: DEBUG }: IEnv = env
 
 dayjs.extend(utc) // * NOTE: required for timezone
 dayjs.extend(timezone)
@@ -498,12 +498,11 @@ const Display = (): JSX.Element => {
 
           img = "/coins/"
 
-          // biome-ignore format: don't expand braces
           img += match<object, string>({ m, y })
-          .returnType<string>()
-          .with({ m: EighteenMonths }, (): string => "18m.png")
-          .with({ y: P.number.gt(0) }, (): string => `${y}y.png`)
-          .otherwise((): string => `${m}m.png`)
+            .returnType<string>()
+            .with({ m: EighteenMonths }, (): string => "18m.png")
+            .with({ y: P.number.gt(0) }, (): string => `${y}y.png`)
+            .otherwise((): string => `${m}m.png`)
 
           if (y > MaxYears) {
             img = undefined

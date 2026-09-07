@@ -4,13 +4,13 @@ import { UnsecuredJWT } from "jose"
 
 import { name } from "../../package.json" with { type: "json" }
 import { env } from "../env.ts"
+import { type IEnv } from "./interfaces/IEnv.ts"
 
-// biome-ignore lint/nursery/useExplicitType: inferred
-const { SOBER_JWT_AUDIENCE: AUDIENCE } = env
+const { SOBER_JWT_AUDIENCE: AUDIENCE, SOBER_JWT_EXPIRE_TIME: EXPIRE_TIME }: IEnv = env
 
 const getJWT = (user: string): string =>
   new UnsecuredJWT()
-    .setExpirationTime("30s")
+    .setExpirationTime(EXPIRE_TIME)
     .setIssuedAt()
     .setSubject(user)
     .setIssuer(name)

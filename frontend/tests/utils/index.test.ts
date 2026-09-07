@@ -1,4 +1,4 @@
-import { describe, expect, spyOn, test } from "bun:test"
+import { beforeEach, describe, expect, spyOn, test } from "bun:test"
 
 import { type Nullable } from "@postfmly/types"
 
@@ -16,6 +16,12 @@ import {
   validate
 } from "../../src/utils/index.ts"
 import { CostType, StringSchema } from "../../src/utils/schemas.ts"
+
+const errorSpy = spyOn(console, "error")
+
+beforeEach((): void => {
+  errorSpy.mockReset()
+})
 
 describe("utils - index", (): void => {
   test("findElement", (): void => {
@@ -36,9 +42,6 @@ describe("utils - index", (): void => {
   })
 
   test("handleError - valibot", (): void => {
-    // biome-ignore lint/suspicious/noEmptyBlockStatements: silence console.error()
-    const error = spyOn(console, "error").mockImplementation(() => {})
-
     handleError(
       new ValiError([
         {
@@ -52,25 +55,19 @@ describe("utils - index", (): void => {
       ])
     )
 
-    expect(error).toHaveBeenCalled()
+    expect(errorSpy).toHaveBeenCalled()
   })
 
   test("handleError - timeout", (): void => {
-    // biome-ignore lint/suspicious/noEmptyBlockStatements: silence console.error()
-    const error = spyOn(console, "error").mockImplementation(() => {})
-
     handleError(new DOMException("", "TimeoutError"))
 
-    expect(error).toHaveBeenCalled()
+    expect(errorSpy).toHaveBeenCalled()
   })
 
   test("handleError - error", (): void => {
-    // biome-ignore lint/suspicious/noEmptyBlockStatements: silence console.error()
-    const error = spyOn(console, "error").mockImplementation(() => {})
-
     handleError("test")
 
-    expect(error).toHaveBeenCalled()
+    expect(errorSpy).toHaveBeenCalled()
   })
 
   test("validate", (): void => {
