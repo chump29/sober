@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, type jest, mock, spyOn, test } from "bun:test"
+import { beforeAll, beforeEach, describe, expect, type jest, mock, spyOn, test } from "bun:test"
 import { sleep } from "bun"
 
 import { MantineProvider } from "@mantine/core"
@@ -43,9 +43,11 @@ const infoSpy: jest.Mock = spyOn(console, "info")
 
 const extract: ExtractNumbers = new ExtractNumbers({ removeCommas: true, string: false })
 
-beforeEach(async (): Promise<void> => {
+beforeAll((): void => {
   infoSpy.mockReset()
+})
 
+beforeEach(async (): Promise<void> => {
   substance = getSubstance()
   substance.costType = CostType.Day
   substance.showCoin = true

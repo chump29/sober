@@ -1,4 +1,4 @@
-import { describe, expect, type jest, spyOn, test } from "bun:test"
+import { beforeAll, describe, expect, type jest, spyOn, test } from "bun:test"
 
 import { type Nullable } from "@postfmly/types"
 
@@ -21,6 +21,10 @@ const settings: IFetchClient = {
 
 const errorSpy: jest.Mock = spyOn(console, "error")
 
+beforeAll((): void => {
+  errorSpy.mockReset()
+})
+
 describe("api - index", (): void => {
   test("fetchClient", async (): Promise<void> => {
     const substance: Nullable<ISubstance> = await fetchClient<ISubstance>(settings)
@@ -30,8 +34,6 @@ describe("api - index", (): void => {
   })
 
   test("fetchClient - invalid settings", async (): Promise<void> => {
-    errorSpy.mockReset()
-
     expect(await fetchClient({ endpoint: "", method: httpMethods.HEAD } as IFetchClient)).toBeNull()
 
     const NUM_TIMES: number = 4

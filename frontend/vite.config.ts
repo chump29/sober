@@ -46,6 +46,7 @@ export default defineConfig({
     visualizer({
       filename: "dist/bundles.html",
       gzipSize: true,
+      template: "flamegraph",
       title: "Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ Bundles"
     }),
     webFontDownload(["https://fonts.googleapis.com/css2?family=Cairo+Play&display=swap"], {

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, spyOn, test } from "bun:test"
+import { beforeEach, describe, expect, type jest, spyOn, test } from "bun:test"
 
 import { type Nullable } from "@postfmly/types"
 
@@ -17,7 +17,7 @@ import {
 } from "../../src/utils/index.ts"
 import { CostType, StringSchema } from "../../src/utils/schemas.ts"
 
-const errorSpy = spyOn(console, "error")
+const errorSpy: jest.Mock = spyOn(console, "error")
 
 beforeEach((): void => {
   errorSpy.mockReset()
