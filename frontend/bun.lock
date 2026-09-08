@@ -33,7 +33,7 @@
       "devDependencies": {
         "@faker-js/faker": "^10.6.0",
         "@happy-dom/global-registrator": "^20.14.0",
-        "@postfmly/config": "^1.4.61",
+        "@postfmly/config": "^1.4.63",
         "@testing-library/jest-dom": "^7.0.1",
         "@testing-library/react": "^16.3.3",
         "@testing-library/user-event": "^14.6.7",
@@ -45,7 +45,7 @@
         "expect-type": "^1.4.0",
         "extract-numbers": "^2.0.2",
         "fdir-size": "^1.0.3",
-        "html-validate": "^11.14.0",
+        "html-validate": "^11.15.0",
         "http-status-codes": "^2.3.0",
         "husky": "^9.1.7",
         "jest-fetch-mock": "^4.2.0",
@@ -70,7 +70,7 @@
   "overrides": {
     "@biomejs/biome": "2.5.12",
     "@types/bun": "1.4.1",
-    "@types/node": "26.4.1",
+    "@types/node": "26.5.0",
     "ansi-regex": "6.3.0",
     "ansi-styles": "7.0.0",
     "aria-query": "5.3.2",
@@ -80,7 +80,7 @@
     "css-tree": "3.2.1",
     "cve-lite-cli": "1.33.0",
     "dom-accessibility-api": "0.7.1",
-    "entities": "8.0.0",
+    "entities": "8.1.0",
     "env-paths": "4.0.0",
     "estree-walker": "3.0.3",
     "globals": "17.12.0",
@@ -341,7 +341,7 @@
 
     "@oxc-project/types": ["@oxc-project/types@0.148.0", "https://npm.postfmly.com/@oxc-project/types/-/types-0.148.0.tgz", {}, "sha512-Nm4s/jB+4FpFsPhWGEC4h7rzksesmtnMXomo6rCMcg/b8zLQuOziRgkCS1fxDCXOlJB/6Q8oABOZ/OP6RIPj9A=="],
 
-    "@postfmly/config": ["@postfmly/config@1.4.61", "https://npm.postfmly.com/@postfmly/config/-/config-1.4.61.tgz", { "peerDependencies": { "@biomejs/biome": "^2.5.12", "@types/bun": "^1.4.1", "@types/node": "^26.4.1", "cspell": "^10.2.2", "cve-lite-cli": "^1.33.0", "globals": "^17.12.0", "typescript": "^7.0.2" }, "bin": { "link-configs": "bin/link-configs" } }, "sha512-idX5DBNyT1ZzU4bsRhSJO4Mv+q64yzo7QQGz0HvMyel+KYTC6bWZB6cftVJO5/SYYHjDkRDiOS+w7EAYw/0zRA=="],
+    "@postfmly/config": ["@postfmly/config@1.4.63", "https://npm.postfmly.com/@postfmly/config/-/config-1.4.63.tgz", { "peerDependencies": { "@biomejs/biome": "^2.5.12", "@types/bun": "^1.4.1", "@types/node": "^26.4.1", "cspell": "^10.2.2", "cve-lite-cli": "^1.33.0", "globals": "^17.12.0", "typescript": "^7.0.2" }, "bin": { "link-configs": "bin/link-configs" } }, "sha512-yb3a8QIhBXkr+CZ04O49Z2QmEXFT4kUR7IPbQgs744NlDiZwkiav2BhVhc5zjTSmgeN6PiL8d8gKE1vewXJg3A=="],
 
     "@postfmly/logger": ["@postfmly/logger@1.0.30", "https://npm.postfmly.com/@postfmly/logger/-/logger-1.0.30.tgz", { "dependencies": { "browser-or-node": "^3.0.0", "dayjs": "^1.11.23", "picocolors": "^1.1.1" }, "peerDependencies": { "@postfmly/config": "^1.4.54" } }, "sha512-/UzM2YQvbfSIFs0ypD3Txo7zo4OcSvfIzhiJ1Xrw6DvpC8hoSnNbdI2UPT/Fx3SK/LuV7D5xJITjlNb6FM0x7Q=="],
 
@@ -405,7 +405,7 @@
 
     "@types/ms": ["@types/ms@2.1.0", "https://npm.postfmly.com/@types/ms/-/ms-2.1.0.tgz", {}, "sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA=="],
 
-    "@types/node": ["@types/node@26.4.1", "https://npm.postfmly.com/@types/node/-/node-26.4.1.tgz", { "dependencies": { "undici-types": "~8.3.0" } }, "sha512-k97ENvZWtvA6yqz5/FS6a7duDgOPEeOQOc2iKS/nY6mX6qJUKtLnWzQS+Xj6tXweyj6ZcTAK2Qecetnvi9nCLA=="],
+    "@types/node": ["@types/node@26.5.0", "https://npm.postfmly.com/@types/node/-/node-26.5.0.tgz", { "dependencies": { "undici-types": "~8.9.0" } }, "sha512-dVSGpriSoCgz8WnDNTuSSuSv1PC/ALXihO4ulRZt7Md8k9mlbdin3lGOcDE8SnWOgf513ByWlXd7BK4azmyg/A=="],
 
     "@types/react": ["@types/react@19.2.18", "https://npm.postfmly.com/@types/react/-/react-19.2.18.tgz", { "dependencies": { "csstype": "^3.2.2" } }, "sha512-AnzbBERsrLKtk2XSfTbYRLjQPdy116Sty4q+T+Bp3IC4l6jNBvreVPAHmpq9qhXQM7CXZPjLVmGMw9sy+hxQ3w=="],
 
@@ -615,7 +615,7 @@
 
     "end-of-stream": ["end-of-stream@1.4.5", "https://npm.postfmly.com/end-of-stream/-/end-of-stream-1.4.5.tgz", { "dependencies": { "once": "^1.4.0" } }, "sha512-ooEGc6HP26xXq/N+GCGOT0JKCLDGrq2bQUZrQ7gyrJiZANJ/8YDTxTpQBXGMn+WbIQXNVpyWymm7KYVICQnyOg=="],
 
-    "entities": ["entities@8.0.0", "https://npm.postfmly.com/entities/-/entities-8.0.0.tgz", {}, "sha512-zwfzJecQ/Uej6tusMqwAqU/6KL2XaB2VZ2Jg54Je6ahNBGNH6Ek6g3jjNCF0fG9EWQKGZNddNjU5F1ZQn/sBnA=="],
+    "entities": ["entities@8.1.0", "https://npm.postfmly.com/entities/-/entities-8.1.0.tgz", {}, "sha512-kxL7msIffSuh9aaFAMD7rxAIuTRMAHMeBtgHW2yUdWw732ZNh4MehkF2gdjvtdmikkaIP9bFDDJOPlsvm7avrA=="],
 
     "env-paths": ["env-paths@4.0.0", "https://npm.postfmly.com/env-paths/-/env-paths-4.0.0.tgz", { "dependencies": { "is-safe-filename": "^0.1.0" } }, "sha512-pxP8eL2SwwaTRi/KHYwLYXinDs7gL3jxFcBYmEdYfZmZXbaVDvdppd0XBU8qVz03rDfKZMXg1omHCbsJjZrMsw=="],
 
@@ -735,7 +735,7 @@
 
     "html-tags": ["html-tags@5.1.0", "https://npm.postfmly.com/html-tags/-/html-tags-5.1.0.tgz", {}, "sha512-n6l5uca7/y5joxZ3LUePhzmBFUJ+U2YWzhMa8XUTecSeSlQiZdF5XAd/Q3/WUl0VsXgUwWi8I7CNIwdI5WN1SQ=="],
 
-    "html-validate": ["html-validate@11.14.0", "https://npm.postfmly.com/html-validate/-/html-validate-11.14.0.tgz", { "dependencies": { "@html-validate/stylish": "^6.0.0", "@sidvind/better-ajv-errors": "7.0.0", "ajv": "^8.0.0", "kleur": "^4.1.0", "prompts": "^2.0.0", "semver": "^7.0.0" }, "peerDependencies": { "@jest/globals": "^29.0.3 || ^30.0.0", "@vitest/expect": "^3.2.0 || ^4.0.1 || ^5.0.0", "jest": "^29.0.3 || ^30.0.0", "jest-snapshot": "^29.0.3 || ^30.0.0", "vitest": "^3.2.0 || ^4.0.1 || ^5.0.0" }, "optionalPeers": ["@jest/globals", "@vitest/expect", "jest", "jest-snapshot", "vitest"], "bin": { "html-validate": "bin/html-validate.mjs" } }, "sha512-QxZyjwlnrQYHhwtJUr79WIaJa7JWkjFXXu3yfzbdIsamdBK5X3TLYLkeqckW43Ws+4HuiH0fR5G9feIDL33FlA=="],
+    "html-validate": ["html-validate@11.15.0", "https://npm.postfmly.com/html-validate/-/html-validate-11.15.0.tgz", { "dependencies": { "@html-validate/stylish": "^6.0.0", "@sidvind/better-ajv-errors": "7.0.0", "ajv": "^8.0.0", "kleur": "^4.1.0", "prompts": "^2.0.0", "semver": "^7.0.0" }, "peerDependencies": { "@jest/globals": "^29.0.3 || ^30.0.0", "@vitest/expect": "^3.2.0 || ^4.0.1 || ^5.0.0", "jest": "^29.0.3 || ^30.0.0", "jest-snapshot": "^29.0.3 || ^30.0.0", "vitest": "^3.2.0 || ^4.0.1 || ^5.0.0" }, "optionalPeers": ["@jest/globals", "@vitest/expect", "jest", "jest-snapshot", "vitest"], "bin": { "html-validate": "bin/html-validate.mjs" } }, "sha512-h9KaylhlNg6F1UliMJQr0W5vBCK5AppCLfOKTxLqiiL/B2n/9lPyvYJTKlwliHbyPTNzKYYp0Dhs0sZyI1osnA=="],
 
     "http-methods-constants": ["http-methods-constants@1.1.0", "https://npm.postfmly.com/http-methods-constants/-/http-methods-constants-1.1.0.tgz", {}, "sha512-Vo+/Vc1o/wETwIje5lF4t/IS4dOqHf4S4ianX8IZCtiZ+HeNBJiBHNExKDSw4sndZpbFu6w5Ot6FVqU/I/IBcQ=="],
 
@@ -1057,7 +1057,7 @@
 
     "typescript": ["typescript@7.0.2", "https://npm.postfmly.com/typescript/-/typescript-7.0.2.tgz", { "optionalDependencies": { "@typescript/typescript-aix-ppc64": "7.0.2", "@typescript/typescript-darwin-arm64": "7.0.2", "@typescript/typescript-darwin-x64": "7.0.2", "@typescript/typescript-freebsd-arm64": "7.0.2", "@typescript/typescript-freebsd-x64": "7.0.2", "@typescript/typescript-linux-arm": "7.0.2", "@typescript/typescript-linux-arm64": "7.0.2", "@typescript/typescript-linux-loong64": "7.0.2", "@typescript/typescript-linux-mips64el": "7.0.2", "@typescript/typescript-linux-ppc64": "7.0.2", "@typescript/typescript-linux-riscv64": "7.0.2", "@typescript/typescript-linux-s390x": "7.0.2", "@typescript/typescript-linux-x64": "7.0.2", "@typescript/typescript-netbsd-arm64": "7.0.2", "@typescript/typescript-netbsd-x64": "7.0.2", "@typescript/typescript-openbsd-arm64": "7.0.2", "@typescript/typescript-openbsd-x64": "7.0.2", "@typescript/typescript-sunos-x64": "7.0.2", "@typescript/typescript-win32-arm64": "7.0.2", "@typescript/typescript-win32-x64": "7.0.2" }, "bin": { "tsc": "bin/tsc" } }, "sha512-8FYau96o3NKOhbjKi/qNvG/W5jhzxkbdm5sj9AbZ/5T5sWqn3hJgLfGx27sRKZWTvyzCP8dLRBTf5tBTSRVUNA=="],
 
-    "undici-types": ["undici-types@8.3.0", "https://npm.postfmly.com/undici-types/-/undici-types-8.3.0.tgz", {}, "sha512-j375ScV60dom+YkPFIfTLcOiPxkN/buHz5GobjLhixFuANaNs3C9l4GmrWqejgXWJ7BbJcFYpTEUkS1Ge8bpZQ=="],
+    "undici-types": ["undici-types@8.9.0", "https://npm.postfmly.com/undici-types/-/undici-types-8.9.0.tgz", {}, "sha512-KTDyRTYX8sWmKXAikPHHSyc63CRPETMctyjKFupcC6OBLXT3xsN0e9aF7m+mIXutFWpUXuedtowG7iLOzp0kQg=="],
 
     "unicorn-magic": ["unicorn-magic@0.4.0", "https://npm.postfmly.com/unicorn-magic/-/unicorn-magic-0.4.0.tgz", {}, "sha512-wH590V9VNgYH9g3lH9wWjTrUoKsjLF6sGLjhR4sH1LWpLmCOH0Zf7PukhDA8BiS7KHe4oPNkcTHqYkj7SOGUOw=="],
 

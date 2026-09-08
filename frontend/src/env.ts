@@ -1,21 +1,11 @@
-import { cleanEnv, type ExactValidator, makeExactValidator } from "envalid"
+import { bool, cleanEnv, type ExactValidator, makeExactValidator } from "envalid"
 import { default as ms } from "ms"
 import { parse } from "valibot"
 
-import {
-  BooleanSchema,
-  ExpireTimeSchema,
-  StringSchema,
-  TimeoutSchema,
-  TitleSchema,
-  UrlSchema
-} from "./utils/schemas.ts"
+import { ExpireTimeSchema, StringSchema, TimeoutSchema, TitleSchema, UrlSchema } from "./utils/schemas.ts"
 
 const timeoutValidator: ExactValidator<number> = makeExactValidator<number>((s: string): number =>
   parse(TimeoutSchema, s)
-)
-const booleanValidator: ExactValidator<boolean> = makeExactValidator<boolean>((s: string): boolean =>
-  parse(BooleanSchema, s)
 )
 const stringValidator: ExactValidator<string> = makeExactValidator<string>((s: string): string =>
   parse(StringSchema, s)
@@ -28,7 +18,7 @@ const titleValidator: ExactValidator<string> = makeExactValidator<string>((s: st
 
 const env = cleanEnv(import.meta.env, {
   SOBER_API_TIMEOUT: timeoutValidator({ default: ms("2s") }),
-  SOBER_DEBUG: booleanValidator({ default: false, testDefault: true }),
+  SOBER_DEBUG: bool({ default: false }),
   SOBER_JWT_AUDIENCE: stringValidator({ default: "sober-backend" }),
   SOBER_JWT_EXPIRE_TIME: expireTimeValidator({ default: "30s" }),
   VITE_API_URL: urlValidator({ default: "" }),

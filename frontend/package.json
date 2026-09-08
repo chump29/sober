@@ -61,7 +61,7 @@
   "overrides": {
     "@biomejs/biome": "2.5.12",
     "@types/bun": "1.4.1",
-    "@types/node": "26.4.1",
+    "@types/node": "26.5.0",
     "cspell": "10.2.2",
     "cve-lite-cli": "1.33.0",
     "globals": "17.12.0",
@@ -73,7 +73,7 @@
     "commander": "15.0.0",
     "css-tree": "3.2.1",
     "dom-accessibility-api": "0.7.1",
-    "entities": "8.0.0",
+    "entities": "8.1.0",
     "env-paths": "4.0.0",
     "estree-walker": "3.0.3",
     "hookified": "3.0.3",
@@ -118,7 +118,7 @@
   "devDependencies": {
     "@faker-js/faker": "^10.6.0",
     "@happy-dom/global-registrator": "^20.14.0",
-    "@postfmly/config": "^1.4.61",
+    "@postfmly/config": "^1.4.63",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",
@@ -130,7 +130,7 @@
     "expect-type": "^1.4.0",
     "extract-numbers": "^2.0.2",
     "fdir-size": "^1.0.3",
-    "html-validate": "^11.14.0",
+    "html-validate": "^11.15.0",
     "http-status-codes": "^2.3.0",
     "husky": "^9.1.7",
     "jest-fetch-mock": "^4.2.0",
@@ -149,7 +149,7 @@
   },
   "packageManager": "bun@1.4.2",
   "engines": {
-    "bun": "^1.4.2"
+    "bun": "~1.4.2"
   },
   "engineStrict": true,
   "patchedDependencies": {
