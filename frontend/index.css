@@ -32,20 +32,22 @@ footer {
   font-style: italic;
   text-align: center;
   background-color: var(--color-black);
-}
 
-footer span.yellow {
-  color: var(--color-yellow);
-}
+  span {
+    .yellow {
+      color: var(--color-yellow);
+    }
 
-footer span.green {
-  color: var(--color-green);
-}
+    .green {
+      color: var(--color-green);
+    }
 
-footer span.red {
-  color: var(--color-red);
-}
+    .red {
+      color: var(--color-red);
+    }
 
-footer span.blue {
-  color: var(--color-blue);
+    .blue {
+      color: var(--color-blue);
+    }
+  }
 }

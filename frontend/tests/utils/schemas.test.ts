@@ -122,17 +122,11 @@ describe("schemas", (): void => {
   })
 
   test("TitleSchema", (): void => {
-    let words: string
-    // * NOTE: hyphens are word breaks, do not use
-    do {
-      words = fake.word.words(2)
-    } while (words.includes("-"))
-
-    expect(safeParse(TitleSchema, words).success).toBeTrue()
+    expect(safeParse(TitleSchema, fake.lorem.words(2)).success).toBeTrue()
   })
 
   test("TitleSchema - fail", (): void => {
-    const t: SafeParseResult<TitleSchema> = safeParse(TitleSchema, fake.word.words(1))
+    const t: SafeParseResult<TitleSchema> = safeParse(TitleSchema, fake.lorem.words(1))
 
     expect(t.success).toBeFalse()
     expect(t.issues?.[0].message).toContain("Expected 2")
