@@ -12,6 +12,7 @@ import {
   Image,
   Modal,
   NumberFormatter,
+  Space,
   Stack,
   Text,
   TextInput,
@@ -788,7 +789,9 @@ const Display = (): JSX.Element => {
                     </Button>
                   </Tooltip>
                 </>
-              ) : null}
+              ) : (
+                <Space h="xl" />
+              )}
             </Stack>
           </Center>
         </>
