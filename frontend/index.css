@@ -34,19 +34,19 @@ footer {
   background-color: var(--color-black);
 
   span {
-    .yellow {
+    &.yellow {
       color: var(--color-yellow);
     }
 
-    .green {
+    &.green {
       color: var(--color-green);
     }
 
-    .red {
+    &.red {
       color: var(--color-red);
     }
 
-    .blue {
+    &.blue {
       color: var(--color-blue);
     }
   }
