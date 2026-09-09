@@ -10,8 +10,7 @@ import { default as ExtractNumbers } from "extract-numbers"
 import { UnsecuredJWT } from "jose"
 
 import { name } from "../../package.json" with { type: "json" }
-import { env } from "../../src/env.ts"
-import { type IEnv } from "../../src/utils/interfaces/IEnv.ts"
+import { env, type IEnv } from "../../src/env.ts"
 import { getHeaders } from "../../src/utils/jwt.ts"
 
 const { SOBER_JWT_AUDIENCE: AUDIENCE, SOBER_JWT_EXPIRE_TIME: EXPIRE_TIME }: IEnv = env

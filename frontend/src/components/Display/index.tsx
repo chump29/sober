@@ -39,7 +39,7 @@ import { titleCase } from "title-case"
 import { match, P } from "ts-pattern"
 
 import { fetchClient } from "../../api/index.ts"
-import { env } from "../../env.ts"
+import { env, type IEnv } from "../../env.ts"
 import {
   displayStoreActions,
   getCoin,
@@ -55,7 +55,6 @@ import {
 import { getKeyByValue, HttpMethods, handleError, validate } from "../../utils/index.ts"
 import { type ICoin } from "../../utils/interfaces/ICoin.ts"
 import { type ICost } from "../../utils/interfaces/ICost.ts"
-import { type IEnv } from "../../utils/interfaces/IEnv.ts"
 import { type IFetchClient } from "../../utils/interfaces/IFetchClient.ts"
 import { defaultSubstance, type ISubstance, SubstanceSchema } from "../../utils/interfaces/ISubstance.ts"
 import { type ISubstanceDisplay } from "../../utils/interfaces/ISubstanceDisplay.ts"

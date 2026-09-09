@@ -1,8 +1,7 @@
 import { type Nullable } from "@postfmly/types"
 
-import { env } from "../env.ts"
+import { env, type IEnv } from "../env.ts"
 import { FetchError, handleError, validate } from "../utils/index.ts"
-import { type IEnv } from "../utils/interfaces/IEnv.ts"
 import { FetchClientSchema, type IFetchClient } from "../utils/interfaces/IFetchClient.ts"
 import { getHeaders } from "../utils/jwt.ts"
 

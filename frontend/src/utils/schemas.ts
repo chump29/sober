@@ -7,6 +7,8 @@ import {
   type CheckIssue,
   check,
   date,
+  decimal,
+  digits,
   enum_,
   gtValue,
   integer,
@@ -106,10 +108,10 @@ const MIN_TIMEOUT: number = 200
 /**
  * Validate API timeout
  * @function
- * @summary string, min value = {@link MIN_TIMEOUT} ms
+ * @summary Non-empty digit string, min value = {@link MIN_TIMEOUT} ms
  * @returns {number} Integer
  */
-const TimeoutSchema = pipe(StringSchema, toNumber(), integer(), minValue(MIN_TIMEOUT))
+const TimeoutSchema = pipe(StringSchema, digits(), toNumber(), integer(), minValue(MIN_TIMEOUT))
 
 type TimeoutSchema = typeof TimeoutSchema
 
@@ -125,10 +127,10 @@ type CostSchema = typeof CostSchema
 /**
  * Validate cost input
  * @function
- * @summary Non-empty string, >= 0
+ * @summary Non-empty decimal string, >= 0
  * @returns {number} Number
  */
-const CostInputSchema = pipe(StringSchema, toNumber(), minValue(0))
+const CostInputSchema = pipe(StringSchema, decimal(), toNumber(), minValue(0))
 
 type CostInputSchema = typeof CostInputSchema
 

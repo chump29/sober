@@ -2,8 +2,7 @@ import { describe, expect, test } from "bun:test"
 
 import { expectTypeOf } from "expect-type"
 
-import { env } from "../src/env.ts"
-import { type IEnv } from "../src/utils/interfaces/IEnv.ts"
+import { env, type IEnv } from "../src/env.ts"
 
 const {
   SOBER_API_TIMEOUT: API_TIMEOUT,

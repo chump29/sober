@@ -62,7 +62,7 @@
     "@types/bun": "1.4.2",
     "@types/node": "26.5.0",
     "cspell": "10.3.0",
-    "cve-lite-cli": "1.33.0",
+    "cve-lite-cli": "1.34.0",
     "globals": "17.12.0",
     "typescript": "7.0.2",
     "ansi-regex": "6.3.0",
@@ -89,12 +89,12 @@
   },
   "dependencies": {
     "@jarrodek/pluralize": "^1.0.2",
-    "@mantine/core": "^9.6.0",
-    "@mantine/dates": "^9.6.0",
-    "@mantine/form": "^9.6.0",
-    "@mantine/hooks": "^9.6.0",
-    "@mantine/modals": "^9.6.0",
-    "@mantine/notifications": "^9.6.0",
+    "@mantine/core": "^9.6.1",
+    "@mantine/dates": "^9.6.1",
+    "@mantine/form": "^9.6.1",
+    "@mantine/hooks": "^9.6.1",
+    "@mantine/modals": "^9.6.1",
+    "@mantine/notifications": "^9.6.1",
     "@postfmly/logger": "^1.0.30",
     "@postfmly/types": "^1.0.2",
     "@tabler/icons-react": "^3.46.0",
@@ -109,7 +109,7 @@
     "swr": "^2.5.1",
     "title-case": "^4.3.2",
     "ts-pattern": "^5.9.0",
-    "valibot": "^1.4.2",
+    "valibot": "^1.5.0",
     "zustand": "^5.0.15"
   },
   "devDependencies": {
@@ -145,7 +145,7 @@
   },
   "packageManager": "bun@1.4.2",
   "engines": {
-    "bun": "~1.4.2"
+    "bun": "^1.4.2"
   },
   "engineStrict": true,
   "patchedDependencies": {
