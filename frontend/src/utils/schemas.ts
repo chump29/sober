@@ -2,12 +2,12 @@
 
 import { default as dayjs } from "dayjs"
 import { default as utc } from "dayjs/plugin/utc"
-import { default as httpMethods } from "http-methods-constants"
 import {
   boolean,
   type CheckIssue,
   check,
   date,
+  enum_,
   gtValue,
   integer,
   isoTimestamp,
@@ -24,9 +24,10 @@ import {
   trim,
   union,
   url,
-  enum as v_enum,
   words
 } from "valibot"
+
+import { HttpMethods } from "./index.ts"
 
 dayjs.extend(utc)
 
@@ -173,7 +174,7 @@ type TitleSchema = typeof TitleSchema
  * @function
  * @summary Valid HTTP method
  */
-const MethodSchema = v_enum(httpMethods)
+const MethodSchema = enum_(HttpMethods)
 
 type MethodSchema = typeof MethodSchema
 
@@ -199,7 +200,7 @@ type CostType = (typeof CostType)[keyof typeof CostType]
  * @function
  * @summary Valid {@link CostType}
  */
-const CostTypeSchema = v_enum(CostType)
+const CostTypeSchema = enum_(CostType)
 
 type CostTypeSchema = typeof CostTypeSchema
 

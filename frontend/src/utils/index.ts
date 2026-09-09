@@ -112,4 +112,17 @@ const SaveType = {
  */
 type SaveType = (typeof SaveType)[keyof typeof SaveType]
 
-export { FetchError, findElement, getKeyByValue, handleError, SaveType, UpdateType, validate }
+/**
+ * HTTP Methods
+ * @constant {HttpMethods}
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods HTTP request methods}
+ */
+const HttpMethods = {
+  DELETE: "DELETE",
+  GET: "GET",
+  HEAD: "HEAD",
+  POST: "POST",
+  PUT: "PUT"
+} as const
+
+export { FetchError, findElement, getKeyByValue, HttpMethods, handleError, SaveType, UpdateType, validate }

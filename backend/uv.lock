@@ -1313,7 +1313,7 @@ requires-dist = [
     { name = "rich", specifier = ">=15.0.0" },
     { name = "semver", specifier = ">=3.0.4" },
     { name = "types-behave", marker = "extra == 'dev'", specifier = ">=1.3.0.20260408" },
-    { name = "types-peewee", marker = "extra == 'dev'", specifier = ">=4.5.0.20260907" },
+    { name = "types-peewee", marker = "extra == 'dev'", specifier = ">=4.5.1.20260909" },
     { name = "venvalid", specifier = ">=0.3.0" },
 ]
 provides-extras = ["dev"]
@@ -1385,11 +1385,11 @@ wheels = [
 
 [[package]]
 name = "types-peewee"
-version = "4.5.0.20260907"
+version = "4.5.1.20260909"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/70/65/d0baa971758c71d4168be31666e49b7db40bf58f8453997266e0f6f29010/types_peewee-4.5.0.20260907.tar.gz", hash = "sha256:f60343807abfa6e6ee5862377a58a0efba4892c9a52bf6ac3e2034b9597e8d80", size = 25427, upload-time = "2026-09-07T06:43:25.683Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7c/6a/d30df7b810754ebc6ad0cfceb8f421d792df9cfbf06563080aac681d7874/types_peewee-4.5.1.20260909.tar.gz", hash = "sha256:a90647f9977a62fc4b39268bf2ca1e95ccb5ff5610cc7d525398db227c0b4be7", size = 25436, upload-time = "2026-09-09T06:50:10.341Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7b/ba/e46ffa83f57c4b247aca4e17f6de5b22a0cc1205cf798cba3106819b81c9/types_peewee-4.5.0.20260907-py3-none-any.whl", hash = "sha256:343f69760ce04c241e5003646429d22b337dafec4ccb0e26cd9b99925958d64b", size = 22426, upload-time = "2026-09-07T06:43:24.47Z" },
+    { url = "https://files.pythonhosted.org/packages/e1/80/2909c7d75e5d0a82798c6b7beed7b21784aadbf528f25f5994935b3f648c/types_peewee-4.5.1.20260909-py3-none-any.whl", hash = "sha256:8687c84164a8b2c92f3b27982b526f277f8600fad916373b1d4572d47f32d797", size = 22427, upload-time = "2026-09-09T06:50:09.484Z" },
 ]
 
 [[package]]

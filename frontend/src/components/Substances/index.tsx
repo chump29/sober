@@ -9,18 +9,17 @@ import { hideNotification, showNotification } from "@mantine/notifications"
 import { info } from "@postfmly/logger"
 import { type Nullable, type Optional } from "@postfmly/types"
 
+import { IconCheck, IconMinus, IconPlus, IconX } from "@tabler/icons-react"
 import { default as dayjs } from "dayjs"
 import { default as advancedFormat } from "dayjs/plugin/advancedFormat"
-import { default as httpMethods } from "http-methods-constants"
 import { default as ms } from "ms"
-import { TbCheck as IconCheck, TbMinus as IconMinus, TbPlus as IconPlus, TbX as IconX } from "react-icons/tb"
 import { type KeyedMutator } from "swr"
 import { titleCase } from "title-case"
 
 import { fetchClient } from "../../api/index.ts"
 import { env } from "../../env.ts"
 import { displayStoreActions } from "../../utils/displayStore.ts"
-import { validate } from "../../utils/index.ts"
+import { HttpMethods, validate } from "../../utils/index.ts"
 import { type IEnv } from "../../utils/interfaces/IEnv.ts"
 import { type IFetchClient } from "../../utils/interfaces/IFetchClient.ts"
 import { defaultSubstance, type ISubstance, SubstanceSchema } from "../../utils/interfaces/ISubstance.ts"
@@ -75,7 +74,7 @@ const Substances = ({
             name: n
           } satisfies ISubstance,
           endpoint: "substances/add",
-          method: httpMethods.POST,
+          method: HttpMethods.POST,
           user
         } satisfies IFetchClient)
       )
@@ -140,7 +139,7 @@ const Substances = ({
           fetchClient<void>({
             body: selectedSubstance,
             endpoint: `substances/update/${selectedSubstance.id}`,
-            method: httpMethods.PUT,
+            method: HttpMethods.PUT,
             user
           } satisfies IFetchClient)
         )
@@ -234,7 +233,7 @@ const Substances = ({
       .then(() =>
         fetchClient<boolean>({
           endpoint: `substances/delete/${selectedSubstance.id}`,
-          method: httpMethods.DELETE,
+          method: HttpMethods.DELETE,
           user
         } satisfies IFetchClient)
       )

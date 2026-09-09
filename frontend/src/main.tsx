@@ -4,13 +4,12 @@ import { Notifications } from "@mantine/notifications"
 
 import { type Nullable } from "@postfmly/types"
 
-import { default as httpMethods } from "http-methods-constants"
 import { createRoot } from "react-dom/client"
 
 import { version } from "../package.json" with { type: "json" }
 import { fetchClient } from "./api/index.ts"
 import { Display } from "./components/Display/index.tsx"
-import { findElement, handleError } from "./utils/index.ts"
+import { findElement, HttpMethods, handleError } from "./utils/index.ts"
 import { type IFetchClient } from "./utils/interfaces/IFetchClient.ts"
 
 const getVersion = (v: Nullable<string>): string => (v ? `v${v}` : "N/A")
@@ -23,7 +22,7 @@ if (frontend) {
 // * NOTE: not using await, don't hold up page render
 fetchClient<string>({
   endpoint: "version",
-  method: httpMethods.GET
+  method: HttpMethods.GET
 } satisfies IFetchClient).then((data: Nullable<string>): void => {
   const backend: Nullable<HTMLElement> = findElement("#backend")
   if (backend) {

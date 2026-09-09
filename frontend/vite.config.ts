@@ -4,7 +4,6 @@ import { default as react } from "@vitejs/plugin-react"
 import { default as getDirSize } from "fdir-size"
 import { default as prettyBytes } from "pretty-bytes"
 import { default as removeAttributes } from "rollup-plugin-jsx-remove-attributes"
-import { visualizer } from "rollup-plugin-visualizer"
 import { defineConfig } from "vite"
 import { ViteMinifyPlugin as minifyHtml } from "vite-plugin-minify"
 import { ViteWebfontDownload as webFontDownload } from "vite-plugin-webfont-dl"
@@ -42,12 +41,6 @@ export default defineConfig({
     react(),
     removeAttributes({
       usage: "vite"
-    }),
-    visualizer({
-      filename: "dist/bundles.html",
-      gzipSize: true,
-      template: "flamegraph",
-      title: "Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ Bundles"
     }),
     webFontDownload(["https://fonts.googleapis.com/css2?family=Cairo+Play&display=swap"], {
       assetsSubfolder: "fonts",

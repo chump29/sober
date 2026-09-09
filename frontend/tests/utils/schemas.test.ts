@@ -3,9 +3,9 @@ import { describe, expect, test } from "bun:test"
 import { fakerEN_US as fake } from "@faker-js/faker"
 import { default as dayjs } from "dayjs"
 import { expectTypeOf } from "expect-type"
-import { default as httpMethods } from "http-methods-constants"
 import { type SafeParseResult, safeParse } from "valibot"
 
+import { HttpMethods } from "../../src/utils/index.ts"
 import {
   BooleanSchema,
   CostInputSchema,
@@ -144,7 +144,7 @@ describe("schemas", (): void => {
   })
 
   test("MethodSchema", (): void => {
-    expect(safeParse(MethodSchema, fake.helpers.objectKey(httpMethods)))
+    expect(safeParse(MethodSchema, fake.helpers.objectKey(HttpMethods)))
   })
 
   test("MethodSchema - fail", (): void => {

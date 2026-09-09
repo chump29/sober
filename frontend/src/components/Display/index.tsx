@@ -26,21 +26,14 @@ import { info } from "@postfmly/logger"
 import { type Nullable, type Optional } from "@postfmly/types"
 
 import { default as pluralize } from "@jarrodek/pluralize"
+import { IconCalendar, IconCheck, IconKey, IconSettings, IconX } from "@tabler/icons-react"
 import { Big } from "big.js"
 import { default as dayjs } from "dayjs"
 import { default as advancedFormat } from "dayjs/plugin/advancedFormat"
 import { default as timezone } from "dayjs/plugin/timezone"
 import { default as utc } from "dayjs/plugin/utc"
 import { fastIsEqual as isEqual } from "fast-is-equal"
-import { default as httpMethods } from "http-methods-constants"
 import { default as ms } from "ms"
-import {
-  TbCalendar as IconCalendar,
-  TbCheck as IconCheck,
-  TbKey as IconKey,
-  TbSettings as IconSettings,
-  TbX as IconX
-} from "react-icons/tb"
 import { default as useSWR } from "swr/immutable"
 import { titleCase } from "title-case"
 import { match, P } from "ts-pattern"
@@ -59,7 +52,7 @@ import {
   getWeeks,
   getYears
 } from "../../utils/displayStore.ts"
-import { getKeyByValue, handleError, validate } from "../../utils/index.ts"
+import { getKeyByValue, HttpMethods, handleError, validate } from "../../utils/index.ts"
 import { type ICoin } from "../../utils/interfaces/ICoin.ts"
 import { type ICost } from "../../utils/interfaces/ICost.ts"
 import { type IEnv } from "../../utils/interfaces/IEnv.ts"
@@ -180,7 +173,7 @@ const Display = (): JSX.Element => {
     // * NOTE: Validate/create user
     await fetchClient({
       endpoint: "user",
-      method: httpMethods.GET,
+      method: HttpMethods.GET,
       user: userValue
     } satisfies IFetchClient)
   }
@@ -193,7 +186,7 @@ const Display = (): JSX.Element => {
 
     return await fetchClient<ISubstance[]>({
       endpoint,
-      method: httpMethods.GET,
+      method: HttpMethods.GET,
       user: userValue
     } satisfies IFetchClient).then((data: Nullable<ISubstance[]>): ISubstance[] => {
       const s: Nullable<ISubstance[]> = validate<ISubstance[], SubstanceSchema>(data, SubstanceSchema)
@@ -285,7 +278,7 @@ const Display = (): JSX.Element => {
         date: d
       } as ISubstance,
       endpoint: `substances/update/${selectedSubstance.id}`,
-      method: httpMethods.PUT,
+      method: HttpMethods.PUT,
       user: userValue
     } satisfies IFetchClient)
       .then((data: Nullable<ISubstance>): void => {
