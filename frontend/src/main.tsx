@@ -14,20 +14,26 @@ import { type IFetchClient } from "./utils/interfaces/IFetchClient.ts"
 
 const getVersion = (v: Nullable<string>): string => (v ? `v${v}` : "N/A")
 
-const frontend: Nullable<HTMLElement> = findElement("#frontend")
-if (frontend) {
-  frontend.innerHTML = `<sup>UI</sup> ${getVersion(version)}`
+const renderVersion = (sel: string, txt: string, ver: Nullable<string>): void => {
+  const ele: Nullable<HTMLElement> = findElement(sel)
+  if (ele) {
+    ele.textContent = ""
+
+    const sup: HTMLElement = document.createElement("sup")
+    sup.textContent = txt
+
+    ele.append(sup, document.createTextNode(` ${getVersion(ver)}`))
+  }
 }
+
+renderVersion("#frontend", "UI", version)
 
 // * NOTE: not using await, don't hold up page render
 fetchClient<string>({
   endpoint: "version",
   method: HttpMethods.GET
 } satisfies IFetchClient).then((data: Nullable<string>): void => {
-  const backend: Nullable<HTMLElement> = findElement("#backend")
-  if (backend) {
-    backend.innerHTML = `<sup>API</sup> ${getVersion(data)}`
-  }
+  renderVersion("#backend", "API", data)
 })
 
 const root: Nullable<HTMLElement> = findElement("#root")

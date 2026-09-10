@@ -1,4 +1,5 @@
-import { appendFile, readdir } from "node:fs/promises"
+import { readdir } from "node:fs/promises"
+import { default as path } from "node:path"
 
 import { default as react } from "@vitejs/plugin-react"
 import { default as getDirSize } from "fdir-size"
@@ -50,36 +51,35 @@ export default defineConfig({
     {
       name: "footer",
       async closeBundle(): Promise<void> {
-        await readdir("dist", {
-          recursive: true
-        })
-          .then((files: string[]): string[] =>
-            files.filter((file: string): boolean => file.endsWith(".css") || file.endsWith(".html"))
-          )
-          .then(async (files: string[]): Promise<void> => {
-            for await (const file of files) {
+        const dist: string = "dist"
+
+        const files: string[] = await readdir(dist, { recursive: true })
+
+        const tasks: Promise<void>[] = files
+          .filter((f: string): boolean => f.endsWith(".css") || f.endsWith(".html"))
+          .map(async (f: string) => {
+            const filePath: string = path.join(dist, f)
+
+            const file: Bun.BunFile = Bun.file(filePath)
+
+            if (file.size > 0) {
               const cat: string = "♡ ᓚᘏᗢ ♡"
 
-              const footer: string = file.endsWith(".html") ? `<!-- ${cat} -->` : `/* ${cat} */`
+              const content: string = await file.text()
 
-              const bunFile: Bun.BunFile = Bun.file(`dist/${file}`)
-              if (bunFile.size > 0) {
-                await bunFile
-                  .slice(bunFile.size - 1)
-                  .arrayBuffer()
-                  .then(async (ending: ArrayBuffer): Promise<void> => {
-                    const LF: number = 10
-
-                    await appendFile(`dist/${file}`, `${new Uint8Array(ending)[0] === LF ? "" : "\n"}${footer}`)
-                  })
-              }
+              await Bun.write(
+                filePath,
+                `${content}${content.endsWith("\n") ? "" : "\n"}${f.endsWith(".html") ? `<!-- ${cat} -->` : `/* ${cat} */`}`
+              )
             }
           })
+
+        await Promise.all(tasks)
       }
     },
     {
       name: "size",
-      async closeBundle(): Promise<void> {
+      async writeBundle(): Promise<void> {
         console.info(
           `\nTotal Size: ${prettyBytes(await getDirSize("dist"), {
             maximumFractionDigits: 2

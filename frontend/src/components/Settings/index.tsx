@@ -116,7 +116,9 @@ const Settings = ({
       endpoint: `substances/update/${substance.id}`,
       method: HttpMethods.PUT,
       user
-    } satisfies IFetchClient).then(async (): Promise<Optional<ISubstance[]>> => await refreshSubstances())
+    } satisfies IFetchClient)
+
+    await refreshSubstances()
   }
 
   const setCost = (substance: ISubstance, value: string): void => {
@@ -224,11 +226,11 @@ const Settings = ({
                     label="Show Cost"
                     offLabel="OFF"
                     onChange={async (val: ChangeEvent<HTMLInputElement>): Promise<void> => {
-                      await handleSave(substance, SaveType.SHOW_COST, val.target.checked).then((): void => {
-                        if (substance.showCost) {
-                          costRef.current?.focus()
-                        }
-                      })
+                      await handleSave(substance, SaveType.SHOW_COST, val.target.checked)
+
+                      if (substance.showCost) {
+                        costRef.current?.focus()
+                      }
                     }}
                     onLabel="ON"
                     size="md"
@@ -239,11 +241,11 @@ const Settings = ({
                     data-testid="costType"
                     disabled={!substance.showCost}
                     label="Cost Frequency"
-                    onChange={async (val: Nullable<CostType>): Promise<void> =>
-                      await handleSave(substance, SaveType.COST_TYPE, val as CostType).then((): void =>
-                        costTypeRef.current?.blur()
-                      )
-                    }
+                    onChange={async (val: Nullable<CostType>): Promise<void> => {
+                      await handleSave(substance, SaveType.COST_TYPE, val as CostType)
+
+                      costTypeRef.current?.blur()
+                    }}
                     placeholder="Choose frequency…"
                     ref={costTypeRef}
                     styles={{

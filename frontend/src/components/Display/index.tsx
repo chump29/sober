@@ -1,4 +1,4 @@
-import { type ChangeEvent, type EffectCallback, type JSX, type KeyboardEvent, useEffect } from "react"
+import { type ChangeEvent, type JSX, type KeyboardEvent, useEffect } from "react"
 
 import {
   ActionIcon,
@@ -183,22 +183,22 @@ const Display = (): JSX.Element => {
       return [] as ISubstance[]
     }
 
-    return await fetchClient<ISubstance[]>({
+    const data: Nullable<ISubstance[]> = await fetchClient<ISubstance[]>({
       endpoint,
       method: HttpMethods.GET,
       user: userValue
-    } satisfies IFetchClient).then((data: Nullable<ISubstance[]>): ISubstance[] => {
-      const s: Nullable<ISubstance[]> = validate<ISubstance[], SubstanceSchema>(data, SubstanceSchema)
-      if (!s) {
-        return [] as ISubstance[]
-      }
+    } satisfies IFetchClient)
 
-      if (DEBUG) {
-        info(`Got ${pluralize("substance", s.length, true)} from API`)
-      }
+    const s: Nullable<ISubstance[]> = validate<ISubstance[], SubstanceSchema>(data, SubstanceSchema)
+    if (!s) {
+      return [] as ISubstance[]
+    }
 
-      return s
-    })
+    if (DEBUG) {
+      info(`Got ${pluralize("substance", s.length, true)} from API`)
+    }
+
+    return s
   }
 
   const { data: substances, mutate: refreshSubstances } = useSWR<ISubstance[]>(
@@ -271,7 +271,7 @@ const Display = (): JSX.Element => {
       return
     }
 
-    await fetchClient<ISubstance>({
+    const data: Nullable<ISubstance> = await fetchClient<ISubstance>({
       body: {
         ...selectedSubstance,
         date: d
@@ -280,50 +280,45 @@ const Display = (): JSX.Element => {
       method: HttpMethods.PUT,
       user: userValue
     } satisfies IFetchClient)
-      .then((data: Nullable<ISubstance>): void => {
-        const s: Nullable<ISubstance> = validate<ISubstance, SubstanceSchema>(data, SubstanceSchema)
-        if (!s) {
-          return
-        }
 
-        setSelectedSubstance(s)
+    const s: Nullable<ISubstance> = validate<ISubstance, SubstanceSchema>(data, SubstanceSchema)
+    if (!s) {
+      return
+    }
 
-        if (DEBUG) {
-          info(`New sober date for ${s.name}: ${d}`)
-        }
-      })
-      .then(async (): Promise<void> => {
-        await refreshSubstances()
-      })
+    setSelectedSubstance(s)
+
+    if (DEBUG) {
+      info(`New sober date for ${s.name}: ${d}`)
+    }
+
+    await refreshSubstances()
   }
 
-  const setUserAndRefresh = (): void => {
-    Promise.resolve()
-      .then(() => {
-        const user: string = getUser() as string
+  const setUserAndRefresh = async (): Promise<void> => {
+    const user: string = getUser() as string
 
-        setSoberUser(user)
+    setSoberUser(user)
 
-        if (DEBUG) {
-          info(`User logged in as: ${user}`)
-        }
-      })
-      .then(() => validateUser())
-      .then(() => refreshSubstances())
+    if (DEBUG) {
+      info(`User logged in as: ${user}`)
+    }
+
+    await validateUser()
+
+    await refreshSubstances()
   }
 
-  const resetUserAndRefresh = (): void => {
-    Promise.resolve()
-      .then(() => {
-        setUser(null)
+  const resetUserAndRefresh = async (): Promise<void> => {
+    setUser(null)
 
-        resetSoberUser()
+    resetSoberUser()
 
-        if (DEBUG) {
-          info("User logged out")
-        }
-      })
-      .then(() => refreshSubstances()) // clear
+    if (DEBUG) {
+      info("User logged out")
+    }
+
+    await refreshSubstances() // clear
   }
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -337,19 +332,19 @@ const Display = (): JSX.Element => {
     nameField.setValue(u)
   }
 
-  const handleNameConfirm = (): void => {
+  const handleNameConfirm = async (): Promise<void> => {
     if (!getUser()) {
       return
     }
 
     closeLogin()
 
-    setUserAndRefresh()
+    await setUserAndRefresh()
   }
 
-  const handleNameChangeKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleNameChangeKeyDown = async (e: KeyboardEvent<HTMLInputElement>): Promise<void> => {
     if (e.key === "Enter" && getUser() !== null) {
-      handleNameConfirm()
+      await handleNameConfirm()
     }
   }
 
@@ -436,7 +431,7 @@ const Display = (): JSX.Element => {
     }
   }
 
-  const handleSetTime = (e: ChangeEvent<HTMLInputElement>): void => {
+  const handleSetTime = async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
     const checked: boolean = e.currentTarget.checked
 
     if (checked) {
@@ -456,7 +451,7 @@ const Display = (): JSX.Element => {
 
     getSelectedSubstance().showTime = checked
 
-    handleChangeDate(getSelectedSubstance().date)
+    await handleChangeDate(getSelectedSubstance().date)
   }
 
   const init = async (): Promise<void> => {
@@ -465,56 +460,58 @@ const Display = (): JSX.Element => {
       return
     }
 
-    await validateUser().then(async (): Promise<Optional<ISubstance[]>> => await refreshSubstances())
+    await validateUser()
+
+    await refreshSubstances()
 
     const selectedSubstance: ISubstance = getSelectedSubstance()
 
-    Promise.resolve()
-      .then(() => {
-        setDisplay(selectedSubstance.date)
+    setDisplay(selectedSubstance.date)
 
-        handleSetCost(selectedSubstance.cost)
-      })
-      .then(() => {
-        let txt: string = "No milestones to show yet."
-        let img: Optional<string>
+    handleSetCost(selectedSubstance.cost)
 
-        const m: number = Math.floor(getMonthsFloat())
+    let txt: string = "No milestones to show yet."
+    let img: Optional<string>
 
-        if (m > 0) {
-          const EighteenMonths: number = 18
-          const MaxYears: number = 5 // TODO: more images
+    const m: number = Math.floor(getMonthsFloat())
 
-          const y: number = Math.floor(getYearsFloat())
+    if (m > 0) {
+      const EighteenMonths: number = 18
+      const MaxYears: number = 5 // TODO: more images
 
-          txt = titleCase(y > 0 ? pluralize("year", y, true) : pluralize("month", m, true))
+      const y: number = Math.floor(getYearsFloat())
 
-          img = "/coins/"
+      txt = titleCase(y > 0 ? pluralize("year", y, true) : pluralize("month", m, true))
 
-          img += match<object, string>({ m, y })
-            .returnType<string>()
-            .with({ m: EighteenMonths }, (): string => "18m.png")
-            .with({ y: P.number.gt(0) }, (): string => `${y}y.png`)
-            .otherwise((): string => `${m}m.png`)
+      img = "/coins/"
 
-          if (y > MaxYears) {
-            img = undefined
-            txt = `${txt} (No image)`
-          }
-        }
+      img += match<object, string>({ m, y })
+        .returnType<string>()
+        .with({ m: EighteenMonths }, (): string => "18m.png")
+        .with({ y: P.number.gt(0) }, (): string => `${y}y.png`)
+        .otherwise((): string => `${m}m.png`)
 
-        setCoin({
-          image: img,
-          text: txt
-        } satisfies ICoin)
-      })
+      if (y > MaxYears) {
+        img = undefined
+        txt = `${txt} (No image)`
+      }
+    }
+
+    setCoin({
+      image: img,
+      text: txt
+    } satisfies ICoin)
   }
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: only watching selectedSubstance
-  useEffect((): ReturnType<EffectCallback> => {
-    init()
+  useEffect(() => {
+    const handleInit = async (): Promise<void> => {
+      await init()
+    }
 
-    const interval: NodeJS.Timeout = setInterval((): void => {
+    handleInit()
+
+    const interval = setInterval((): void => {
       setDisplay(getSelectedSubstance().date)
     }, INTERVAL_MS)
 

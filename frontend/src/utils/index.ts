@@ -1,8 +1,8 @@
 import { error } from "@postfmly/logger"
 import { type Nullable } from "@postfmly/types"
 
-import { match } from "ts-pattern"
-import { array, type GenericSchema, isValiError, parse, summarize, type ValiError } from "valibot"
+import { match, P } from "ts-pattern"
+import { array, type GenericSchema, isValiError, parse, summarize } from "valibot"
 
 /**
  * Find DOM element
@@ -34,13 +34,10 @@ class FetchError extends Error {
  * @param {unknown} e The error object
  */
 const handleError = (e: unknown): void => {
-  match<object, void>({
-    isTimeoutError: e instanceof DOMException && e.name === "TimeoutError",
-    isValiError: isValiError(e)
-  })
+  match<unknown, void>(e)
     .returnType<void>()
-    .with({ isTimeoutError: true }, () => error("Request timed out"))
-    .with({ isValiError: true }, (): void => error(summarize((e as ValiError<GenericSchema>).issues)))
+    .with(P.intersection(P.instanceOf(DOMException), { name: "TimeoutError" }), () => error("Request timed out"))
+    .with(P.when(isValiError), (v): void => error(summarize(v.issues)))
     .otherwise((): void => error(e))
 }
 

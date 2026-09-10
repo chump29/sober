@@ -1,5 +1,7 @@
 import { type Nullable } from "@postfmly/types"
 
+import { default as httpStatus } from "http-status-codes"
+
 import { env, type IEnv } from "../env.ts"
 import { FetchError, handleError, validate } from "../utils/index.ts"
 import { FetchClientSchema, type IFetchClient } from "../utils/interfaces/IFetchClient.ts"
@@ -27,27 +29,24 @@ const fetchClient = async <R = null>(settings: IFetchClient): Promise<Nullable<R
   }
   endpoint += s.endpoint
 
-  return await fetch(endpoint, config)
-    .then(async (response: Response): Promise<Nullable<R>> => {
-      if (!response.ok) {
-        throw new FetchError(response)
-      }
+  try {
+    const response: Response = await fetch(endpoint, config)
+    if (!response.ok) {
+      throw new FetchError(response)
+    }
 
-      const text: string = await response.text()
-      return text.length > 0 ? JSON.parse(text) : null
-    })
-    .then((data: Nullable<R>): Nullable<R> => {
-      if (data === null) {
-        return null
-      }
-
-      return data as R
-    })
-    .catch((e: Error): null => {
-      handleError(e)
-
+    if (response.status === httpStatus.NO_CONTENT) {
       return null
-    })
+    }
+
+    const text: string = (await response.text()).trim()
+
+    return text.length > 0 ? (JSON.parse(text) as R) : null
+  } catch (e: unknown) {
+    handleError(e)
+
+    return null
+  }
 }
 
 export { fetchClient }

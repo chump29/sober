@@ -58,48 +58,44 @@ const Substances = ({
 
   const isRenaming: RefObject<boolean> = useRef<boolean>(false)
 
-  const addSubstanceAndRefresh = (name: string): void => {
+  const addSubstanceAndRefresh = async (name: string): Promise<void> => {
     if (!user) {
       return
     }
 
     const n: string = titleCase(name)
 
-    Promise.resolve()
-      .then(() =>
-        fetchClient<ISubstance>({
-          body: {
-            ...defaultSubstance,
-            name: n
-          } satisfies ISubstance,
-          endpoint: "substances/add",
-          method: HttpMethods.POST,
-          user
-        } satisfies IFetchClient)
-      )
-      .then((data: Nullable<ISubstance>) => {
-        const s: Nullable<ISubstance> = validate<ISubstance, SubstanceSchema>(data, SubstanceSchema)
-        if (!s) {
-          return
-        }
+    const data: Nullable<ISubstance> = await fetchClient<ISubstance>({
+      body: {
+        ...defaultSubstance,
+        name: n
+      } satisfies ISubstance,
+      endpoint: "substances/add",
+      method: HttpMethods.POST,
+      user
+    } satisfies IFetchClient)
 
-        setSelectedSubstance(s)
+    const s: Nullable<ISubstance> = validate<ISubstance, SubstanceSchema>(data, SubstanceSchema)
+    if (!s) {
+      return
+    }
 
-        if (DEBUG) {
-          info(`Substance added: ${s.name}`)
-        }
-      })
-      .then(() => refreshSubstances())
-      .then(() =>
-        showNotification({
-          autoClose: ms("7.5s"),
-          className: "var(--color-blue)",
-          id: "setDate",
-          message: `Choose your sober date for ${getSelectedSubstance().name}`,
-          title: "Set Sober Date",
-          withBorder: true
-        })
-      )
+    setSelectedSubstance(s)
+
+    if (DEBUG) {
+      info(`Substance added: ${s.name}`)
+    }
+
+    await refreshSubstances()
+
+    showNotification({
+      autoClose: ms("7.5s"),
+      className: "var(--color-blue)",
+      id: "setDate",
+      message: `Choose your sober date for ${getSelectedSubstance().name}`,
+      title: "Set Sober Date",
+      withBorder: true
+    })
   }
 
   const handleSubstanceChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -121,7 +117,7 @@ const Substances = ({
     closeSubstance()
   }
 
-  const handleSubstanceConfirm = (): void => {
+  const handleSubstanceConfirm = async (): Promise<void> => {
     if (substanceValue.current.trim().length === 0) {
       return
     }
@@ -133,22 +129,20 @@ const Substances = ({
 
       selectedSubstance.name = substanceValue.current
 
-      Promise.resolve()
-        .then(() =>
-          fetchClient<void>({
-            body: selectedSubstance,
-            endpoint: `substances/update/${selectedSubstance.id}`,
-            method: HttpMethods.PUT,
-            user
-          } satisfies IFetchClient)
-        )
-        .then(() => {
-          if (DEBUG) {
-            info(`Updated ID ${selectedSubstance.id} to ${selectedSubstance.name}`)
-          }
-        })
-        .then(() => hideNotification("setDate"))
-        .then(() => refreshSubstances())
+      await fetchClient<void>({
+        body: selectedSubstance,
+        endpoint: `substances/update/${selectedSubstance.id}`,
+        method: HttpMethods.PUT,
+        user
+      } satisfies IFetchClient)
+
+      if (DEBUG) {
+        info(`Updated ID ${selectedSubstance.id} to ${selectedSubstance.name}`)
+      }
+
+      hideNotification("setDate")
+
+      await refreshSubstances()
 
       handleClose()
 
@@ -169,12 +163,12 @@ const Substances = ({
 
     handleClose()
 
-    addSubstanceAndRefresh(substanceValue.current)
+    await addSubstanceAndRefresh(substanceValue.current)
   }
 
-  const handleSubstanceChangeKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleSubstanceChangeKeyDown = async (e: KeyboardEvent<HTMLInputElement>): Promise<void> => {
     if (e.key === "Enter" && substanceValue.current.trim().length > 0) {
-      handleSubstanceConfirm()
+      await handleSubstanceConfirm()
     }
   }
 
@@ -223,30 +217,27 @@ const Substances = ({
     openSubstance()
   }
 
-  const doDeleteAndRefresh = (): void => {
+  const doDeleteAndRefresh = async (): Promise<void> => {
     if (!(user && selectedSubstance)) {
       return
     }
 
-    Promise.resolve()
-      .then(() =>
-        fetchClient<boolean>({
-          endpoint: `substances/delete/${selectedSubstance.id}`,
-          method: HttpMethods.DELETE,
-          user
-        } satisfies IFetchClient)
-      )
-      .then((data: Nullable<boolean>) => {
-        if (!data) {
-          // * NOTE: catches false and null
-          return
-        }
+    const data: Nullable<boolean> = await fetchClient<boolean>({
+      endpoint: `substances/delete/${selectedSubstance.id}`,
+      method: HttpMethods.DELETE,
+      user
+    } satisfies IFetchClient)
 
-        if (DEBUG) {
-          info(`Deleted ID ${selectedSubstance.id}`)
-        }
-      })
-      .then(() => refreshSubstances())
+    if (!data) {
+      // * NOTE: catches false and null
+      return
+    }
+
+    if (DEBUG) {
+      info(`Deleted ID ${selectedSubstance.id}`)
+    }
+
+    await refreshSubstances()
   }
 
   const handleDelete = (): void => {
@@ -269,7 +260,7 @@ const Substances = ({
       confirmProps: {
         "data-testid": "confirmDelete"
       },
-      onConfirm: (): void => doDeleteAndRefresh()
+      onConfirm: async (): Promise<void> => await doDeleteAndRefresh()
     })
   }
 
