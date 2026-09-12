@@ -41,7 +41,7 @@ describe("env", (): void => {
   test("VITE_API_URL", (): void => {
     expectTypeOf(API_URL).toEqualTypeOf<string>()
 
-    expect(API_URL.length).toEqual(0)
+    expect(API_URL).toHaveLength(0)
   })
 
   test("VITE_TITLE", (): void => {
