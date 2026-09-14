@@ -3,10 +3,10 @@ import { describe, expect, test } from "bun:test"
 import { expectTypeOf } from "expect-type"
 import { default as ms } from "ms"
 
-import { env, type IEnv } from "../../src/env.ts"
+import { env } from "../../src/env.ts"
 
-const { SOBER_API_TIMEOUT, SOBER_DEBUG, SOBER_JWT_AUDIENCE, SOBER_JWT_EXPIRE_TIME, VITE_API_URL, VITE_TITLE }: IEnv =
-  env
+const { SOBER_API_TIMEOUT, SOBER_DEBUG, SOBER_JWT_AUDIENCE, SOBER_JWT_EXPIRE_TIME, VITE_API_URL, VITE_TITLE } =
+  env as typeof env
 
 describe("env", (): void => {
   test("SOBER_API_TIMEOUT", (): void => {

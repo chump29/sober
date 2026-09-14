@@ -25,6 +25,4 @@ const env = cleanEnv(import.meta.env, {
   VITE_TITLE: titleValidator({ default: "Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" })
 })
 
-type IEnv = typeof env
-
-export { env, type IEnv }
+export { env }

@@ -1,13 +1,11 @@
 import { type Nullable } from "@postfmly/types"
 
-import { default as httpStatus } from "http-status-codes"
-
-import { env, type IEnv } from "../env.ts"
-import { FetchError, handleError, validate } from "../utils/index.ts"
+import { env } from "../env.ts"
+import { FetchError, HttpStatus, handleError, validate } from "../utils/index.ts"
 import { FetchClientSchema, type IFetchClient } from "../utils/interfaces/IFetchClient.ts"
 import { getHeaders } from "../utils/jwt.ts"
 
-const { SOBER_API_TIMEOUT: API_TIMEOUT, VITE_API_URL: API_URL }: IEnv = env
+const { SOBER_API_TIMEOUT: API_TIMEOUT, VITE_API_URL: API_URL } = env as typeof env
 
 const fetchClient = async <R = null>(settings: IFetchClient): Promise<Nullable<R>> => {
   const s: Nullable<IFetchClient> = validate<IFetchClient, FetchClientSchema>(settings, FetchClientSchema)
@@ -35,7 +33,7 @@ const fetchClient = async <R = null>(settings: IFetchClient): Promise<Nullable<R
       throw new FetchError(response)
     }
 
-    if (response.status === httpStatus.NO_CONTENT) {
+    if (response.status === HttpStatus.NO_CONTENT) {
       return null
     }
 

@@ -17,7 +17,7 @@ import { type KeyedMutator } from "swr"
 import { titleCase } from "title-case"
 
 import { fetchClient } from "../../api/index.ts"
-import { env, type IEnv } from "../../env.ts"
+import { env } from "../../env.ts"
 import { displayStoreActions } from "../../utils/displayStore.ts"
 import { HttpMethods, validate } from "../../utils/index.ts"
 import { type IFetchClient } from "../../utils/interfaces/IFetchClient.ts"
@@ -25,7 +25,7 @@ import { defaultSubstance, type ISubstance, SubstanceSchema } from "../../utils/
 import { type ISubstanceDisplay } from "../../utils/interfaces/ISubstanceDisplay.ts"
 import { DATETIME_FORMAT_OUTPUT, DATETIME_FORMAT_SHORT_OUTPUT, MAX_LEN_STR, NameSchema } from "../../utils/schemas.ts"
 
-const { SOBER_DEBUG: DEBUG }: IEnv = env
+const { SOBER_DEBUG: DEBUG } = env as typeof env
 
 dayjs.extend(advancedFormat) // * NOTE: for Do format option
 

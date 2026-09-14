@@ -39,7 +39,7 @@ import { titleCase } from "title-case"
 import { match, P } from "ts-pattern"
 
 import { fetchClient } from "../../api/index.ts"
-import { env, type IEnv } from "../../env.ts"
+import { env } from "../../env.ts"
 import {
   displayStoreActions,
   getCoin,
@@ -73,7 +73,7 @@ import { Substances } from "../Substances/index.tsx"
 
 import "./index.css"
 
-const { SOBER_DEBUG: DEBUG }: IEnv = env
+const { SOBER_DEBUG: DEBUG } = env as typeof env
 
 dayjs.extend(utc) // * NOTE: required for timezone
 dayjs.extend(timezone)

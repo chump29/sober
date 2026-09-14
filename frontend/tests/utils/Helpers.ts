@@ -6,7 +6,6 @@ import { type ICost } from "../../src/utils/interfaces/ICost.ts"
 import { type ISubstance } from "../../src/utils/interfaces/ISubstance.ts"
 import { type ISubstanceDisplay } from "../../src/utils/interfaces/ISubstanceDisplay.ts"
 import { CostType, DATETIME_FORMAT } from "../../src/utils/schemas.ts"
-import { SUBSTANCES } from "./Substances.ts"
 
 const getCoin = (): ICoin =>
   ({
@@ -42,7 +41,7 @@ const getSubstance = (): ISubstance =>
     costType: fake.helpers.enumValue(CostType),
     date: dayjs(fake.date.past()).format(DATETIME_FORMAT),
     id: fake.number.int({ max: 1000, min: 1 }),
-    name: fake.helpers.arrayElement(SUBSTANCES),
+    name: fake.lorem.word(),
     showCoin: fake.datatype.boolean(),
     showCost: fake.datatype.boolean(),
     showDecimals: fake.datatype.boolean(),

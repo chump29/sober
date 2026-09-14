@@ -10,15 +10,14 @@ import { type Nullable } from "@postfmly/types"
 import { fakerEN_US as fake } from "@faker-js/faker"
 import { configure, render, screen } from "@testing-library/react"
 import { type UserEvent, userEvent } from "@testing-library/user-event"
-import { default as httpStatus } from "http-status-codes"
 import { type FetchMock, default as fetchMock } from "jest-fetch-mock"
 import { default as ms } from "ms"
 import { match, P } from "ts-pattern"
 
 import { Substances } from "../../../src/components/Substances/index.tsx"
+import { HttpStatus } from "../../../src/utils/index.ts"
 import { type ISubstance } from "../../../src/utils/interfaces/ISubstance.ts"
 import { getSubstance, getSubstanceDisplay } from "../../utils/Helpers.ts"
-import { SUBSTANCES } from "../../utils/Substances.ts"
 
 configure({
   asyncUtilTimeout: ms("3s")
@@ -40,7 +39,7 @@ const fetch: FetchMock = fetchMock.enableMocks().mockResponse(
       .otherwise(
         (): Response =>
           new Response(null, {
-            status: httpStatus.IM_A_TEAPOT
+            status: HttpStatus.IM_A_TEAPOT
           })
       )
 )
@@ -90,8 +89,7 @@ describe("Substances - index", (): void => {
 
       expect(nameInput).toBeVisible()
 
-      // * NOTE: userEvent.type() doesn't like spaces
-      const name: string = fake.helpers.arrayElement(SUBSTANCES).replaceAll(" ", "-")
+      const name: string = fake.lorem.word()
 
       await user.type(nameInput, name)
 
@@ -133,8 +131,7 @@ describe("Substances - index", (): void => {
 
     expect(nameInput).not.toHaveValue()
 
-    // * NOTE: userEvent.type() doesn't like spaces
-    const name: string = fake.helpers.arrayElement(SUBSTANCES).replaceAll(" ", "-")
+    const name: string = fake.lorem.word()
 
     await user.type(nameInput, name)
 

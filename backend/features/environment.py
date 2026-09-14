@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING, Final
 from api import DB_PATH, CostType, SubstanceDTO, User  # pylint: disable=import-error
 from faker import Faker
 from rich.console import Console
-from substances import SUBSTANCES  # pyright: ignore[reportMissingImports]
 
 if TYPE_CHECKING:
     from behave.model import Feature
@@ -41,7 +40,7 @@ def get_new_substance() -> SubstanceDTO:
         costType=fake.enum(CostType),
         date=fake.date_time_this_decade(tzinfo=UTC),
         id=fake.pyint(min_value=1, max_value=100),
-        name=fake.random_element(SUBSTANCES),
+        name=fake.word(),
         showCoin=fake.boolean(),
         showCost=show_cost,
         showDecimals=fake.boolean(),

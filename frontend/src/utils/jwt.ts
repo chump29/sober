@@ -3,9 +3,9 @@ import { type Optional } from "@postfmly/types"
 import { UnsecuredJWT } from "jose"
 
 import { name } from "../../package.json" with { type: "json" }
-import { env, type IEnv } from "../env.ts"
+import { env } from "../env.ts"
 
-const { SOBER_JWT_AUDIENCE: AUDIENCE, SOBER_JWT_EXPIRE_TIME: EXPIRE_TIME }: IEnv = env
+const { SOBER_JWT_AUDIENCE: AUDIENCE, SOBER_JWT_EXPIRE_TIME: EXPIRE_TIME } = env as typeof env
 
 const getJWT = (user: string): string =>
   new UnsecuredJWT()

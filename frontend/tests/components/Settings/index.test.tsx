@@ -10,13 +10,12 @@ import { type Nullable } from "@postfmly/types"
 import { fakerEN_US as fake } from "@faker-js/faker"
 import { configure, render, screen, waitFor } from "@testing-library/react"
 import { type UserEvent, userEvent } from "@testing-library/user-event"
-import { default as httpStatus } from "http-status-codes"
 import { type FetchMock, default as fetchMock } from "jest-fetch-mock"
 import { default as ms } from "ms"
 import { match, P } from "ts-pattern"
 
 import { Settings } from "../../../src/components/Settings/index.tsx"
-import { getKeyByValue } from "../../../src/utils/index.ts"
+import { getKeyByValue, HttpStatus } from "../../../src/utils/index.ts"
 import { type ISubstance } from "../../../src/utils/interfaces/ISubstance.ts"
 import { CostType } from "../../../src/utils/schemas.ts"
 import { getSubstance } from "../../utils/Helpers.ts"
@@ -37,7 +36,7 @@ const fetch: FetchMock = fetchMock.enableMocks().mockResponse(
       .otherwise(
         (): Response =>
           new Response(null, {
-            status: httpStatus.IM_A_TEAPOT
+            status: HttpStatus.IM_A_TEAPOT
           })
       )
 )

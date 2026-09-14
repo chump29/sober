@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 
 import { expectTypeOf } from "expect-type"
 
-import { env, type IEnv } from "../src/env.ts"
+import { env } from "../src/env.ts"
 
 const {
   SOBER_API_TIMEOUT: API_TIMEOUT,
@@ -11,7 +11,7 @@ const {
   SOBER_JWT_EXPIRE_TIME: EXPIRE_TIME,
   VITE_API_URL: API_URL,
   VITE_TITLE: TITLE
-}: IEnv = env
+} = env as typeof env
 
 describe("env", (): void => {
   test("SOBER_API_TIMEOUT", (): void => {

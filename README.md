@@ -6,7 +6,6 @@
 
 ![CodeQL](https://github.com/chump29/sober/workflows/CodeQL/badge.svg "CodeQL")
 
-![NO AI](https://img.shields.io/badge/NO-AI-orange?style=plastic "NO AI") &nbsp;
 ![License](https://img.shields.io/github/license/chump29/sober?style=plastic&color=blueviolet&label=License&logo=gplv3 "GPLv3")
 
 ---

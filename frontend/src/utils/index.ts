@@ -122,4 +122,14 @@ const HttpMethods = {
   PUT: "PUT"
 } as const
 
-export { FetchError, findElement, getKeyByValue, HttpMethods, handleError, SaveType, UpdateType, validate }
+/**
+ * HTTP Status Codes
+ * @constant {HttpStatus}
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status HTTP status codes}
+ */
+const HttpStatus = {
+  IM_A_TEAPOT: 418,
+  NO_CONTENT: 204
+} as const
+
+export { FetchError, findElement, getKeyByValue, HttpMethods, HttpStatus, handleError, SaveType, UpdateType, validate }
