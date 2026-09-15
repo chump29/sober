@@ -5,7 +5,7 @@
 ---
 
 <!-- cspell:disable -->
-![Backend](https://img.shields.io/badge/Backend-1.1.0-chocolate?style=plastic&logo=docker "Backend")
+![Backend](https://img.shields.io/badge/Backend-1.1.1-chocolate?style=plastic&logo=docker "Backend")
 
 ![Behave](https://img.shields.io/badge/Behave->=1.3.3-informational?style=plastic "Behave") &nbsp;
 ![FastAPI](https://img.shields.io/badge/FastAPI->=0.141.1-informational?style=plastic&logo=fastapi "FastAPI") &nbsp;
@@ -14,7 +14,7 @@
 ![SQLite](https://img.shields.io/badge/SQLite-3.53.4-informational?style=plastic&logo=sqlite "SQLite") &nbsp;
 ![uv](https://img.shields.io/badge/uv-0.12.13-informational?style=plastic&logo=uv "uv")
 
-![Coverage](https://img.shields.io/badge/Coverage-86.70%25-success?style=plastic "Coverage")
+![Coverage](https://img.shields.io/badge/Coverage-86.81%25-success?style=plastic "Coverage")
 <!-- cspell:enable -->
 
 ---

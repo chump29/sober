@@ -19,7 +19,7 @@ ARGS: Final[Namespace] = parser.parse_args()
 print(  # noqa: T201
     encode(
         {
-            "aud": env["SOBER_NAME"],
+            "aud": env.SOBER_NAME,
             "exp": datetime.now(UTC) + timedelta(minutes=ARGS.minutes),
             "iat": datetime.now(UTC),
             "iss": "sober-frontend",

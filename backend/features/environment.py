@@ -2,13 +2,12 @@
 
 """Environment setup"""
 
-from datetime import UTC
 from decimal import Decimal
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
-from api import DB_PATH, CostType, SubstanceDTO, User  # pylint: disable=import-error
-from faker import Faker
+from api import DB_PATH, SubstanceDTO, User  # pylint: disable=import-error
+from fake import fake  # pylint: disable=import-error
 from rich.console import Console
 
 if TYPE_CHECKING:
@@ -20,8 +19,6 @@ else:
 
 CONSOLE: Final[Console] = Console()
 
-fake: Final[Faker] = Faker()
-
 
 def log(what: str, obj: str) -> None:
     """Log message"""
@@ -32,19 +29,15 @@ def get_new_substance() -> SubstanceDTO:
     """Return new SubstanceDTO"""
     show_cost: Final[bool] = fake.boolean()
     return SubstanceDTO(
-        cost=(
-            fake.pydecimal(left_digits=fake.random_int(min=2, max=3), right_digits=2, positive=True)
-            if show_cost
-            else Decimal()
-        ),
-        costType=fake.enum(CostType),
-        date=fake.date_time_this_decade(tzinfo=UTC),
-        id=fake.pyint(min_value=1, max_value=100),
+        cost=(fake.decimal() if show_cost else Decimal()),
+        costType=fake.cost_type(),
+        date=fake.date_time(),
+        id=fake.integer(),
         name=fake.word(),
         showCoin=fake.boolean(),
         showCost=show_cost,
         showDecimals=fake.boolean(),
-        showTime=fake.boolean()
+        showTime=fake.boolean(),
     )
 
 

@@ -11,6 +11,18 @@ repos:
         require_serial: true
         args:
           - --rcfile=backend/pyproject.toml
+  - repo: local
+    hooks:
+      - id: ty
+        name: ty
+        entry: uv run ty
+        language: unsupported
+        types:
+          - python
+        args:
+          - check
+          - --error-on-warning
+        require_serial: true
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:

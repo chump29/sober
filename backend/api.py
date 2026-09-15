@@ -15,9 +15,8 @@ from signal import SIGINT, SIGKILL, SIGTERM, Signals, signal
 from typing import TYPE_CHECKING, Annotated, ClassVar, Final
 
 from cachetools import LRUCache, _CacheInfo, cached
-from env import MAX_PORT, MIN_PORT, env
+from env import MAX_PORT, MIN_PORT, env  # pylint: disable=import-error
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt import InvalidTokenError, decode
 from nh3 import clean  # pylint: disable=no-name-in-module
@@ -55,6 +54,8 @@ from pydantic import (
 )
 from rich.console import Console
 from rich.traceback import install as catch_exceptions
+from secure import Secure
+from secure.middleware import SecureASGIMiddleware
 from semver import Version
 from uvicorn import run
 
@@ -66,10 +67,10 @@ if TYPE_CHECKING:
 CONSOLE: Final[Console] = Console()
 catch_exceptions()
 
-DEBUG: Final[bool] = env["SOBER_DEBUG"]
+DEBUG: Final[bool] = env.SOBER_DEBUG
 
-DB_PATH: Final[str] = env["SOBER_DB_PATH"]
-DB_FILE: Final[str] = env["SOBER_DB_FILE"]
+DB_PATH: Final[str] = env.SOBER_DB_PATH
+DB_FILE: Final[str] = env.SOBER_DB_FILE
 DB_STR: Final[str] = "./" + path.normpath(f"{DB_PATH}/{DB_FILE}")
 
 if not DB_STR.startswith(DB_PATH):
@@ -283,13 +284,7 @@ elif DEBUG:
 
 
 ROUTER: Final[FastAPI] = FastAPI(docs_url="/docs", openapi_url="/openapi.json", redoc_url="/redoc")
-ROUTER.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+ROUTER.add_middleware(SecureASGIMiddleware, secure=Secure.with_default_headers())
 
 API: Final[APIRouter] = APIRouter(prefix="/api")
 
@@ -368,7 +363,7 @@ def get_version() -> str | None:
         raise ValueError(msg)
 
     try:
-        version: Final[str] = env["SOBER_VERSION"]
+        version: Final[str] = env.SOBER_VERSION
         if not Version.is_valid(version):
             invalid_version(version)
         if DEBUG:
@@ -403,8 +398,8 @@ def verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(HTTP
             },
             algorithms=["none"],
             leeway=5,
-            audience=env["SOBER_NAME"],
-            issuer=env["SOBER_JWT_AUDIENCE"],
+            audience=env.SOBER_NAME,
+            issuer=env.SOBER_JWT_AUDIENCE,
         )
         user = payload.get("sub")
     except InvalidTokenError as e:
@@ -682,7 +677,7 @@ def invalid_port(port: int) -> None:
 
 
 try:
-    PORT: Final[int] = env["SOBER_API_PORT"]
+    PORT: Final[int] = env.SOBER_API_PORT
     if not validate_port(PORT):
         invalid_port(PORT)
     elif DEBUG:
