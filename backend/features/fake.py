@@ -3,14 +3,14 @@
 """Provides fake data"""
 
 from decimal import Decimal
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Any, Final
 
-from api import CostType  # pylint: disable=import-error
 from mimesis import Datetime, Development, Numeric, Person, Text, random
 from pytz import UTC
 
 if TYPE_CHECKING:
     from datetime import datetime
+    from enum import Enum
 
 
 class Fake:
@@ -46,24 +46,28 @@ class Fake:
         """
         return Decimal(str(self._numeric.float_number(start=start, end=end, precision=precision)))
 
-    def cost_type(self) -> int:
+    def enum_value(self, enum: type[Enum]) -> Any:  # noqa: ANN401
         """Get CostType
 
-        Returns:
-            int: CostType value
-        """
-        return self._random.choice_enum_item(CostType)
+        Args:
+            enum (Enum): Enum of values.
 
-    def date_time(self, years_ago: int = 5) -> datetime:
-        """Get UTC datetime
+        Returns:
+            Any: Enum value
+        """
+        return self._random.choice_enum_item(enum)
+
+    def date_time(self, years_ago: int = 5, tz: str | None = UTC.zone) -> datetime:
+        """Get datetime
 
         Args:
             years_ago (int, optional): Number of years ago. Defaults to 5.
+            tz (str | None): Time zone. Defaults to `UTC`.
 
         Returns:
             datetime: Value between five years ago and now
         """
-        return self._datetime.past_datetime(days=years_ago, timezone=str(UTC))
+        return self._datetime.past_datetime(days=years_ago, timezone=tz)
 
     def integer(self, start: int = 1, end: int = 100) -> int:
         """Get integer

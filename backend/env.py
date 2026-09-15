@@ -21,7 +21,7 @@ environ["SOBER_VERSION"] = pyproject.project.version
 MIN_PORT: Final[int] = 1024
 MAX_PORT: Final[int] = 65_535
 
-env: Box = Box(
+env: Final[Box] = Box(
     venvalid(
         {
             "SOBER_API_PORT": int_(default=5560, validate=lambda i: MIN_PORT <= i <= MAX_PORT),

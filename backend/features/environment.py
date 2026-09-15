@@ -6,7 +6,7 @@ from decimal import Decimal
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
-from api import DB_PATH, SubstanceDTO, User  # pylint: disable=import-error
+from api import DB_PATH, CostType, SubstanceDTO, User  # pylint: disable=import-error
 from fake import fake  # pylint: disable=import-error
 from rich.console import Console
 
@@ -30,7 +30,7 @@ def get_new_substance() -> SubstanceDTO:
     show_cost: Final[bool] = fake.boolean()
     return SubstanceDTO(
         cost=(fake.decimal() if show_cost else Decimal()),
-        costType=fake.cost_type(),
+        costType=fake.enum_value(CostType),
         date=fake.date_time(),
         id=fake.integer(),
         name=fake.word(),
@@ -43,7 +43,7 @@ def get_new_substance() -> SubstanceDTO:
 
 def before_feature(context: Context, _: Feature) -> None:
     """Run before features"""
-    User.delete().execute()  # pylint: disable=no-value-for-parameter
+    User.delete().execute()  # type: ignore[misc] # pylint: disable=no-value-for-parameter
     context.user = fake.first_name()
     assert context.user, "Could not set user"
     if context.config.wip:

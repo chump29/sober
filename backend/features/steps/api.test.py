@@ -8,7 +8,7 @@ from asyncio import run
 from json import dumps
 from pathlib import Path
 from tomllib import loads
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING, Final
 
 # pylint: disable-next=import-error
 from api import (
@@ -121,7 +121,7 @@ def return_cache_cleared(context: Context) -> None:
 @given("a request for the version")
 def request_version(context: Context) -> None:
     """Request version"""
-    pyproject: Final[dict[str, Any]] = Box(loads(Path("pyproject.toml").read_text(encoding="utf-8")), frozen_box=True)
+    pyproject: Final[Box] = Box(loads(Path("pyproject.toml").read_text(encoding="utf-8")), frozen_box=True)
     context.real_version = pyproject.project.version
 
 

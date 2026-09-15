@@ -23,6 +23,20 @@ repos:
           - check
           - --error-on-warning
         require_serial: true
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v2.3.1
+    hooks:
+      - id: mypy
+  - repo: https://github.com/pyCQA/bandit
+    rev: 1.9.4
+    hooks:
+      - id: bandit
+        args:
+          - --recursive
+          - --configfile
+          - backend/pyproject.toml
+          - --quiet
+          - .
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:

@@ -14,7 +14,7 @@ from pathlib import Path
 from signal import SIGINT, SIGKILL, SIGTERM, Signals, signal
 from typing import TYPE_CHECKING, Annotated, ClassVar, Final
 
-from cachetools import LRUCache, _CacheInfo, cached
+from cachetools import LRUCache, cached
 from env import MAX_PORT, MIN_PORT, env  # pylint: disable=import-error
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -62,7 +62,8 @@ from uvicorn import run
 if TYPE_CHECKING:
     from types import FrameType
 
-    from cachetools import _cached_wrapper_info
+    from cachetools import _cached_wrapper_info, _CacheInfo
+    from peewee import SQL, NodeList
 
 CONSOLE: Final[Console] = Console()
 catch_exceptions()
@@ -193,7 +194,7 @@ class Substance(BaseModel):
     class Meta:  # pyright: ignore [reportIncompatibleVariableOverride]
         """Constraints"""
 
-        constraints: ClassVar[list] = [Check("NOT show_cost OR cost > 0")]
+        constraints: ClassVar[list[SQL | NodeList]] = [Check("NOT show_cost OR cost > 0")]
 
     def __str__(self: Substance) -> str:
         """Show Substance data as string"""
@@ -317,7 +318,7 @@ async def get_cache_stats() -> Json:  # noqa: C901 - 13/10
                 for item in list(func.cache.values()):
                     if item is not None:
                         v: SubstanceDTO = item[0]
-                        if v not in json:
+                        if not any(item.startswith(f"{v.name}") for item in json):
                             json.append(f"{v.name} on {v.date}")
             return json
 
