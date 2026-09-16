@@ -58,7 +58,7 @@
     "*.html": "bun run --bun html-validate *.html"
   },
   "overrides": {
-    "@biomejs/biome": "2.5.13",
+    "@biomejs/biome": "2.5.14",
     "@types/bun": "1.4.2",
     "@types/node": "26.5.1",
     "ansi-regex": "6.3.0",
@@ -115,7 +115,7 @@
   "devDependencies": {
     "@faker-js/faker": "^10.6.0",
     "@happy-dom/global-registrator": "^20.14.5",
-    "@postfmly/config": "^1.4.67",
+    "@postfmly/config": "^1.4.68",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",
@@ -127,7 +127,7 @@
     "expect-type": "^1.4.0",
     "extract-numbers": "^2.0.2",
     "fdir-size": "^1.0.3",
-    "html-validate": "^11.15.0",
+    "html-validate": "^11.16.0",
     "husky": "^9.1.7",
     "jest-fetch-mock": "^4.2.0",
     "lcov-total": "^2.1.1",
