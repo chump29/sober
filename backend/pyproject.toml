@@ -18,7 +18,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "cachetools>=7.1.8",
+    "cachetools>=7.2.0",
     "fastapi[standard-no-fastapi-cloud-cli]>=0.141.1",
     "nh3>=0.3.7",
     "peewee>=4.5.1",
