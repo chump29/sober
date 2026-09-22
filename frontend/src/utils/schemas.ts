@@ -2,6 +2,7 @@
 
 import { default as dayjs } from "dayjs"
 import { default as utc } from "dayjs/plugin/utc"
+import { createRegExp, digit, letter, oneOrMore } from "magic-regexp"
 import {
   boolean,
   type CheckIssue,
@@ -206,6 +207,9 @@ const CostTypeSchema = enum_(CostType)
 
 type CostTypeSchema = typeof CostTypeSchema
 
+const EXP_MIN_LEN: number = 1
+const EXP_MAX_LEN: number = 7
+
 /**
  * Validate JWT expiration time
  * @function
@@ -213,9 +217,17 @@ type CostTypeSchema = typeof CostTypeSchema
  * @see {@link https://github.com/panva/jose/blob/main/docs/jwt/sign/classes/SignJWT.md#setexpirationtime setExpirationTime}
  */
 const ExpireTimeSchema = union([
-  pipe(StringSchema, regex(/^\d+[a-z]+$/i)),
+  pipe(
+    StringSchema,
+    regex(
+      createRegExp(
+        oneOrMore(digit).at.lineStart(),
+        letter.lowercase.times.between(EXP_MIN_LEN, EXP_MAX_LEN).at.lineEnd()
+      )
+    )
+  ),
   pipe(number(), integer(), gtValue(dayjs().unix())),
-  pipe(date(), gtValue(dayjs().toDate()))
+  pipe(date(), minValue(dayjs().toDate()))
 ])
 
 type ExpireTimeSchema = typeof TitleSchema

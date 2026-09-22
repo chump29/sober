@@ -3,6 +3,7 @@ import { default as path } from "node:path"
 
 import { default as react } from "@vitejs/plugin-react"
 import { default as getDirSize } from "fdir-size"
+import { MagicRegExpTransformPlugin as regexp } from "magic-regexp/transform"
 import { default as prettyBytes } from "pretty-bytes"
 import { default as removeAttributes } from "rollup-plugin-jsx-remove-attributes"
 import { defineConfig } from "vite"
@@ -40,6 +41,7 @@ export default defineConfig({
       removeComments: true
     }),
     react(),
+    regexp.vite(),
     removeAttributes({
       usage: "vite"
     }),
