@@ -6,7 +6,7 @@ from typing import Final
 
 from box import Box
 from loadfig import pyproject as load_pyproject
-from venvalid import bool_, int_, str_, venvalid
+from venvalid import bool_, int_, list_, str_, venvalid
 from venvalid.dotenv import load_env_file
 
 load_env_file(".env.local", override=True)
@@ -25,6 +25,7 @@ env: Final[Box] = Box(
             "SOBER_DEBUG": bool_(default=False),
             "SOBER_JWT_FRONTEND": str_(default="sober-frontend"),
             "SOBER_NAME": str_(default=pyproject.project.name),
+            "SOBER_URLS": list_(default=[]),
             "SOBER_VERSION": str_(default=pyproject.project.version),
         }
     ),

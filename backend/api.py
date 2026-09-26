@@ -303,7 +303,11 @@ async def lifespan(_: FastAPI) -> AsyncGenerator:
 ROUTER: Final[FastAPI] = FastAPI(docs_url="/docs", openapi_url="/openapi.json", redoc_url="/redoc", lifespan=lifespan)
 ROUTER.add_middleware(
     SecurityMiddleware,
-    config=SecurityConfig(enable_redis=False, whitelist=("127.0.0.1",)),
+    config=SecurityConfig(
+        enable_redis=False,
+        whitelist=("127.0.0.1",),
+        cors_allow_origins=env.SOBER_URLS,
+    ),
 )
 ROUTER.add_middleware(
     SecureASGIMiddleware,
