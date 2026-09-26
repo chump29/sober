@@ -9,7 +9,6 @@ import {
   Checkbox,
   EmptyState,
   Group,
-  Image,
   Modal,
   NumberFormatter,
   Space,
@@ -35,14 +34,12 @@ import { default as utc } from "dayjs/plugin/utc"
 import { fastIsEqual as isEqual } from "fast-is-equal"
 import { default as ms } from "ms"
 import { default as useSWR } from "swr/immutable"
-import { titleCase } from "title-case"
-import { match, P } from "ts-pattern"
+import { match } from "ts-pattern"
 
 import { fetchClient } from "../../api/index.ts"
 import { env } from "../../env.ts"
 import {
   displayStoreActions,
-  getCoin,
   getCost,
   getDays,
   getHours,
@@ -53,7 +50,6 @@ import {
   getYears
 } from "../../utils/displayStore.ts"
 import { getKeyByValue, HttpMethods, handleError, validate } from "../../utils/index.ts"
-import { type ICoin } from "../../utils/interfaces/ICoin.ts"
 import { type ICost } from "../../utils/interfaces/ICost.ts"
 import { type IFetchClient } from "../../utils/interfaces/IFetchClient.ts"
 import { defaultSubstance, type ISubstance, SubstanceSchema } from "../../utils/interfaces/ISubstance.ts"
@@ -68,6 +64,7 @@ import {
   MAX_LEN_STR,
   NameSchema
 } from "../../utils/schemas.ts"
+import { Coin } from "../Coin/index.tsx"
 import { Settings } from "../Settings/index.tsx"
 import { Substances } from "../Substances/index.tsx"
 
@@ -146,14 +143,12 @@ const Display = (): JSX.Element => {
     getUser,
     getWeeksFloat,
     getYearsFloat,
-    setCoin,
     setCost,
     setDisplay,
     setSelectedSubstance,
     setUser
   } = displayStoreActions()
 
-  const coin: Nullable<ICoin> = getCoin()
   const cost: Nullable<ICost> = getCost()
   const days: string = getDays()
   const hours: string = getHours()
@@ -410,7 +405,6 @@ const Display = (): JSX.Element => {
 
     try {
       const totalCost: number = match<CostType, number>(substance.costType)
-        .returnType<number>()
         .with(CostType.Day, (): number => substanceCost * getDaysInt())
         .with(CostType.Week, (): number => substanceCost * getWeeksFloat())
         .with(CostType.Month, (): number => substanceCost * getMonthsFloat())
@@ -469,38 +463,6 @@ const Display = (): JSX.Element => {
     setDisplay(selectedSubstance.date)
 
     handleSetCost(selectedSubstance.cost)
-
-    let txt: string = "No milestones to show yet."
-    let img: Optional<string>
-
-    const m: number = Math.floor(getMonthsFloat())
-
-    if (m > 0) {
-      const EighteenMonths: number = 18
-      const MaxYears: number = 5 // TODO: more images
-
-      const y: number = Math.floor(getYearsFloat())
-
-      txt = titleCase(y > 0 ? pluralize("year", y, true) : pluralize("month", m, true))
-
-      img = "/coins/"
-
-      img += match<object, string>({ m, y })
-        .returnType<string>()
-        .with({ m: EighteenMonths }, (): string => "18m.png")
-        .with({ y: P.number.gt(0) }, (): string => `${y}y.png`)
-        .otherwise((): string => `${m}m.png`)
-
-      if (y > MaxYears) {
-        img = undefined
-        txt = `${txt} (No image)`
-      }
-    }
-
-    setCoin({
-      image: img,
-      text: txt
-    } satisfies ICoin)
   }
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: only watching selectedSubstance
@@ -736,29 +698,14 @@ const Display = (): JSX.Element => {
                   </Tooltip>
                 </Center>
               ) : null}
-              {getSelectedSubstance().showCoin && coin ? (
+              {getSelectedSubstance().showCoin ? (
                 <>
-                  {/* biome-ignore lint/correctness/useUniqueElementIds: needed for CSS */}
-                  <Modal
-                    centered={true}
-                    id="coin"
-                    onClose={closeCoin}
-                    opened={openedCoin}
-                    size="auto"
-                    styles={{
-                      title: {
-                        fontSize: "20px",
-                        fontWeight: "bold"
-                      }
-                    }}
-                    title="AA Coin">
-                    <Stack ta="center">
-                      <Text c="var(--color-blue)" fw="bold" size="xl">
-                        {coin.text}
-                      </Text>
-                      {coin.image ? <Image src={coin.image} title={coin.text} /> : null}
-                    </Stack>
-                  </Modal>
+                  <Coin
+                    closeCoin={closeCoin}
+                    m={Math.floor(getMonthsFloat())}
+                    openedCoin={openedCoin}
+                    y={Math.floor(getYearsFloat())}
+                  />
                   <Tooltip label="Show Coin" withArrow={true}>
                     <Button
                       c="var(--color-black)"

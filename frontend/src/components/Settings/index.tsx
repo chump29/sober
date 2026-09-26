@@ -45,7 +45,6 @@ const Settings = ({
     }
 
     const res: Nullish<string> = match<SaveType, Nullish<string>>(type)
-      .returnType<Nullish<string>>()
       .with(SaveType.COST, (): Nullish<string> => {
         const c: Nullable<number> = validate<number, CostSchema>(value as number, CostSchema)
 

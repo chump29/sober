@@ -48,14 +48,3 @@ display-->coin
 display-->cost
 port@{shape: comment, label: "&nbsp; Nginx exposes port 80"}
 ```
-
----
-
-### 🛠️ Environment Variables
-
-|        Name        | Default Value  |
-|:------------------:|:--------------:|
-| SOBER_API_TIMEOUT  |      2000      |
-|    SOBER_DEBUG     |     false      |
-| SOBER_JWT_AUDIENCE | sober-backend  |
-|    VITE_API_URL    | [empty string] |

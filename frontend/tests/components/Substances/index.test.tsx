@@ -32,7 +32,6 @@ let substance: Nullable<ISubstance> = null
 const fetch: FetchMock = fetchMock.enableMocks().mockResponse(
   (req: Request): Response =>
     match<string, Response>(new URL(req.url).pathname)
-      .returnType<Response>()
       .with("/api/substances/add", (): Response => Response.json(substance))
       .with(P.string.startsWith("/api/substances/delete"), (): Response => Response.json(true))
       .with(P.string.startsWith("/api/substances/update"), (): Response => new Response())

@@ -33,7 +33,6 @@ let substance: Nullable<ISubstance> = null
 const fetch: FetchMock = fetchMock.enableMocks().mockResponse(
   (req: Request): Response =>
     match<string, Response>(new URL(req.url).pathname)
-      .returnType<Response>()
       .with("/api/substances", (): Response => Response.json([substance]))
       .with("/api/user", (): Response => new Response(null, { status: HttpStatus.NO_CONTENT }))
       .otherwise((): Response => new Response(null, { status: HttpStatus.IM_A_TEAPOT }))

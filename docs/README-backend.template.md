@@ -7,7 +7,6 @@
 <!-- cspell:disable -->
 ![Backend](https://img.shields.io/badge/Backend-$_version-chocolate?style=plastic&logo=docker "Backend")
 
-![Behave](https://img.shields.io/badge/Behave-$_behave-informational?style=plastic "Behave") &nbsp;
 ![FastAPI](https://img.shields.io/badge/FastAPI-$_fastapi-informational?style=plastic&logo=fastapi "FastAPI") &nbsp;
 ![Peewee](https://img.shields.io/badge/Peewee-$_peewee-informational?style=plastic "Peewee") &nbsp;
 ![Pydantic](https://img.shields.io/badge/Pydantic-$_pydantic-informational?style=plastic&logo=pydantic "Pydantic") &nbsp;

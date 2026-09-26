@@ -6,7 +6,6 @@ import { default as dayjs } from "dayjs"
 import { default as duration } from "dayjs/plugin/duration"
 import { create } from "zustand"
 
-import { type ICoin } from "./interfaces/ICoin.ts"
 import { type ICost } from "./interfaces/ICost.ts"
 import { defaultValues, type IDisplay, type IDisplayActions } from "./interfaces/IDisplay.ts"
 import { defaultSubstance, type ISubstance } from "./interfaces/ISubstance.ts"
@@ -24,10 +23,6 @@ const displayStore = create<IDisplay>()(
         getWeeksFloat: (): number => get().weeksFloat,
         getYearsFloat: (): number => get().yearsFloat,
 
-        setCoin: (data: Nullable<ICoin>): void =>
-          set({
-            coin: data
-          }),
         setCost: (data: Nullable<ICost>): void =>
           set({
             cost: data
@@ -74,7 +69,6 @@ const displayStore = create<IDisplay>()(
           })
       } satisfies IDisplayActions,
       ...defaultValues,
-      coin: null,
       cost: null,
       selectedSubstance: defaultSubstance,
       user: null
@@ -94,7 +88,6 @@ const round = (num: number): number => {
   return Math.floor(num)
 }
 
-export const getCoin = (): Nullable<ICoin> => displayStore((state: IDisplay): Nullable<ICoin> => state.coin)
 export const getCost = (): Nullable<ICost> => displayStore((state: IDisplay): Nullable<ICost> => state.cost)
 export const getDays = (): string => displayStore((state: IDisplay): string => state.days)
 export const getHours = (): string => displayStore((state: IDisplay): string => state.hours)

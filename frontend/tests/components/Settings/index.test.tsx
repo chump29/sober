@@ -31,7 +31,6 @@ mock.module("@mantine/hooks", (): unknown => ({
 const fetch: FetchMock = fetchMock.enableMocks().mockResponse(
   (req: Request): Response =>
     match<string, Response>(new URL(req.url).pathname)
-      .returnType<Response>()
       .with(P.string.startsWith("/api/substances/update"), (): Response => new Response())
       .otherwise(
         (): Response =>

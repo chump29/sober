@@ -1,17 +1,25 @@
-import { fakerEN_US as fake } from "@faker-js/faker"
+import { exponentialDistributor, fakerEN_US as fake } from "@faker-js/faker"
 import { default as dayjs } from "dayjs"
 
-import { type ICoin } from "../../src/utils/interfaces/ICoin.ts"
 import { type ICost } from "../../src/utils/interfaces/ICost.ts"
+import { type IMonthAndYear } from "../../src/utils/interfaces/IMonthAndYear.ts"
 import { type ISubstance } from "../../src/utils/interfaces/ISubstance.ts"
 import { type ISubstanceDisplay } from "../../src/utils/interfaces/ISubstanceDisplay.ts"
 import { CostType, DATETIME_FORMAT } from "../../src/utils/schemas.ts"
 
-const getCoin = (): ICoin =>
-  ({
-    image: fake.image.url(),
-    text: fake.word.words(2)
-  }) satisfies ICoin
+const MONTHS: number = 12
+
+const getMonthAndYear = (): IMonthAndYear => {
+  // * NOTE: 66% chance that years will be 0-10
+  const years: number = fake.number.int({ distributor: exponentialDistributor({ base: 864.58 }), max: 100 })
+  const months: number =
+    years === 0 ? fake.number.int({ distributor: exponentialDistributor(), max: 12, min: 1 }) : years * MONTHS
+
+  return {
+    m: months,
+    y: years
+  } satisfies IMonthAndYear
+}
 
 const getCost = (): ICost => {
   const cost: number = Number(fake.commerce.price())
@@ -48,4 +56,4 @@ const getSubstance = (): ISubstance =>
     showTime: fake.datatype.boolean()
   }) satisfies ISubstance
 
-export { getCoin, getCost, getSubstance, getSubstanceDisplay }
+export { getCost, getMonthAndYear, getSubstance, getSubstanceDisplay }

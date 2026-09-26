@@ -4,10 +4,8 @@
 
 """CRUD tests"""
 
-from asyncio import run
+from asyncio import run as run_async
 from json import dumps
-from pathlib import Path
-from tomllib import loads
 from typing import TYPE_CHECKING, Final
 
 # pylint: disable-next=import-error
@@ -33,13 +31,12 @@ from behave import given, then, when
 from box import Box
 from environment import get_new_substance, log  # pylint: disable=import-error
 from fake import fake  # pylint: disable=import-error
+from loadfig import pyproject as load_pyproject
 
 if TYPE_CHECKING:
     from behave.runner import Context
     from cachetools import _CacheInfo
-else:
-    Context = object
-    _CacheInfo = object
+
 
 # region Stringify a SubstanceDTO
 
@@ -53,6 +50,7 @@ def stringify_substance_dto(_: Context) -> None:
 def output_substance_dto(context: Context) -> None:
     """Output a SubstanceDTO"""
     context.substance_dto = str(get_new_substance())
+
     assert not context.failed, "Unable to set SubstanceDTO"
 
 
@@ -60,7 +58,9 @@ def output_substance_dto(context: Context) -> None:
 def substance_dto_string(context: Context) -> None:
     """SubstanceDTO should be a string"""
     assert context.substance_dto, "Invalid SubstanceDTO string"
+
     assert isinstance(context.substance_dto, str), "Invalid SubstanceDTO type"
+
     if context.config.wip:
         log("SubstanceDTO", context.substance_dto)
 
@@ -78,7 +78,8 @@ def get_cache(_: Context) -> None:
 @when("/cache API endpoint is called")
 def call_cache(context: Context) -> None:
     """Call /cache API"""
-    context.stats = run(get_cache_stats())
+    context.stats = run_async(get_cache_stats())
+
     assert not context.failed, "/cache call failed"
 
 
@@ -86,6 +87,7 @@ def call_cache(context: Context) -> None:
 def return_cache_stats(context: Context) -> None:
     """Return cache stats"""
     assert context.stats, "Invalid get_cache_stats results"
+
     if context.config.wip:
         log("Stats", dumps(context.stats, indent=2))
 
@@ -103,7 +105,8 @@ def clear_cache(_: Context) -> None:
 @when("/cache/clear API endpoint is called")
 def call_clear_cache(context: Context) -> None:
     """Call /cache/clear API"""
-    context.stats = run(clear_cache_stats())
+    context.stats = run_async(clear_cache_stats())
+
     assert not context.failed, "/cache/clear call failed"
 
 
@@ -121,7 +124,7 @@ def return_cache_cleared(context: Context) -> None:
 @given("a request for the version")
 def request_version(context: Context) -> None:
     """Request version"""
-    pyproject: Final[Box] = Box(loads(Path("pyproject.toml").read_text(encoding="utf-8")), frozen_box=True)
+    pyproject: Final[Box] = Box(load_pyproject(), frozen_box=True)
     context.real_version = pyproject.project.version
 
 
@@ -129,6 +132,7 @@ def request_version(context: Context) -> None:
 def call_get_version(context: Context) -> None:
     """Call /version API"""
     context.version = get_version()
+
     assert not context.failed, "/version call failed"
 
 
@@ -142,6 +146,7 @@ def verify_port(_: Context, port: str) -> None:
 def version_returned(context: Context) -> None:
     """Return version"""
     assert context.real_version == context.version, "Invalid get_version results"
+
     if context.config.wip:
         log("Version", context.version)
 
@@ -168,6 +173,7 @@ def create_user_record(_: Context) -> None:
 def call_create_user(context: Context) -> None:
     """Call /user API (create)"""
     get_user(context.user)
+
     assert not context.failed, "/user (create) call failed"
 
 
@@ -176,6 +182,7 @@ def create_user_data(context: Context) -> None:
     """Create user data"""
     user: Final[User | None] = User.get_or_none(user=get_user_hash(context.user))
     assert user, "User not created"
+
     if context.config.wip:
         log("User", str(user))
 
@@ -194,6 +201,7 @@ def get_user_record(_: Context) -> None:
 def call_get_user(context: Context) -> None:
     """Call /user API (get)"""
     get_user(context.user)
+
     assert not context.failed, "/user (get) call failed"
 
 
@@ -218,7 +226,8 @@ def delete_user_record(_: Context) -> None:
 @when("/user/delete API endpoint is called with an ID")
 def call_delete_user(context: Context) -> None:
     """Call /user/delete API"""
-    run(delete_user(get_user_hash(context.user)))
+    run_async(delete_user(get_user_hash(context.user)))
+
     assert not context.failed, "/user/delete call failed"
 
 
@@ -244,7 +253,8 @@ def add_substance_record(context: Context) -> None:
 def call_substance_add(context: Context) -> None:
     """Call /substances/add API"""
     substance: Final[SubstanceDTO] = get_new_substance()
-    context.substance = run(add_substance(substance, context.user))
+    context.substance = run_async(add_substance(substance, context.user))
+
     assert not context.failed, "/substance/add call failed"
 
 
@@ -252,6 +262,7 @@ def call_substance_add(context: Context) -> None:
 def return_new_substance(context: Context) -> None:
     """Return new substance"""
     assert context.substance, "Invalid add_substance results"
+
     if context.config.wip:
         log("SubstanceDTO", context.substance)
 
@@ -270,6 +281,7 @@ def get_all_substances(_: Context) -> None:
 def call_substances(context: Context) -> None:
     """Call /substances API"""
     context.substances = get_substances(context.user)
+
     assert not context.failed, "/substances call failed"
 
 
@@ -278,6 +290,7 @@ def return_substances(context: Context) -> None:
     """Return substances"""
     assert context.substances, "Invalid get_substances results"
     assert len(context.substances) == 1, "Incorrect get_substances length"
+
     get_substances(context.user)  # cache
 
 
@@ -306,7 +319,8 @@ def get_substance_by_id(context: Context) -> None:
 @when("/substances/get API endpoint is called with an ID")
 def call_get_substance(context: Context) -> None:
     """Call /substances/get API"""
-    context.substance = run(get_substance(context.substances[0].id, context.user))
+    context.substance = run_async(get_substance(context.substances[0].id, context.user))
+
     assert not context.failed, "/substances/get call failed"
 
 
@@ -334,12 +348,16 @@ def update_substance_by_id(context: Context) -> None:
 def call_update_substance(context: Context) -> None:
     """Call /substance/update API"""
     substance: Final[SubstanceDTO] = context.substances[0]
-    assert substance, "Invalid substance"
+
     context.date = substance.date
-    substance.date = fake.date_time()
+
+    object.__setattr__(substance, "date", fake.date_time())  # frozen
+
     user: Final[User | None] = User.get_or_none(user=get_user_hash(context.user))
     assert user, "Invalid user"
-    context.substance = run(update_substance(pk=user.id, substance=substance, user=context.user))
+
+    context.substance = run_async(update_substance(pk=user.id, substance=substance, user=context.user))
+
     assert not context.failed, "/substance/update call failed"
 
 
@@ -347,7 +365,9 @@ def call_update_substance(context: Context) -> None:
 def return_updated_substance(context: Context) -> None:
     """Return updated substance"""
     assert context.substance, "Invalid substance from update"
+
     assert context.substance.date != context.date, "Could not update substance"
+
     if context.config.wip:
         log("SubstanceDTO", context.substance)
 
@@ -364,13 +384,15 @@ def delete_substance_by_id(context: Context) -> None:
     """Delete substance"""
     substance: Final[list[Substance]] = list(Substance.select())
     assert substance, "Could not get Substance"
+
     context.substance_id = substance[0].id
 
 
 @when("/substance/delete API endpoint is called with an ID")
 def call_delete_substance(context: Context) -> None:
     """Call /substance/delete API"""
-    context.isDeleted = run(delete_substance(pk=context.substance_id, user=context.user))
+    context.isDeleted = run_async(delete_substance(pk=context.substance_id, user=context.user))
+
     assert not context.failed, "/substance/delete call failed"
 
 
@@ -395,7 +417,8 @@ def request_favicon(_: Context) -> None:
 @when("/favicon.ico API endpoint is called")
 def call_favicon(context: Context) -> None:
     """Call /favicon API"""
-    context.favicon = run(get_favicon())
+    context.favicon = run_async(get_favicon())
+
     assert not context.failed, "/favicon call failed"
 
 

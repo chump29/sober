@@ -70,28 +70,21 @@ for _env in frontend backend; do
 
     echo -e "\n📌 Packages:\n"
 
-    _behave=$(yq '.project.optional-dependencies.dev[0] // "❓"' pyproject.toml)
-    if [[ $_behave != "❓" ]]; then
-      _behave=$(getVersion "$_behave")
-    fi
-    export _behave
-    echo -e " • behave: $_behave"
-
-    _fastapi=$(yq '.project.dependencies[1] // "❓"' pyproject.toml)
+    _fastapi=$(yq '.project.dependencies[3] // "❓"' pyproject.toml)
     if [[ $_fastapi != "❓" ]]; then
       _fastapi=$(getVersion "$_fastapi")
     fi
     export _fastapi
     echo -e " • fastapi: $_fastapi"
 
-    _peewee=$(yq '.project.dependencies[3] // "❓"' pyproject.toml)
+    _peewee=$(yq '.project.dependencies[6] // "❓"' pyproject.toml)
     if [[ $_peewee != "❓" ]]; then
       _peewee=$(getVersion "$_peewee")
     fi
     export _peewee
     echo -e " • peewee: $_peewee"
 
-    _pydantic=$(yq '.project.dependencies[5] // "❓"' pyproject.toml)
+    _pydantic=$(yq '.project.dependencies[8] // "❓"' pyproject.toml)
     if [[ $_pydantic != "❓" ]]; then
       _pydantic=$(getVersion "$_pydantic")
     fi
@@ -99,7 +92,7 @@ for _env in frontend backend; do
     echo -e " • pydantic: $_pydantic"
 
     _name=$(jq -r .name ../frontend/package.json)
-    if [[ "$HOSTNAME" == "guru" ]]; then
+    if [[ $HOSTNAME == "guru" ]]; then
       docker context use nova > /dev/null 2>&1
     fi
     if [ "$(docker ps -q -f name="$_name")" ]; then

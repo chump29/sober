@@ -35,7 +35,6 @@ class FetchError extends Error {
  */
 const handleError = (e: unknown): void => {
   match<unknown, void>(e)
-    .returnType<void>()
     .with(P.intersection(P.instanceOf(DOMException), { name: "TimeoutError" }), () => error("Request timed out"))
     .with(P.when(isValiError), (v): void => error(summarize(v.issues)))
     .otherwise((): void => error(e))

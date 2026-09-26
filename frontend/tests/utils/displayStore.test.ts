@@ -9,12 +9,11 @@ import { default as dayjs } from "dayjs"
 import { default as duration } from "dayjs/plugin/duration"
 
 import { displayStore, displayStoreActions, round } from "../../src/utils/displayStore.ts"
-import { type ICoin } from "../../src/utils/interfaces/ICoin.ts"
 import { type ICost } from "../../src/utils/interfaces/ICost.ts"
 import { type IDisplayActions } from "../../src/utils/interfaces/IDisplay.ts"
 import { type ISubstance } from "../../src/utils/interfaces/ISubstance.ts"
 import { DATETIME_FORMAT } from "../../src/utils/schemas.ts"
-import { getCoin, getCost, getSubstance } from "./Helpers.ts"
+import { getCost, getSubstance } from "./Helpers.ts"
 
 dayjs.extend(duration)
 
@@ -36,14 +35,6 @@ beforeEach((): void => {
 })
 
 describe("displayStore", (): void => {
-  test("Coin", (): void => {
-    const c: ICoin = getCoin()
-
-    displayStore.getState().actions.setCoin(c)
-
-    expect(displayStore.getState().coin).toBe(c)
-  })
-
   test("Cost", (): void => {
     const c: ICost = getCost()
 

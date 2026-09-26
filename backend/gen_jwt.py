@@ -2,17 +2,12 @@
 
 """Generate unsecure JWT"""
 
-from datetime import UTC, datetime, timedelta
-from pathlib import Path
-from tomllib import loads
-from typing import Annotated, Final
+from typing import Annotated
 
-from box import Box
 from env import env
 from jwt import encode
 from typer import Option, run
-
-pyproject: Final[Box] = Box(loads(Path("pyproject.toml").read_text(encoding="utf-8")), frozen_box=True)
+from whenever import Instant
 
 
 def main(
@@ -23,9 +18,9 @@ def main(
     print(  # noqa: T201
         encode(
             {
-                "aud": env.SOBER_JWT_AUDIENCE,
-                "exp": datetime.now(UTC) + timedelta(minutes=minutes),
-                "iat": datetime.now(UTC),
+                "aud": env.SOBER_JWT_FRONTEND,
+                "exp": Instant.now().add(minutes=minutes).timestamp(),
+                "iat": Instant.now().timestamp(),
                 "iss": env.SOBER_NAME,
                 "sub": name,
             },

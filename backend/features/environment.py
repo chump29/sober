@@ -13,9 +13,6 @@ from rich.console import Console
 if TYPE_CHECKING:
     from behave.model import Feature
     from behave.runner import Context
-else:
-    Context = object
-    Feature = object
 
 CONSOLE: Final[Console] = Console()
 
@@ -28,6 +25,7 @@ def log(what: str, obj: str) -> None:
 def get_new_substance() -> SubstanceDTO:
     """Return new SubstanceDTO"""
     show_cost: Final[bool] = fake.boolean()
+
     return SubstanceDTO(
         cost=(fake.decimal() if show_cost else Decimal()),
         costType=fake.enum_value(CostType),
@@ -44,8 +42,10 @@ def get_new_substance() -> SubstanceDTO:
 def before_feature(context: Context, _: Feature) -> None:
     """Run before features"""
     User.delete().execute()  # type: ignore[misc] # pylint: disable=no-value-for-parameter
+
     context.user = fake.first_name()
     assert context.user, "Could not set user"
+
     if context.config.wip:
         log("User", context.user)
 

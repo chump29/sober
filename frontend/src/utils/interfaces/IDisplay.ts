@@ -1,6 +1,5 @@
 import { type Nullable, type Nullish } from "@postfmly/types"
 
-import { type ICoin } from "./ICoin.ts"
 import { type ICost } from "./ICost.ts"
 import { type ISubstance } from "./ISubstance.ts"
 
@@ -12,7 +11,6 @@ interface IDisplayActions {
   getWeeksFloat: () => number
   getYearsFloat: () => number
 
-  setCoin: (data: Nullable<ICoin>) => void
   setCost: (data: Nullable<ICost>) => void
   setDisplay: (date: Nullish<string>) => void
   setSelectedSubstance: (data: ISubstance) => void
@@ -21,7 +19,6 @@ interface IDisplayActions {
 
 interface IDisplay {
   actions: IDisplayActions
-  coin: Nullable<ICoin>
   cost: Nullable<ICost>
   days: string
   daysInt: number

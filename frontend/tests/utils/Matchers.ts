@@ -1,16 +1,16 @@
 import { expect } from "bun:test"
 
-import { type ICoin } from "../../src/utils/interfaces/ICoin.ts"
 import { type ICost } from "../../src/utils/interfaces/ICost.ts"
 import { type IDisplay } from "../../src/utils/interfaces/IDisplay.ts"
+import { type IMonthAndYear } from "../../src/utils/interfaces/IMonthAndYear.ts"
 import { type ISelectDisplay } from "../../src/utils/interfaces/ISelectDisplay.ts"
 import { type ISubstance } from "../../src/utils/interfaces/ISubstance.ts"
 import { type ISubstanceDisplay } from "../../src/utils/interfaces/ISubstanceDisplay.ts"
 
-const ICoinMatcher: ICoin = {
-  image: expect.any(String),
-  text: expect.any(String)
-} satisfies ICoin
+const IMonthAndYearMatcher: IMonthAndYear = {
+  m: expect.any(Number),
+  y: expect.any(Number)
+} satisfies IMonthAndYear
 
 const ICostMatcher: ICost = {
   cost: expect.any(Number),
@@ -56,9 +56,9 @@ const ISubstanceDisplayMatcher: ISubstanceDisplay = {
 } satisfies ISubstanceDisplay
 
 export {
-  ICoinMatcher,
   ICostMatcher,
   IDisplayMatcher,
+  IMonthAndYearMatcher,
   ISelectDisplayMatcher,
   ISubstanceDisplayMatcher,
   ISubstanceMatcher

@@ -5,14 +5,13 @@
 ---
 
 <!-- cspell:disable -->
-![Backend](https://img.shields.io/badge/Backend-1.1.1-chocolate?style=plastic&logo=docker "Backend")
+![Backend](https://img.shields.io/badge/Backend-1.2.0-chocolate?style=plastic&logo=docker "Backend")
 
-![Behave](https://img.shields.io/badge/Behave->=1.3.3-informational?style=plastic "Behave") &nbsp;
 ![FastAPI](https://img.shields.io/badge/FastAPI->=0.141.1-informational?style=plastic&logo=fastapi "FastAPI") &nbsp;
 ![Peewee](https://img.shields.io/badge/Peewee->=4.5.1-informational?style=plastic "Peewee") &nbsp;
 ![Pydantic](https://img.shields.io/badge/Pydantic->=2.13.5-informational?style=plastic&logo=pydantic "Pydantic") &nbsp;
 ![SQLite](https://img.shields.io/badge/SQLite-3.53.4-informational?style=plastic&logo=sqlite "SQLite") &nbsp;
-![uv](https://img.shields.io/badge/uv-0.12.17-informational?style=plastic&logo=uv "uv")
+![uv](https://img.shields.io/badge/uv-0.12.19-informational?style=plastic&logo=uv "uv")
 
 ![Coverage](https://img.shields.io/badge/Coverage-83.47%25-success?style=plastic "Coverage")
 <!-- cspell:enable -->

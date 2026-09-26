@@ -6,7 +6,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, Any, Final
 
 from mimesis import Datetime, Development, Numeric, Person, Text, random
-from pytz import UTC
+from whenever import Instant, ItemizedDateDelta
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -57,17 +57,23 @@ class Fake:
         """
         return self._random.choice_enum_item(enum)
 
-    def date_time(self, years_ago: int = 5, tz: str | None = UTC.zone) -> datetime:
-        """Get datetime
+    def date_time(self, years_ago: int = 5) -> datetime:
+        """Get UTC datetime in the past
 
         Args:
             years_ago (int, optional): Number of years ago. Defaults to 5.
-            tz (str | None): Time zone. Defaults to `UTC`.
 
         Returns:
             datetime: Value between five years ago and now
         """
-        return self._datetime.past_datetime(days=years_ago, timezone=tz)
+        days_ago: Final[int] = (
+            ItemizedDateDelta(years=years_ago)
+            .in_units(["days"], relative_to=Instant.now().to_tz("UTC").date())
+            .get("days")
+            or 0
+        )
+
+        return self._datetime.past_datetime(days=days_ago, timezone="UTC")
 
     def integer(self, start: int = 1, end: int = 100) -> int:
         """Get integer
