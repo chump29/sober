@@ -416,9 +416,9 @@ async def clear_cache_stats() -> str:
     return "Cache cleared"
 
 
-@guard.suspicious_detection(enabled=False)
 @ROUTER.get("/version", response_model=str | None)
 @cached(cache=LRUCache(maxsize=1), info=True)
+@guard.suspicious_detection(enabled=False)
 def get_version() -> str | None:
     """Get version"""
 
