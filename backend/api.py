@@ -18,7 +18,7 @@ from cachetools import LRUCache, cached
 from env import MAX_PORT, MIN_PORT, env  # pylint: disable=import-error
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from guard import SecurityConfig
+from guard import SecurityConfig, SecurityDecorator
 from guard.middleware import SecurityMiddleware
 from jwt import InvalidTokenError, decode
 from nh3 import clean  # pylint: disable=no-name-in-module
@@ -300,11 +300,12 @@ async def lifespan(_: FastAPI) -> AsyncGenerator:
         CONSOLE.print("🛑 Stopping server")
 
 
+config: Final[SecurityConfig] = SecurityConfig(enable_redis=False, whitelist=env.SOBER_IPS or None, rate_limit=100)
+
+guard: Final[SecurityDecorator] = SecurityDecorator(config=config)
+
 ROUTER: Final[FastAPI] = FastAPI(docs_url="/docs", openapi_url="/openapi.json", redoc_url="/redoc", lifespan=lifespan)
-ROUTER.add_middleware(
-    SecurityMiddleware,
-    config=SecurityConfig(enable_redis=False, whitelist=env.SOBER_IPS or None, rate_limit=100),
-)
+ROUTER.add_middleware(SecurityMiddleware, config=config)
 ROUTER.add_middleware(
     SecureASGIMiddleware,
     secure=Secure(
@@ -415,6 +416,7 @@ async def clear_cache_stats() -> str:
     return "Cache cleared"
 
 
+@guard.suspicious_detection(enabled=False)
 @ROUTER.get("/version", response_model=str | None)
 @cached(cache=LRUCache(maxsize=1), info=True)
 def get_version() -> str | None:
