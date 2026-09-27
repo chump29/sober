@@ -8,7 +8,7 @@
 ![Backend](https://img.shields.io/badge/Backend-1.2.0-chocolate?style=plastic&logo=docker "Backend")
 
 ![FastAPI](https://img.shields.io/badge/FastAPI->=0.141.1-informational?style=plastic&logo=fastapi "FastAPI") &nbsp;
-![Peewee](https://img.shields.io/badge/Peewee->=4.5.1-informational?style=plastic "Peewee") &nbsp;
+![Peewee](https://img.shields.io/badge/Peewee->=4.5.2-informational?style=plastic "Peewee") &nbsp;
 ![Pydantic](https://img.shields.io/badge/Pydantic->=2.13.5-informational?style=plastic&logo=pydantic "Pydantic") &nbsp;
 ![SQLite](https://img.shields.io/badge/SQLite-3.53.4-informational?style=plastic&logo=sqlite "SQLite") &nbsp;
 ![uv](https://img.shields.io/badge/uv-0.12.19-informational?style=plastic&logo=uv "uv")
