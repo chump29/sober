@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 
+import { parse as ms } from "@lukeed/ms"
 import { expectTypeOf } from "expect-type"
-import { default as ms } from "ms"
 
 import { env } from "../../src/env.ts"
 
@@ -12,7 +12,7 @@ describe("env", (): void => {
   test("SOBER_API_TIMEOUT", (): void => {
     expectTypeOf(SOBER_API_TIMEOUT).toEqualTypeOf<number>()
 
-    expect(SOBER_API_TIMEOUT).toBe(ms("2s"))
+    expect(SOBER_API_TIMEOUT).toBe(ms("2s") as number)
   })
 
   test("SOBER_DEBUG", (): void => {

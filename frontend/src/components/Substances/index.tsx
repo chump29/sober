@@ -9,10 +9,10 @@ import { hideNotification, showNotification } from "@mantine/notifications"
 import { info } from "@postfmly/logger"
 import { type Nullable, type Optional } from "@postfmly/types"
 
+import { parse as ms } from "@lukeed/ms"
 import { IconCheck, IconMinus, IconPlus, IconX } from "@tabler/icons-react"
 import { default as dayjs } from "dayjs"
 import { default as advancedFormat } from "dayjs/plugin/advancedFormat"
-import { default as ms } from "ms"
 import { type KeyedMutator } from "swr"
 import { titleCase } from "title-case"
 

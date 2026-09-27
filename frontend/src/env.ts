@@ -1,5 +1,5 @@
+import { parse as ms } from "@lukeed/ms"
 import { bool, cleanEnv, type ExactValidator, makeExactValidator, str, url } from "envalid"
-import { default as ms } from "ms"
 import { parse } from "valibot"
 
 import { ExpireTimeSchema, TimeoutSchema, TitleSchema } from "./utils/schemas.ts"

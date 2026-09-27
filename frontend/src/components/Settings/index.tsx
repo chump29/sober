@@ -5,8 +5,8 @@ import { useDebouncedCallback } from "@mantine/hooks"
 
 import { type Nullable, type Nullish, type Optional } from "@postfmly/types"
 
+import { parse as ms } from "@lukeed/ms"
 import { IconCurrencyDollar } from "@tabler/icons-react"
-import { default as ms } from "ms"
 import { type KeyedMutator } from "swr"
 import { match } from "ts-pattern"
 
@@ -17,7 +17,7 @@ import { type ISelectDisplay } from "../../utils/interfaces/ISelectDisplay.ts"
 import { type ISubstance } from "../../utils/interfaces/ISubstance.ts"
 import { BooleanSchema, CostInputSchema, CostSchema, CostType, CostTypeSchema } from "../../utils/schemas.ts"
 
-const DEBOUNCE_MS: number = ms("0.75s")
+const DEBOUNCE_MS: number = ms("0.75s") as number
 
 const Settings = ({
   closeSettings,

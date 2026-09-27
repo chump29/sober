@@ -3,8 +3,8 @@ import { describe, expect, jest, mock, test } from "bun:test"
 import { MantineProvider } from "@mantine/core"
 import { ModalsProvider } from "@mantine/modals"
 
+import { parse as ms } from "@lukeed/ms"
 import { configure, type RenderResult, render, screen } from "@testing-library/react"
-import { default as ms } from "ms"
 
 import { Coin } from "../../../src/components/Coin/index.tsx"
 import { getMonthAndYear } from "../../utils/Helpers.ts"

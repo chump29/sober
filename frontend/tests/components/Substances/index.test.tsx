@@ -8,10 +8,10 @@ import { ModalsProvider } from "@mantine/modals"
 import { type Nullable } from "@postfmly/types"
 
 import { fakerEN_US as fake } from "@faker-js/faker"
+import { parse as ms } from "@lukeed/ms"
 import { configure, render, screen } from "@testing-library/react"
 import { type UserEvent, userEvent } from "@testing-library/user-event"
 import { type FetchMock, default as fetchMock } from "jest-fetch-mock"
-import { default as ms } from "ms"
 import { match, P } from "ts-pattern"
 
 import { Substances } from "../../../src/components/Substances/index.tsx"

@@ -4,7 +4,6 @@
     "types": [
       "big.js",
       "bun",
-      "ms",
       "node",
       "react",
       "react-dom"

@@ -25,6 +25,7 @@ import { info } from "@postfmly/logger"
 import { type Nullable, type Optional } from "@postfmly/types"
 
 import { default as pluralize } from "@jarrodek/pluralize"
+import { parse as ms } from "@lukeed/ms"
 import { IconCalendar, IconCheck, IconKey, IconSettings, IconX } from "@tabler/icons-react"
 import { Big } from "big.js"
 import { default as dayjs } from "dayjs"
@@ -32,7 +33,6 @@ import { default as advancedFormat } from "dayjs/plugin/advancedFormat"
 import { default as timezone } from "dayjs/plugin/timezone"
 import { default as utc } from "dayjs/plugin/utc"
 import { fastIsEqual as isEqual } from "fast-is-equal"
-import { default as ms } from "ms"
 import { default as useSWR } from "swr/immutable"
 import { match } from "ts-pattern"
 
@@ -85,7 +85,7 @@ if (DEBUG) {
   info(`Timezone set to: ${dayjs.tz.guess()}`)
 }
 
-const INTERVAL_MS: number = ms("1s")
+const INTERVAL_MS: number = ms("1s") as number
 
 const Display = (): JSX.Element => {
   const [soberUser, setSoberUser, resetSoberUser] = useLocalStorage<Optional<string>>({

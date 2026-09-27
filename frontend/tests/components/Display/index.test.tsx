@@ -8,10 +8,10 @@ import { Notifications } from "@mantine/notifications"
 import { type Nullable } from "@postfmly/types"
 
 import { fakerEN_US as fake } from "@faker-js/faker"
+import { parse as ms } from "@lukeed/ms"
 import { act, configure, render, screen, waitFor } from "@testing-library/react"
 import { default as ExtractNumbers } from "extract-numbers"
 import { type FetchMock, default as fetchMock } from "jest-fetch-mock"
-import { default as ms } from "ms"
 import { match } from "ts-pattern"
 
 import { Display } from "../../../src/components/Display/index.tsx"
@@ -100,7 +100,7 @@ describe("Display - index", (): void => {
     expect(numBefore).toHaveLength(1)
 
     await waitFor(async (): Promise<void> => {
-      await sleep(ms("2s"))
+      await sleep(ms("2s") as number)
     })
 
     const numAfter: number[] = extract.extractNumbers(counter.textContent) as number[]
