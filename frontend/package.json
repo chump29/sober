@@ -96,7 +96,7 @@
     "@mantine/hooks": "^9.6.3",
     "@mantine/modals": "^9.6.3",
     "@mantine/notifications": "^9.6.3",
-    "@postfmly/logger": "^1.0.32",
+    "@postfmly/logger": "^1.0.33",
     "@postfmly/types": "^1.0.2",
     "@tabler/icons-react": "^3.48.0",
     "big.js": "^7.0.1",
