@@ -127,7 +127,7 @@ const Substances = ({
         return
       }
 
-      selectedSubstance.name = substanceValue.current
+      setSelectedSubstance({ ...selectedSubstance, name: substanceValue.current })
 
       await fetchClient<void>({
         body: selectedSubstance,
@@ -285,7 +285,8 @@ const Substances = ({
                     onClick={handleSubstanceConfirm}
                     size={16}
                     style={{
-                      cursor: (substanceValue.current ?? "").length === 0 ? "not-allowed" : "pointer",
+                      // biome-ignore lint/nursery/useReactCompiler: keeping as ref
+                      cursor: substanceValue.current.length === 0 ? "not-allowed" : "pointer",
                       flexShrink: 0,
                       marginRight: "5px"
                     }}

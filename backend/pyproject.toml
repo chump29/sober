@@ -21,13 +21,13 @@ dependencies = [
     "anyio>=4.15.1",
     "cachetools>=7.2.0",
     "fastapi-guard>=8.0.2",
-    "fastapi[standard-no-fastapi-cloud-cli]>=0.141.1",
+    "fastapi[standard-no-fastapi-cloud-cli]>=0.142.2",
     "loadfig>=0.1.1",
     "nh3>=0.3.7",
     "peewee>=4.5.2",
     "pluralizer>=2.0.0",
     "pydantic>=2.13.5",
-    "pyjwt>=2.15.0",
+    "pyjwt>=2.15.1",
     "python-box>=7.4.1",
     "rich>=15.0.0",
     "secure>=2.0.1",
@@ -52,7 +52,7 @@ dev = [
     "coverage>=7.16.2",
     "mimesis>=22.2.0",
     "pre-commit>=4.6.2",
-    "pylint>=4.0.8",
+    "pylint>=4.1.1",
     "pytz>=2026.4",
     "ty>=0.0.84",
     "typer>=0.27.2",
@@ -169,7 +169,7 @@ convention = "google"
 
 [tool.uv]
 python-downloads = "manual"
-required-version = ">=0.12.19"
+required-version = ">=0.12.21"
 
 [tool.uv.build-backend]
 namespace = true
