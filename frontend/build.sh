@@ -22,7 +22,7 @@ echo -e "\n${_lint} ${_yellow}Linting${_nc}:"
 bun run lint
 
 echo -e "\n${_test} ${_yellow}Testing${_nc}:"
-bun run test
+bun run test:coverage
 
 echo -e "\n${_build} ${_yellow}Building${_nc}:\n"
 ./Dockerfile

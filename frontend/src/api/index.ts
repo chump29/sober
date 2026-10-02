@@ -5,8 +5,6 @@ import { FetchError, HttpStatus, handleError, validate } from "../utils/index.ts
 import { FetchClientSchema, type IFetchClient } from "../utils/interfaces/IFetchClient.ts"
 import { getHeaders } from "../utils/jwt.ts"
 
-const { SOBER_API_TIMEOUT: API_TIMEOUT, VITE_API_URL: API_URL } = env as typeof env
-
 const fetchClient = async <R = null>(settings: IFetchClient): Promise<Nullable<R>> => {
   const s: Nullable<IFetchClient> = validate<IFetchClient, FetchClientSchema>(settings, FetchClientSchema)
   if (!s) {
@@ -18,10 +16,10 @@ const fetchClient = async <R = null>(settings: IFetchClient): Promise<Nullable<R
     body: JSON.stringify(s.body),
     headers: getHeaders(s.user),
     method: s.method,
-    signal: AbortSignal.timeout(API_TIMEOUT)
+    signal: AbortSignal.timeout(env.SOBER_API_TIMEOUT)
   } satisfies RequestInit
 
-  let endpoint: string = `${API_URL}/`
+  let endpoint: string = `${env.VITE_API_URL}/`
   if (s.endpoint !== "version") {
     endpoint += "api/"
   }

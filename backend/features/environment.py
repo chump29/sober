@@ -6,9 +6,11 @@ from decimal import Decimal
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
-from api import DB_PATH, CostType, SubstanceDTO, User  # pylint: disable=import-error
 from fake import fake  # pylint: disable=import-error
 from rich.console import Console
+
+from api import CostType, SubstanceDTO, User  # pylint: disable=import-error
+from env import env  # pylint: disable=import-error
 
 if TYPE_CHECKING:
     from behave.model import Feature
@@ -52,5 +54,5 @@ def before_feature(context: Context, _: Feature) -> None:
 
 def after_feature(_: Context, __: Feature) -> None:
     """Run after features"""
-    for filename in Path(DB_PATH).glob("sober.test.*"):
+    for filename in Path(env.SOBER_DB_PATH).glob("sober.test.*"):
         Path(filename).unlink()

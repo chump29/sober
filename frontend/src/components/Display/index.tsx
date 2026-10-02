@@ -70,18 +70,16 @@ import { Substances } from "../Substances/index.tsx"
 
 import "./index.css"
 
-const { SOBER_DEBUG: DEBUG } = env as typeof env
-
 dayjs.extend(utc) // * NOTE: required for timezone
 dayjs.extend(timezone)
 dayjs.extend(advancedFormat) // * NOTE: for Do format option
 
-if (DEBUG) {
+if (env.SOBER_DEBUG) {
   info("Debug is ON")
 }
 
 dayjs.tz.setDefault(dayjs.tz.guess())
-if (DEBUG) {
+if (env.SOBER_DEBUG) {
   info(`Timezone set to: ${dayjs.tz.guess()}`)
 }
 
@@ -189,7 +187,7 @@ const Display = (): JSX.Element => {
       return [] as ISubstance[]
     }
 
-    if (DEBUG) {
+    if (env.SOBER_DEBUG) {
       info(`Got ${pluralize("substance", s.length, true)} from API`)
     }
 
@@ -224,7 +222,7 @@ const Display = (): JSX.Element => {
         const substance: Optional<ISubstance> = !selectedSubstance.name || subs.length === 1 ? subs[0] : foundSubstance
 
         if (!substance) {
-          if (DEBUG) {
+          if (env.SOBER_DEBUG) {
             handleError("Substance not found")
           }
 
@@ -234,7 +232,7 @@ const Display = (): JSX.Element => {
         handleSetCost(substance.cost)
 
         if (isEqual(substance, selectedSubstance)) {
-          if (DEBUG) {
+          if (env.SOBER_DEBUG) {
             info("Found same substance… skipping")
           }
 
@@ -243,7 +241,7 @@ const Display = (): JSX.Element => {
 
         setSelectedSubstance(substance)
 
-        if (DEBUG) {
+        if (env.SOBER_DEBUG) {
           info(`Setting substance to: ${substance.name} on ${substance.date}`)
         }
       }
@@ -283,7 +281,7 @@ const Display = (): JSX.Element => {
 
     setSelectedSubstance(s)
 
-    if (DEBUG) {
+    if (env.SOBER_DEBUG) {
       info(`New sober date for ${s.name}: ${d}`)
     }
 
@@ -295,7 +293,7 @@ const Display = (): JSX.Element => {
 
     setSoberUser(user)
 
-    if (DEBUG) {
+    if (env.SOBER_DEBUG) {
       info(`User logged in as: ${user}`)
     }
 
@@ -309,7 +307,7 @@ const Display = (): JSX.Element => {
 
     resetSoberUser()
 
-    if (DEBUG) {
+    if (env.SOBER_DEBUG) {
       info("User logged out")
     }
 

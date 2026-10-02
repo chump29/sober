@@ -5,15 +5,13 @@ import { UnsecuredJWT } from "jose"
 import { name } from "../../package.json" with { type: "json" }
 import { env } from "../env.ts"
 
-const { SOBER_JWT_AUDIENCE: AUDIENCE, SOBER_JWT_EXPIRE_TIME: EXPIRE_TIME } = env as typeof env
-
 const getJWT = (user: string): string =>
   new UnsecuredJWT()
-    .setExpirationTime(EXPIRE_TIME)
+    .setExpirationTime(env.SOBER_JWT_EXPIRE_TIME)
     .setIssuedAt()
     .setSubject(user)
     .setIssuer(name)
-    .setAudience(AUDIENCE)
+    .setAudience(env.SOBER_JWT_AUDIENCE)
     .encode()
 
 /**

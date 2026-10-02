@@ -4,49 +4,40 @@ import { expectTypeOf } from "expect-type"
 
 import { env } from "../src/env.ts"
 
-const {
-  SOBER_API_TIMEOUT: API_TIMEOUT,
-  SOBER_DEBUG: DEBUG,
-  SOBER_JWT_AUDIENCE: AUDIENCE,
-  SOBER_JWT_EXPIRE_TIME: EXPIRE_TIME,
-  VITE_API_URL: API_URL,
-  VITE_TITLE: TITLE
-} = env as typeof env
-
 describe("env", (): void => {
   test("SOBER_API_TIMEOUT", (): void => {
-    expectTypeOf(API_TIMEOUT).toEqualTypeOf<number>()
+    expectTypeOf(env.SOBER_API_TIMEOUT).toEqualTypeOf<number>()
 
-    expect(API_TIMEOUT).toBeGreaterThan(0)
+    expect(env.SOBER_API_TIMEOUT).toBeGreaterThan(0)
   })
 
   test("SOBER_DEBUG", (): void => {
-    expectTypeOf(DEBUG).toEqualTypeOf<boolean>()
+    expectTypeOf(env.SOBER_DEBUG).toEqualTypeOf<boolean>()
 
-    expect(DEBUG).toBeTrue()
+    expect(env.SOBER_DEBUG).toBeTrue()
   })
 
   test("SOBER_JWT_AUDIENCE", (): void => {
-    expectTypeOf(AUDIENCE).toEqualTypeOf<string>()
+    expectTypeOf(env.SOBER_JWT_AUDIENCE).toEqualTypeOf<string>()
 
-    expect(AUDIENCE.length).toBeGreaterThan(0)
+    expect(env.SOBER_JWT_AUDIENCE.length).toBeGreaterThan(0)
   })
 
   test("SOBER_JWT_EXPIRE_TIME", (): void => {
-    expectTypeOf(EXPIRE_TIME).toEqualTypeOf<string | number | Date>()
+    expectTypeOf(env.SOBER_JWT_EXPIRE_TIME).toEqualTypeOf<string | number | Date>()
 
-    expect((EXPIRE_TIME as string).length).toBeGreaterThan(0)
+    expect((env.SOBER_JWT_EXPIRE_TIME as string).length).toBeGreaterThan(0)
   })
 
   test("VITE_API_URL", (): void => {
-    expectTypeOf(API_URL).toEqualTypeOf<string>()
+    expectTypeOf(env.VITE_API_URL).toEqualTypeOf<string>()
 
-    expect(API_URL).toHaveLength(0)
+    expect(env.VITE_API_URL).toHaveLength(0)
   })
 
   test("VITE_TITLE", (): void => {
-    expectTypeOf(TITLE).toEqualTypeOf<string>()
+    expectTypeOf(env.VITE_TITLE).toEqualTypeOf<string>()
 
-    expect(TITLE.length).toBeGreaterThan(0)
+    expect(env.VITE_TITLE.length).toBeGreaterThan(0)
   })
 })

@@ -25,8 +25,6 @@ import { defaultSubstance, type ISubstance, SubstanceSchema } from "../../utils/
 import { type ISubstanceDisplay } from "../../utils/interfaces/ISubstanceDisplay.ts"
 import { DATETIME_FORMAT_OUTPUT, DATETIME_FORMAT_SHORT_OUTPUT, MAX_LEN_STR, NameSchema } from "../../utils/schemas.ts"
 
-const { SOBER_DEBUG: DEBUG } = env as typeof env
-
 dayjs.extend(advancedFormat) // * NOTE: for Do format option
 
 const Substances = ({
@@ -82,7 +80,7 @@ const Substances = ({
 
     setSelectedSubstance(s)
 
-    if (DEBUG) {
+    if (env.SOBER_DEBUG) {
       info(`Substance added: ${s.name}`)
     }
 
@@ -136,7 +134,7 @@ const Substances = ({
         user
       } satisfies IFetchClient)
 
-      if (DEBUG) {
+      if (env.SOBER_DEBUG) {
         info(`Updated ID ${selectedSubstance.id} to ${selectedSubstance.name}`)
       }
 
@@ -154,7 +152,7 @@ const Substances = ({
         (substance: ISubstance): boolean => substance.name.toLowerCase() === substanceValue.current.toLowerCase()
       )
     ) {
-      if (DEBUG) {
+      if (env.SOBER_DEBUG) {
         substanceField.setError("Substance already added")
       }
 
@@ -200,7 +198,7 @@ const Substances = ({
 
     setSelectedSubstance(substance)
 
-    if (DEBUG) {
+    if (env.SOBER_DEBUG) {
       info(`Showing substance: ${substance.name} on ${substance.date}`)
     }
   }
@@ -233,7 +231,7 @@ const Substances = ({
       return
     }
 
-    if (DEBUG) {
+    if (env.SOBER_DEBUG) {
       info(`Deleted ID ${selectedSubstance.id}`)
     }
 

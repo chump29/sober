@@ -15,7 +15,6 @@ from typing import TYPE_CHECKING, Annotated, ClassVar, Final, final
 
 from anyio import to_thread
 from cachetools import LRUCache, cached
-from env import MAX_PORT, MIN_PORT, env  # pylint: disable=import-error
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from guard import SecurityConfig
@@ -30,9 +29,7 @@ from peewee import (
     DecimalField,
     ForeignKeyField,
     IntegerField,
-)
-from peewee import Model as DatabaseModel
-from peewee import (
+    Model as DatabaseModel,
     SqliteDatabase,
 )
 from playhouse.shortcuts import model_to_dict
@@ -40,9 +37,7 @@ from playhouse.sqlite_ext import ISODateTimeField
 from pluralizer import Pluralizer
 from pydantic import (
     AwareDatetime,
-)
-from pydantic import BaseModel as ValidationModel
-from pydantic import (
+    BaseModel as ValidationModel,
     ConfigDict,
     Field,
     PlainSerializer,
@@ -61,6 +56,8 @@ from semver import Version
 from uvicorn import run
 from whenever import ZonedDateTime
 
+from env import MAX_PORT, MIN_PORT, env  # pylint: disable=import-error
+
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
     from datetime import datetime
@@ -71,13 +68,9 @@ if TYPE_CHECKING:
 CONSOLE: Final[Console] = Console()
 catch_exceptions()
 
-DEBUG: Final[bool] = env.SOBER_DEBUG
+DB_STR: Final[str] = "./" + path.normpath(f"{env.SOBER_DB_PATH}/{env.SOBER_DB_FILE}")
 
-DB_PATH: Final[str] = env.SOBER_DB_PATH
-DB_FILE: Final[str] = env.SOBER_DB_FILE
-DB_STR: Final[str] = "./" + path.normpath(f"{DB_PATH}/{DB_FILE}")
-
-if not DB_STR.startswith(DB_PATH):
+if not DB_STR.startswith(env.SOBER_DB_PATH):
     MSG: Final[str] = "Invalid DB path"
     raise ValueError(MSG)
 
@@ -264,20 +257,20 @@ def log(msg: str, info: str = "") -> None:
     CONSOLE.log(s if not info else f"{s}: [cyan]{info}[/cyan]")
 
 
-if not Path(DB_PATH).resolve().exists():
-    if DEBUG:
-        CONSOLE.print("📂 Creating path", DB_PATH)
+if not Path(env.SOBER_DB_PATH).resolve().exists():
+    if env.SOBER_DEBUG:
+        CONSOLE.print("📂 Creating path", env.SOBER_DB_PATH)
 
-    Path(DB_PATH).mkdir(parents=True)
+    Path(env.SOBER_DB_PATH).mkdir(parents=True)
 
 if not Path(DB_STR).resolve().exists():
-    if DEBUG:
-        CONSOLE.print("🛢️  Creating database", DB_FILE)
+    if env.SOBER_DEBUG:
+        CONSOLE.print("🛢️  Creating database", env.SOBER_DB_FILE)
 
     User.create_table()
 
     Substance.create_table()
-elif DEBUG:
+elif env.SOBER_DEBUG:
     CONSOLE.print("🛢️  Using database", DB_STR)
 
 
@@ -286,17 +279,17 @@ async def lifespan(_: FastAPI) -> AsyncGenerator:
     """Handle FastAPI lifespan"""
     CONSOLE.print("✨ Running local server…")
 
-    if DEBUG:
+    if env.SOBER_DEBUG:
         CONSOLE.print("🐞 Debug is ON")
 
     yield
 
-    if DEBUG:
+    if env.SOBER_DEBUG:
         CONSOLE.print("🛢️  Closing database")
 
     await to_thread.run_sync(DB.close)
 
-    if DEBUG:
+    if env.SOBER_DEBUG:
         CONSOLE.print("🛑 Stopping server")
 
 
@@ -428,18 +421,17 @@ def get_version() -> str | None:
         raise ValueError(msg)
 
     try:
-        version: Final[str] = env.SOBER_VERSION
-        if not Version.is_valid(version):
-            invalid_version(version)
+        if not Version.is_valid(env.SOBER_VERSION):
+            invalid_version(env.SOBER_VERSION)
 
-        if DEBUG:
-            log("Got version:", version)
+        if env.SOBER_DEBUG:
+            log("Got version:", env.SOBER_VERSION)
     except Exception:
         CONSOLE.print_exception()
 
         return None
 
-    return version
+    return env.SOBER_VERSION
 
 
 def _verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())]) -> str | None:
@@ -470,12 +462,12 @@ def _verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(HTT
         )
         user = payload.get("sub")
     except InvalidTokenError as e:
-        if DEBUG:
+        if env.SOBER_DEBUG:
             CONSOLE.print(f"[bold][red]❌ JWT Error:[/bold] {e}[/red]")
 
         _invalid_jwt()
     except Exception:
-        if DEBUG:
+        if env.SOBER_DEBUG:
             CONSOLE.print_exception()
 
         raise
@@ -516,7 +508,7 @@ def get_user(user: Annotated[str, Depends(_verify_jwt)]) -> None:
 
             created: Final[bool] = User.get_or_create(user=user_hash)[1]
 
-            if DEBUG:
+            if env.SOBER_DEBUG:
                 short_user: Final[str] = _shorten(user_hash)
 
                 if created:
@@ -549,7 +541,7 @@ async def delete_user(user: str) -> None:
 
             u.delete_instance()
 
-            if DEBUG:
+            if env.SOBER_DEBUG:
                 log(f"Deleted user: {get_user_hash(user)}")
     except Exception:
         CONSOLE.print_exception()
@@ -581,7 +573,7 @@ def get_substances(user: Annotated[str, Depends(_verify_jwt)]) -> list[Substance
         if count == 0:
             return None
 
-        if DEBUG:
+        if env.SOBER_DEBUG:
             log(f"Getting {pluralizer.pluralize('substance', count, True)} for {_shorten(user_hash)}")
 
         return [_to_substance_dto(substance) for substance in substances]
@@ -620,7 +612,7 @@ async def add_substance(substance: SubstanceDTO, user: Annotated[str, Depends(_v
         if not _user_exists(user_hash):
             return None
 
-        if DEBUG:
+        if env.SOBER_DEBUG:
             log(f"Adding substance for {_shorten(user_hash)}:", str(substance))
 
         get_substances.cache_clear()
@@ -654,7 +646,7 @@ async def get_substance(pk: int, user: Annotated[str, Depends(_verify_jwt)]) -> 
         if substance is None:
             return None
 
-        if DEBUG:
+        if env.SOBER_DEBUG:
             log("Getting substance ID", str(pk))
 
         return _to_substance_dto(substance)
@@ -674,14 +666,14 @@ async def delete_substance(pk: int, user: Annotated[str, Depends(_verify_jwt)]) 
 
         substance: Final[Substance | None] = Substance.get_or_none(Substance.id == pk, Substance.user == user_hash)
         if substance is not None:
-            if DEBUG:
+            if env.SOBER_DEBUG:
                 log(f"Deleting substance {substance.name} for {_shorten(user_hash)}")
 
             get_substances.cache_clear()
 
             substance.delete_instance()
         else:
-            if DEBUG:
+            if env.SOBER_DEBUG:
                 log("Could not delete ID", str(pk))
 
             return False
@@ -706,7 +698,7 @@ async def update_substance(
         if not _user_exists(user_hash):
             return None
 
-        if DEBUG:
+        if env.SOBER_DEBUG:
             log(f"Updating substance for {_shorten(user_hash)}:", str(substance))
 
         get_substances.cache_clear()
@@ -757,11 +749,10 @@ def _invalid_port(port: int) -> None:
 
 
 try:
-    PORT: Final[int] = env.SOBER_API_PORT
-    if not _validate_port(PORT):
-        _invalid_port(PORT)
-    elif DEBUG:
-        log("Got port", str(PORT))
+    if not _validate_port(env.SOBER_API_PORT):
+        _invalid_port(env.SOBER_API_PORT)
+    elif env.SOBER_DEBUG:
+        log("Got port", str(env.SOBER_API_PORT))
 except Exception as e:
     CONSOLE.print_exception()
 
@@ -770,4 +761,4 @@ except Exception as e:
 get_version()  # precache
 
 if __name__ == "__main__":
-    run("api:ROUTER", host="0.0.0.0", port=PORT, reload=True)  # noqa: S104
+    run("api:ROUTER", host="0.0.0.0", port=env.SOBER_API_PORT, reload=True)  # noqa: S104

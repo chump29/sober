@@ -1,3 +1,5 @@
+#!/usr/bin/env bun
+
 import { parse as ms } from "@lukeed/ms"
 import { bool, cleanEnv, type ExactValidator, makeExactValidator, str, url } from "envalid"
 import { parse } from "valibot"
@@ -20,5 +22,9 @@ const env = cleanEnv(import.meta.env, {
   VITE_API_URL: url({ default: "" }),
   VITE_TITLE: titleValidator({ default: "Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" })
 })
+
+if (import.meta.main) {
+  console.table(env)
+}
 
 export { env }

@@ -43,7 +43,7 @@ jobs:
         run: bun run lint:ci
 
       - name: Testing
-        run: bun run test
+        run: bun run test:coverage
 
   check-backend:
     runs-on: amd64

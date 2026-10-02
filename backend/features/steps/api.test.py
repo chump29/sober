@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING, Final
 
 # pylint: disable-next=import-error
 from api import (
-    PORT,
     Substance,
     SubstanceDTO,
     User,
@@ -30,6 +29,7 @@ from api import (
 from behave import given, then, when
 from box import Box
 from environment import get_new_substance, log  # pylint: disable=import-error
+from env import env  # pylint: disable=import-error
 from fake import fake  # pylint: disable=import-error
 from loadfig import pyproject as load_pyproject
 
@@ -139,7 +139,7 @@ def call_get_version(context: Context) -> None:
 @then("port {port} is used")
 def verify_port(_: Context, port: str) -> None:
     """Verify port"""
-    assert int(port.replace('"', "")) == PORT, f"Invalid port: {port}"
+    assert int(port.replace('"', "")) == env.SOBER_API_PORT, f"Invalid port: {port}"
 
 
 @then("version is returned")

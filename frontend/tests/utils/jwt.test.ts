@@ -13,8 +13,6 @@ import { name } from "../../package.json" with { type: "json" }
 import { env } from "../../src/env.ts"
 import { getHeaders } from "../../src/utils/jwt.ts"
 
-const { SOBER_JWT_AUDIENCE: AUDIENCE, SOBER_JWT_EXPIRE_TIME: EXPIRE_TIME } = env as typeof env
-
 describe("jwt", (): void => {
   test("getHeaders", (): void => {
     const user: string = fake.person.firstName()
@@ -30,13 +28,13 @@ describe("jwt", (): void => {
     const exp: number = Math.abs(dayjs().diff(dayjs.unix(payload.exp ?? 0), "seconds"))
 
     const extract: ExtractNumbers = new ExtractNumbers({ removeCommas: true, string: false })
-    const expires: number[] = extract.extractNumbers(EXPIRE_TIME as string) as number[]
+    const expires: number[] = extract.extractNumbers(env.SOBER_JWT_EXPIRE_TIME as string) as number[]
     assert(expires[0])
 
     expect(exp).toBeLessThanOrEqual(expires[0])
     expect(payload.sub).toBe(user)
     expect(payload.iss).toBe(name)
-    expect(payload.aud).toBe(AUDIENCE)
+    expect(payload.aud).toBe(env.SOBER_JWT_AUDIENCE)
   })
 
   test("getHeaders - fail", (): void => {
