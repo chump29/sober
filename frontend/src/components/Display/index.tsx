@@ -626,6 +626,7 @@ const Display = (): JSX.Element => {
                       data-testid="dateTimePicker"
                       disabled={!getSelectedSubstance().name}
                       dropdownType="modal"
+                      firstDayOfWeek={0}
                       highlightToday={true}
                       label="Sober since:"
                       leftSection={<IconCalendar color="var(--color-red)" size={16} />}
