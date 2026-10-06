@@ -1,6 +1,5 @@
 import { type Nullable, type Nullish } from "@postfmly/types"
 
-import { default as pluralize } from "@jarrodek/pluralize"
 import { Big } from "big.js"
 import { default as dayjs } from "dayjs"
 import { default as duration } from "dayjs/plugin/duration"
@@ -16,12 +15,12 @@ const displayStore = create<IDisplay>()(
   (set, get) =>
     ({
       actions: {
-        getDaysInt: (): number => get().daysInt,
-        getMonthsFloat: (): number => get().monthsFloat,
+        getDaysNow: (): number => get().days,
+        getMonthsNow: (): number => get().months,
         getSelectedSubstance: (): ISubstance => get().selectedSubstance,
         getUser: (): Nullable<string> => get().user,
-        getWeeksFloat: (): number => get().weeksFloat,
-        getYearsFloat: (): number => get().yearsFloat,
+        getWeeksNow: (): number => get().weeks,
+        getYearsNow: (): number => get().years,
 
         setCost: (data: Nullable<ICost>): void =>
           set({
@@ -34,29 +33,19 @@ const displayStore = create<IDisplay>()(
             }
 
             const diff: duration.Duration = dayjs.duration(dayjs().diff(dayjs(date)))
-            const seconds: number = Math.floor(diff.asSeconds())
-            const minutes: number = Math.floor(diff.asMinutes())
-            const hours: number = Math.floor(diff.asHours())
-            const days: number = Math.floor(diff.asDays())
+
             const weeksDuration: number = diff.asWeeks()
-            const weeks: number = round(weeksDuration)
             const monthsDuration: number = diff.asMonths()
-            const months: number = round(monthsDuration)
             const yearsDuration: number = diff.asYears()
-            const years: number = round(yearsDuration)
 
             return {
-              days: days > 0 ? pluralize("day", days, true) : "",
-              daysInt: days,
-              hours: hours > 0 ? pluralize("hour", hours, true) : "",
-              minutes: minutes > 0 ? pluralize("minute", minutes, true) : "",
-              months: months > 0 ? pluralize("month", months, true) : "",
-              monthsFloat: months,
-              seconds: pluralize("second", seconds, true),
-              weeks: weeks > 0 ? pluralize("week", weeks, true) : "",
-              weeksFloat: weeks,
-              years: years > 0 ? pluralize("year", years, true) : "",
-              yearsFloat: years
+              days: Math.floor(diff.asDays()),
+              hours: Math.floor(diff.asHours()),
+              minutes: Math.floor(diff.asMinutes()),
+              months: round(monthsDuration),
+              seconds: Math.floor(diff.asSeconds()),
+              weeks: round(weeksDuration),
+              years: round(yearsDuration)
             } as IDisplay
           }),
         setSelectedSubstance: (data: ISubstance): void =>
@@ -89,13 +78,13 @@ const round = (num: number): number => {
 }
 
 export const getCost = (): Nullable<ICost> => displayStore((state: IDisplay): Nullable<ICost> => state.cost)
-export const getDays = (): string => displayStore((state: IDisplay): string => state.days)
-export const getHours = (): string => displayStore((state: IDisplay): string => state.hours)
-export const getMinutes = (): string => displayStore((state: IDisplay): string => state.minutes)
-export const getMonths = (): string => displayStore((state: IDisplay): string => state.months)
-export const getSeconds = (): string => displayStore((state: IDisplay): string => state.seconds)
-export const getWeeks = (): string => displayStore((state: IDisplay): string => state.weeks)
-export const getYears = (): string => displayStore((state: IDisplay): string => state.years)
+export const getDays = (): number => displayStore((state: IDisplay): number => state.days)
+export const getHours = (): number => displayStore((state: IDisplay): number => state.hours)
+export const getMinutes = (): number => displayStore((state: IDisplay): number => state.minutes)
+export const getMonths = (): number => displayStore((state: IDisplay): number => state.months)
+export const getSeconds = (): number => displayStore((state: IDisplay): number => state.seconds)
+export const getWeeks = (): number => displayStore((state: IDisplay): number => state.weeks)
+export const getYears = (): number => displayStore((state: IDisplay): number => state.years)
 
 export const displayStoreActions = (): IDisplayActions =>
   displayStore((state: IDisplay): IDisplayActions => state.actions)

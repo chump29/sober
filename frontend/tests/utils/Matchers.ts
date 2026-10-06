@@ -18,17 +18,13 @@ const ICostMatcher: ICost = {
 } satisfies ICost
 
 const IDisplayMatcher: IDisplay = {
-  days: expect.any(String),
-  daysInt: expect.any(Number),
-  hours: expect.any(String),
-  minutes: expect.any(String),
-  months: expect.any(String),
-  monthsFloat: expect.any(Number),
-  seconds: expect.any(String),
-  weeks: expect.any(String),
-  weeksFloat: expect.any(Number),
-  years: expect.any(String),
-  yearsFloat: expect.any(Number)
+  days: expect.any(Number),
+  hours: expect.any(Number),
+  minutes: expect.any(Number),
+  months: expect.any(Number),
+  seconds: expect.any(Number),
+  weeks: expect.any(Number),
+  years: expect.any(Number)
 } as IDisplay
 
 const ISelectDisplayMatcher: ISelectDisplay = {

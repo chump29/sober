@@ -1,4 +1,4 @@
-import { type ChangeEvent, type JSX, type KeyboardEvent, useEffect } from "react"
+import { type ChangeEvent, type JSX, type KeyboardEvent, useEffect, useMemo } from "react"
 
 import {
   ActionIcon,
@@ -11,6 +11,7 @@ import {
   Group,
   Modal,
   NumberFormatter,
+  RollingNumber,
   Space,
   Stack,
   Text,
@@ -135,12 +136,12 @@ const Display = (): JSX.Element => {
   const [openedCoin, { open: openCoin, close: closeCoin }] = useDisclosure(false)
 
   const {
-    getDaysInt,
-    getMonthsFloat,
+    getDaysNow,
+    getMonthsNow,
     getSelectedSubstance,
     getUser,
-    getWeeksFloat,
-    getYearsFloat,
+    getWeeksNow,
+    getYearsNow,
     setCost,
     setDisplay,
     setSelectedSubstance,
@@ -148,13 +149,21 @@ const Display = (): JSX.Element => {
   } = displayStoreActions()
 
   const cost: Nullable<ICost> = getCost()
-  const days: string = getDays()
-  const hours: string = getHours()
-  const minutes: string = getMinutes()
-  const months: string = getMonths()
-  const seconds: string = getSeconds()
-  const weeks: string = getWeeks()
-  const years: string = getYears()
+  const days: number = getDays()
+  const hours: number = getHours()
+  const minutes: number = getMinutes()
+  const months: number = getMonths()
+  const seconds: number = getSeconds()
+  const weeks: number = getWeeks()
+  const years: number = getYears()
+
+  const strSeconds: string = useMemo((): string => pluralize("second", seconds), [seconds])
+  const strMinutes: string = useMemo((): string => pluralize("minute", minutes), [minutes])
+  const strHours: string = useMemo((): string => pluralize("hour", hours), [hours])
+  const strDays: string = useMemo((): string => pluralize("day", days), [days])
+  const strWeeks: string = useMemo((): string => pluralize("week", weeks), [weeks])
+  const strMonths: string = useMemo((): string => pluralize("month", months), [months])
+  const strYears: string = useMemo((): string => pluralize("year", years), [years])
 
   const validateUser = async (): Promise<void> => {
     const userValue: Nullable<string> = getUser()
@@ -403,10 +412,10 @@ const Display = (): JSX.Element => {
 
     try {
       const totalCost: number = match<CostType, number>(substance.costType)
-        .with(CostType.Day, (): number => substanceCost * getDaysInt())
-        .with(CostType.Week, (): number => substanceCost * getWeeksFloat())
-        .with(CostType.Month, (): number => substanceCost * getMonthsFloat())
-        .with(CostType.Year, (): number => substanceCost * getYearsFloat())
+        .with(CostType.Day, (): number => substanceCost * getDaysNow())
+        .with(CostType.Week, (): number => substanceCost * getWeeksNow())
+        .with(CostType.Month, (): number => substanceCost * getMonthsNow())
+        .with(CostType.Year, (): number => substanceCost * getYearsNow())
         .exhaustive()
 
       if (totalCost === 0) {
@@ -655,13 +664,39 @@ const Display = (): JSX.Element => {
                 fw="bold"
                 fz="h1"
                 gap="xs">
-                <Box data-testid="seconds">{seconds}</Box>
-                <Box>{minutes}</Box>
-                <Box>{hours}</Box>
-                <Box>{days}</Box>
-                <Box>{weeks}</Box>
-                <Box>{months}</Box>
-                <Box>{years}</Box>
+                <Box data-testid="seconds">
+                  <RollingNumber animationDuration={500} thousandSeparator={true} value={seconds} /> {strSeconds}
+                </Box>
+                {minutes > 0 ? (
+                  <Box>
+                    <RollingNumber animationDuration={500} thousandSeparator={true} value={minutes} /> {strMinutes}
+                  </Box>
+                ) : null}
+                {hours > 0 ? (
+                  <Box>
+                    <RollingNumber animationDuration={500} thousandSeparator={true} value={hours} /> {strHours}
+                  </Box>
+                ) : null}
+                {days > 0 ? (
+                  <Box>
+                    <RollingNumber animationDuration={500} thousandSeparator={true} value={days} /> {strDays}
+                  </Box>
+                ) : null}
+                {weeks > 0 ? (
+                  <Box>
+                    <RollingNumber animationDuration={500} thousandSeparator={true} value={weeks} /> {strWeeks}
+                  </Box>
+                ) : null}
+                {months > 0 ? (
+                  <Box>
+                    <RollingNumber animationDuration={500} thousandSeparator={true} value={months} /> {strMonths}
+                  </Box>
+                ) : null}
+                {years > 0 ? (
+                  <Box>
+                    <RollingNumber animationDuration={500} thousandSeparator={true} value={years} /> {strYears}
+                  </Box>
+                ) : null}
               </Stack>
               {getSelectedSubstance().showCost && cost ? (
                 <Center mt={20}>
@@ -700,9 +735,9 @@ const Display = (): JSX.Element => {
                 <>
                   <Coin
                     closeCoin={closeCoin}
-                    m={Math.floor(getMonthsFloat())}
+                    m={Math.floor(getMonthsNow())}
                     openedCoin={openedCoin}
-                    y={Math.floor(getYearsFloat())}
+                    y={Math.floor(getYearsNow())}
                   />
                   <Tooltip label="Show Coin" withArrow={true}>
                     <Button

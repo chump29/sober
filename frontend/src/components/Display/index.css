@@ -32,6 +32,7 @@
 @import "@mantine/core/styles/Modal.css";
 @import "@mantine/core/styles/Notification.css";
 @import "@mantine/core/styles/NumberInput.css";
+@import "@mantine/core/styles/RollingNumber.css";
 @import "@mantine/core/styles/Stack.css";
 @import "@mantine/core/styles/Switch.css";
 @import "@mantine/core/styles/Text.css";

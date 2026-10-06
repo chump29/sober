@@ -4,12 +4,12 @@ import { type ICost } from "./ICost.ts"
 import { type ISubstance } from "./ISubstance.ts"
 
 interface IDisplayActions {
-  getDaysInt: () => number
-  getMonthsFloat: () => number
+  getDaysNow: () => number
+  getMonthsNow: () => number
   getSelectedSubstance: () => ISubstance
   getUser: () => Nullable<string>
-  getWeeksFloat: () => number
-  getYearsFloat: () => number
+  getWeeksNow: () => number
+  getYearsNow: () => number
 
   setCost: (data: Nullable<ICost>) => void
   setDisplay: (date: Nullish<string>) => void
@@ -20,33 +20,25 @@ interface IDisplayActions {
 interface IDisplay {
   actions: IDisplayActions
   cost: Nullable<ICost>
-  days: string
-  daysInt: number
-  hours: string
-  minutes: string
-  months: string
-  monthsFloat: number
-  seconds: string
+  days: number
+  hours: number
+  minutes: number
+  months: number
+  seconds: number
   selectedSubstance: ISubstance
   user: Nullable<string>
-  weeks: string
-  weeksFloat: number
-  years: string
-  yearsFloat: number
+  weeks: number
+  years: number
 }
 
 const defaultValues: Partial<IDisplay> = {
-  days: "",
-  daysInt: 0,
-  hours: "",
-  minutes: "",
-  months: "",
-  monthsFloat: 0,
-  seconds: "",
-  weeks: "",
-  weeksFloat: 0,
-  years: "",
-  yearsFloat: 0
+  days: 0,
+  hours: 0,
+  minutes: 0,
+  months: 0,
+  seconds: 0,
+  weeks: 0,
+  years: 0
 } as Partial<IDisplay>
 
 export { defaultValues, type IDisplay, type IDisplayActions }

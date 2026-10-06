@@ -7,13 +7,13 @@
       "dependencies": {
         "@jarrodek/pluralize": "^1.0.2",
         "@lukeed/ms": "^2.0.2",
-        "@mantine/core": "^9.7.0",
-        "@mantine/dates": "^9.7.0",
-        "@mantine/form": "^9.7.0",
-        "@mantine/hooks": "^9.7.0",
-        "@mantine/modals": "^9.7.0",
-        "@mantine/notifications": "^9.7.0",
-        "@postfmly/logger": "^1.1.5",
+        "@mantine/core": "^9.7.1",
+        "@mantine/dates": "^9.7.1",
+        "@mantine/form": "^9.7.1",
+        "@mantine/hooks": "^9.7.1",
+        "@mantine/modals": "^9.7.1",
+        "@mantine/notifications": "^9.7.1",
+        "@postfmly/logger": "^1.1.6",
         "@postfmly/types": "^1.0.4",
         "@tabler/icons-react": "^3.49.0",
         "big.js": "^7.0.1",
@@ -318,19 +318,19 @@
 
     "@lukeed/ms": ["@lukeed/ms@2.0.2", "https://npm.postfmly.com/@lukeed/ms/-/ms-2.0.2.tgz", {}, "sha512-9I2Zn6+NJLfaGoz9jN3lpwDgAYvfGeNYdbAIjJOqzs4Tpc+VU3Jqq4IofSUBKajiDS8k9fZIg18/z13mpk1bsA=="],
 
-    "@mantine/core": ["@mantine/core@9.7.0", "https://npm.postfmly.com/@mantine/core/-/core-9.7.0.tgz", { "dependencies": { "@floating-ui/react": "^0.27.20", "clsx": "^2.1.1", "react-number-format": "^5.4.5", "react-remove-scroll": "^2.7.2", "type-fest": "^5.10.0" }, "peerDependencies": { "@mantine/hooks": "9.7.0", "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-WhCvfXXpYMKV6py05wt0Vlxthtxe4YOzQiVhrrCvWKYDmvhKXgOTDzRdjkGHNji4r+7f7d3nz2XpwbzaZ47R/w=="],
+    "@mantine/core": ["@mantine/core@9.7.1", "https://npm.postfmly.com/@mantine/core/-/core-9.7.1.tgz", { "dependencies": { "@floating-ui/react": "^0.27.20", "clsx": "^2.1.1", "react-number-format": "^5.4.5", "react-remove-scroll": "^2.7.2", "type-fest": "^5.10.0" }, "peerDependencies": { "@mantine/hooks": "9.7.1", "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-SU1xklOfdEDzpPhw35ti9rF4QRE9HUongCe37C+xCO2Ea8MLJkAzreCrMxb8qcCij+gnF7SQbtTCBa1r+pKxYA=="],
 
-    "@mantine/dates": ["@mantine/dates@9.7.0", "https://npm.postfmly.com/@mantine/dates/-/dates-9.7.0.tgz", { "dependencies": { "clsx": "^2.1.1" }, "peerDependencies": { "@mantine/core": "9.7.0", "@mantine/hooks": "9.7.0", "dayjs": ">=1.0.0", "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-K1iVmIX+fX87MjvcV5MQEUfY5s8ND52hak+Zak40swna3/t0oAlVenoJ66YoOeTYRtRWmencqn5ele08uY3q5g=="],
+    "@mantine/dates": ["@mantine/dates@9.7.1", "https://npm.postfmly.com/@mantine/dates/-/dates-9.7.1.tgz", { "dependencies": { "clsx": "^2.1.1" }, "peerDependencies": { "@mantine/core": "9.7.1", "@mantine/hooks": "9.7.1", "dayjs": ">=1.0.0", "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-oFQf8b0cW2ArcdP6r0ATMA4gJN3D8Nc29J7wE4E2xM5mI1+nW6k47L0E45uKwxFb9CqdhXaN+XA9lbrkWkMfsg=="],
 
-    "@mantine/form": ["@mantine/form@9.7.0", "https://npm.postfmly.com/@mantine/form/-/form-9.7.0.tgz", { "dependencies": { "@standard-schema/spec": "^1.1.0", "fast-deep-equal": "^3.1.3", "klona": "^2.0.6" }, "peerDependencies": { "react": "^19.2.0" } }, "sha512-v7GuFaKzM5TRpxh0LmlwM3S59yB2PXQjmn7IdbKQpvW+72tKJZwKnbEFJbYfTehBS73MKxqO+MGctHLUc1Yz2g=="],
+    "@mantine/form": ["@mantine/form@9.7.1", "https://npm.postfmly.com/@mantine/form/-/form-9.7.1.tgz", { "dependencies": { "@standard-schema/spec": "^1.1.0", "fast-deep-equal": "^3.1.3", "klona": "^2.0.6" }, "peerDependencies": { "react": "^19.2.0" } }, "sha512-fVjWYdiMBw21z/bqUkFghyV1MsANHoqCZaXji0k4KJaRCHh7cD3qhBuLIVhc2hUCKXQ3cHiJTHLz3ayoE/mRZg=="],
 
-    "@mantine/hooks": ["@mantine/hooks@9.7.0", "https://npm.postfmly.com/@mantine/hooks/-/hooks-9.7.0.tgz", { "peerDependencies": { "react": "^19.2.0" } }, "sha512-3a1w90f1OliaClGRlnPiviJtKxyMiKdVyM8Pd2h6se+LOm9/bgGI+pgoGw/tgv++BSQ4frqv+X7NBlqcY/S7KQ=="],
+    "@mantine/hooks": ["@mantine/hooks@9.7.1", "https://npm.postfmly.com/@mantine/hooks/-/hooks-9.7.1.tgz", { "peerDependencies": { "react": "^19.2.0" } }, "sha512-C1xD4A3bfB87nUsLHr42WqOabnK4G+fCyEf8FN14EEiZAcKjdcWJbK63qxhIXFKuHCc3acLbpm2ts9UqmLASTw=="],
 
-    "@mantine/modals": ["@mantine/modals@9.7.0", "https://npm.postfmly.com/@mantine/modals/-/modals-9.7.0.tgz", { "peerDependencies": { "@mantine/core": "9.7.0", "@mantine/hooks": "9.7.0", "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-zPQnLodyUV2dDZ3Kfxt1y2KPPZ2yiqjY+ipcRXxgOPazIdYeDBfy6htXXVEqHI6RCLvnxtku0Iv2ElFI6VdUXg=="],
+    "@mantine/modals": ["@mantine/modals@9.7.1", "https://npm.postfmly.com/@mantine/modals/-/modals-9.7.1.tgz", { "peerDependencies": { "@mantine/core": "9.7.1", "@mantine/hooks": "9.7.1", "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-pJbnRaqBmOUaiMk8ByJ/SZ9nbLwAn7JuaYYmwyToi+uQWut2gdxo1MZRE594Foaiw1lkHqzBoGBzTJlo/iut3g=="],
 
-    "@mantine/notifications": ["@mantine/notifications@9.7.0", "https://npm.postfmly.com/@mantine/notifications/-/notifications-9.7.0.tgz", { "dependencies": { "@mantine/store": "9.7.0", "react-transition-group": "4.4.5" }, "peerDependencies": { "@mantine/core": "9.7.0", "@mantine/hooks": "9.7.0", "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-0WUBbZpgDOO86YsGjV3zBYge+jkjIC9VLojSah4g0ZaYzKnh1cANRc0RF1OwSosABKaDZKZ1FAvlAhP8hq2ApQ=="],
+    "@mantine/notifications": ["@mantine/notifications@9.7.1", "https://npm.postfmly.com/@mantine/notifications/-/notifications-9.7.1.tgz", { "dependencies": { "@mantine/store": "9.7.1", "react-transition-group": "4.4.5" }, "peerDependencies": { "@mantine/core": "9.7.1", "@mantine/hooks": "9.7.1", "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-gmN+rTrjwYFJqaIqDQtQfoTJ/OR0wSxqxIihOHD5/S/sYUycVi9wDqK4tub5y8x0HeQH4kNkehPMN4l1Uk0A6A=="],
 
-    "@mantine/store": ["@mantine/store@9.7.0", "https://npm.postfmly.com/@mantine/store/-/store-9.7.0.tgz", { "peerDependencies": { "react": "^19.2.0" } }, "sha512-r1eCDANMSITib3NvYU82JBXVivT7wEDvHeTyRJdO+slqH+K9PY5PIIeasGIocQNXyi9HQph6rz+e3eou5abRMw=="],
+    "@mantine/store": ["@mantine/store@9.7.1", "https://npm.postfmly.com/@mantine/store/-/store-9.7.1.tgz", { "peerDependencies": { "react": "^19.2.0" } }, "sha512-CYCQHWt7zFrUe2kVQmFAWnQaZbiDUoN2VeMJBI/vf1XybGj+itTEB6cnvoX4C8yOrln3sXe4BIoIf46pUhnEhA=="],
 
     "@nodelib/fs.scandir": ["@nodelib/fs.scandir@2.1.5", "https://npm.postfmly.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz", { "dependencies": { "@nodelib/fs.stat": "2.0.5", "run-parallel": "^1.1.9" } }, "sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g=="],
 
@@ -342,7 +342,7 @@
 
     "@postfmly/config": ["@postfmly/config@1.6.1", "https://npm.postfmly.com/@postfmly/config/-/config-1.6.1.tgz", { "dependencies": { "@biomejs/biome": "^2.5.15", "@types/bun": "^1.4.2", "@types/node": "^26.6.4", "cspell": "^10.3.6", "globals": "^17.13.0", "typescript": "^7.0.2" }, "bin": { "link-configs": "bin/link-configs" } }, "sha512-vFx+QV+454gS4o9z6I973Kxq2b2KIKMHeN6sI5RfNy6SFF89pryNXomVY96CD5OKtSTke2Bgx7tCVFOnYM8g5A=="],
 
-    "@postfmly/logger": ["@postfmly/logger@1.1.5", "https://npm.postfmly.com/@postfmly/logger/-/logger-1.1.5.tgz", { "dependencies": { "ansis": "^4.4.0", "browser-or-node": "^3.0.0", "dayjs": "^1.11.23", "ts-pattern": "^5.9.0" } }, "sha512-Ijw/Tv2d1DaajgAooyxnvSN/IR2IUwPgO2kLej5x+zeIOXRIkgIDGNSQWWz1lYJ2zWW9GM6raNwCWCAW0x/wHQ=="],
+    "@postfmly/logger": ["@postfmly/logger@1.1.6", "https://npm.postfmly.com/@postfmly/logger/-/logger-1.1.6.tgz", { "dependencies": { "ansis": "^4.4.0", "browser-or-node": "^3.0.0", "dayjs": "^1.11.23", "hex-color-to-color-name": "^2.0.7", "ts-pattern": "^5.9.0" } }, "sha512-YADl0UFAM5eqSR/ifiSk4vLntT7KdCvWKRq8Tx/kK0JkrkoNSZUn446go+ggNSNSrayLifZgfgv+Xo5gIwooJg=="],
 
     "@postfmly/types": ["@postfmly/types@1.0.4", "https://npm.postfmly.com/@postfmly/types/-/types-1.0.4.tgz", {}, "sha512-vJMDhbp1H9dmzIxCrc42T5Y6EHzuCWwwSG0ygQiy2/Ki0aTuxCCj4aR9xmBAHkGUzznVVOZotMXYnAFRBE6S9A=="],
 
@@ -677,6 +677,8 @@
     "hashery": ["hashery@1.5.1", "https://npm.postfmly.com/hashery/-/hashery-1.5.1.tgz", { "dependencies": { "hookified": "^1.15.0" } }, "sha512-iZyKG96/JwPz1N55vj2Ie2vXbhu440zfUfJvSwEqEbeLluk7NnapfGqa7LH0mOsnDxTF85Mx8/dyR6HfqcbmbQ=="],
 
     "hasown": ["hasown@2.0.4", "https://npm.postfmly.com/hasown/-/hasown-2.0.4.tgz", { "dependencies": { "function-bind": "^1.1.2" } }, "sha512-T2UbfbBEF32wiepXIsMlTW9+dDYC6wMh/t/vYA4tuOMKqWz/n3vr1NFSxQiyP+zk2mXsoMA/i/7qV6LKut1t1A=="],
+
+    "hex-color-to-color-name": ["hex-color-to-color-name@2.0.7", "https://npm.postfmly.com/hex-color-to-color-name/-/hex-color-to-color-name-2.0.7.tgz", {}, "sha512-9lPY2Z3839+aKpEE2sSGIMLe96Xb/7SQdkkJ0EWc8V72RYm2kgJYfkerSQPZf+p717l2E/s5IiAi9jyrpQ7liQ=="],
 
     "hookified": ["hookified@3.0.4", "https://npm.postfmly.com/hookified/-/hookified-3.0.4.tgz", {}, "sha512-Uos6DSO6BKv4DeR1C22UosRpeUaaoQgEQ+eDCyoJRll2OGzGpZc708vL7orIvqrYLo6zhVV+pkwO9zKVCsq3PQ=="],
 

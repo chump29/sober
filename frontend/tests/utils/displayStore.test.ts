@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, test } from "bun:test"
 import { type Nullable } from "@postfmly/types"
 
 import { fakerEN_US as fake } from "@faker-js/faker"
-import { default as pluralize } from "@jarrodek/pluralize"
 import { renderHook } from "@testing-library/react"
 import { default as dayjs } from "dayjs"
 import { default as duration } from "dayjs/plugin/duration"
@@ -48,31 +47,31 @@ describe("displayStore", (): void => {
   test("Days", (): void => {
     const days: number = Math.floor(diff?.asDays() ?? 0)
 
-    expect(displayStore.getState().days).toBe(days > 0 ? pluralize("day", days, true) : "")
+    expect(displayStore.getState().days).toBe(days)
   })
 
   test("Hours", (): void => {
     const hours: number = Math.floor(diff?.asHours() ?? 0)
 
-    expect(displayStore.getState().hours).toBe(hours > 0 ? pluralize("hour", hours, true) : "")
+    expect(displayStore.getState().hours).toBe(hours)
   })
 
   test("Minutes", (): void => {
     const minutes: number = Math.floor(diff?.asMinutes() ?? 0)
 
-    expect(displayStore.getState().minutes).toBe(minutes > 0 ? pluralize("minute", minutes, true) : "")
+    expect(displayStore.getState().minutes).toBe(minutes)
   })
 
   test("Months", (): void => {
     const months: number = round(diff?.asMonths() ?? 0)
 
-    expect(displayStore.getState().months).toBe(months > 0 ? pluralize("month", months, true) : "")
+    expect(displayStore.getState().months).toBe(months)
   })
 
   test("Seconds", (): void => {
     const seconds: number = Math.floor(diff?.asSeconds() ?? 0)
 
-    expect(displayStore.getState().seconds).toBe(pluralize("second", seconds, true))
+    expect(displayStore.getState().seconds).toBe(seconds)
   })
 
   test("SelectedSubstance", (): void => {
@@ -94,13 +93,13 @@ describe("displayStore", (): void => {
   test("Weeks", (): void => {
     const weeks: number = round(diff?.asWeeks() ?? 0)
 
-    expect(displayStore.getState().weeks).toBe(weeks > 0 ? pluralize("week", weeks, true) : "")
+    expect(displayStore.getState().weeks).toBe(weeks)
   })
 
   test("Years", (): void => {
     const years: number = round(diff?.asYears() ?? 0)
 
-    expect(displayStore.getState().years).toBe(years > 0 ? pluralize("year", years, true) : "")
+    expect(displayStore.getState().years).toBe(years)
   })
 
   test("Years - <1", (): void => {
@@ -108,7 +107,7 @@ describe("displayStore", (): void => {
 
     setDisplay()
 
-    expect(displayStore.getState().years).toBe("")
+    expect(displayStore.getState().years).toBe(0)
   })
 
   test("Years - !showDecimals", (): void => {
@@ -121,23 +120,19 @@ describe("displayStore", (): void => {
 
     const years: number = Math.floor(diff?.asYears() ?? 0)
 
-    expect(displayStore.getState().years).toBe(pluralize("year", years, true))
+    expect(displayStore.getState().years).toBe(years)
   })
 
   test("Invalid date", (): void => {
     displayStore.getState().actions.setDisplay(null)
 
-    expect(displayStore.getState().days).toBe("")
-    expect(displayStore.getState().daysInt).toBe(0)
-    expect(displayStore.getState().hours).toBe("")
-    expect(displayStore.getState().minutes).toBe("")
-    expect(displayStore.getState().months).toBe("")
-    expect(displayStore.getState().monthsFloat).toBe(0)
-    expect(displayStore.getState().seconds).toBe("")
-    expect(displayStore.getState().weeks).toBe("")
-    expect(displayStore.getState().weeksFloat).toBe(0)
-    expect(displayStore.getState().years).toBe("")
-    expect(displayStore.getState().yearsFloat).toBe(0)
+    expect(displayStore.getState().days).toBe(0)
+    expect(displayStore.getState().hours).toBe(0)
+    expect(displayStore.getState().minutes).toBe(0)
+    expect(displayStore.getState().months).toBe(0)
+    expect(displayStore.getState().seconds).toBe(0)
+    expect(displayStore.getState().weeks).toBe(0)
+    expect(displayStore.getState().years).toBe(0)
   })
 
   test("displayStoreActions", (): void => {
