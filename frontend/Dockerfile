@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 RUN --mount=type=cache,target=/.bun-cache \
-    bun install --frozen-lockfile --ignore-scripts && \
+    bun ci && \
     bun run build
 
 # -=-

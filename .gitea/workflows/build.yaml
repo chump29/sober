@@ -34,7 +34,7 @@ jobs:
           path: ${{ env.BUN_INSTALL_CACHE_DIR }}
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile --ignore-scripts
+        run: bun ci
 
       - name: Install dotenv-linter
         run: curl -sSfL https://git.io/JLbXn | sh -s -- -b /usr/local/bin

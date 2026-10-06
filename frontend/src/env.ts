@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+import { printVars } from "@postfmly/logger"
 
 import { parse as ms } from "@lukeed/ms"
 import { bool, cleanEnv, type ExactValidator, makeExactValidator, str, url } from "envalid"
@@ -24,7 +24,7 @@ const env = cleanEnv(import.meta.env, {
 })
 
 if (import.meta.main) {
-  console.table(env)
+  printVars(env)
 }
 
 export { env }
