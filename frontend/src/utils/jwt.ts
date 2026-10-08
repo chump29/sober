@@ -16,10 +16,9 @@ const getJWT = (user: string): string =>
 
 /**
  * Get request headers
- * @function
  * @summary Includes unsecured JWT
- * @param {string} user User
- * @returns {Headers} Request {@link https://developer.mozilla.org/en-US/docs/Web/API/Headers headers}
+ * @param user User
+ * @returns Request {@link https://developer.mozilla.org/en-US/docs/Web/API/Headers headers}
  */
 const getHeaders = (user: Optional<string>): Optional<Headers> => {
   if (!user || user.length === 0) {

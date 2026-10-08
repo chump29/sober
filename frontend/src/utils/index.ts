@@ -6,17 +6,14 @@ import { array, type GenericSchema, isValiError, parse, summarize } from "valibo
 
 /**
  * Find DOM element
- * @function
- * @param {string} element - Element identifier
- * @returns {Nullable<HTMLElement>} DOM element, or null
+ * @param element - Element identifier
+ * @returns DOM element, or null
  */
 const findElement = (element: string): Nullable<HTMLElement> => document.querySelector(element)
 
 /**
  * Show {@link https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API Fetch API} error message
- * @class
- * @extends Error
- * @param {Response} response {@link https://developer.mozilla.org/en-US/docs/Web/API/Response Response} object
+ * @param response {@link https://developer.mozilla.org/en-US/docs/Web/API/Response Response} object
  */
 class FetchError extends Error {
   constructor(response: Response) {
@@ -30,8 +27,7 @@ class FetchError extends Error {
 
 /**
  * Show custom error message
- * @function
- * @param {unknown} e The error object
+ * @param e The error object
  */
 const handleError = (e: unknown): void => {
   match<unknown, void>(e)
@@ -42,10 +38,10 @@ const handleError = (e: unknown): void => {
 
 /**
  * Validate object or array
- * @function
- * @param {T | null} obj Value, object, or array
- * @param {S} schema Validation schema
- * @returns {T | R | null} Value, object, array, or null
+ * @param obj Value, object, or array
+ * @param schema Validation schema
+ * @returns Value, object, array, or null
+ * @example validate<string, StringToNumberSchema, number>("5", StringToNumberSchema) // returns 5
  */
 const validate = <T, S extends GenericSchema, R = T>(obj: T | null, schema: S): R | null => {
   if (obj === undefined || obj === null) {
@@ -65,35 +61,25 @@ const validate = <T, S extends GenericSchema, R = T>(obj: T | null, schema: S): 
   }
 }
 
-/**
- * Update type
- * @constant {UpdateType}
- */
+/** Update type */
 const UpdateType = {
   ShowCoin: "ShowCoin",
   ShowCost: "ShowCost"
 } as const
 
-/**
- * Update type
- * @type {UpdateType}
- */
+/** Update type */
 type UpdateType = (typeof UpdateType)[keyof typeof UpdateType]
 
 /**
  * Get key by value
- * @function
- * @param {T} obj Const literal
- * @param {number} value Value
- * @returns {string} Key
+ * @param obj Const literal
+ * @param value Value
+ * @returns Key
  */
 const getKeyByValue = <T extends Record<string, number>>(obj: T, value: number): string =>
   Object.keys(obj).find((key: string): boolean => obj[key] === value) as string
 
-/**
- * Save type
- * @constant {SaveType}
- */
+/** Save type */
 const SaveType = {
   COST: 1,
   COST_TYPE: 2,
@@ -102,15 +88,11 @@ const SaveType = {
   SHOW_DECIMALS: 5
 } as const
 
-/**
- * Save type
- * @type {SaveType}
- */
+/** Save type */
 type SaveType = (typeof SaveType)[keyof typeof SaveType]
 
 /**
  * HTTP Methods
- * @constant {HttpMethods}
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods HTTP request methods}
  */
 const HttpMethods = {
@@ -123,7 +105,6 @@ const HttpMethods = {
 
 /**
  * HTTP Status Codes
- * @constant {HttpStatus}
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status HTTP status codes}
  */
 const HttpStatus = {

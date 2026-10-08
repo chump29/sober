@@ -12,28 +12,7 @@ import {
   NameSchema
 } from "../schemas.ts"
 
-/**
- * Validate an {@link ISubstance} object
- * @constant {SubstanceSchema}
- * @property {number} cost
- * @see {@link CostSchema}
- * @property {CostType} costType
- * @see {@link CostTypeSchema}
- * @property {string} date
- * @see {@link DateTimeSchema}
- * @property {Optional<number>} id
- * @see {@link IdSchema}
- * @property {string} name
- * @see {@link NameSchema}
- * @property {boolean} showCoin
- * @see {@link BooleanSchema}
- * @property {boolean} showCost
- * @see {@link BooleanSchema}
- * @property {boolean} showDecimals
- * @see {@link BooleanSchema}
- * @property {boolean} showTime
- * @see {@link BooleanSchema}
- */
+/** Validate an {@link ISubstance} object */
 const SubstanceSchema = object({
   cost: CostSchema,
   costType: CostTypeSchema,
@@ -48,21 +27,18 @@ const SubstanceSchema = object({
 
 /**
  * SubstanceSchema type
- * @type {SubstanceSchema}
  * @see {@link SubstanceSchema}
  */
 type SubstanceSchema = typeof SubstanceSchema
 
 /**
  * Interface for SubstanceSchema
- * @interface
  * @see {@link SubstanceSchema}
  */
 type ISubstance = InferInput<SubstanceSchema>
 
 /**
  * Default SubstanceSchema values
- * @constant {ISubstance}
  * @see {@link ISubstance}
  */
 const defaultSubstance: ISubstance = {

@@ -36,7 +36,6 @@ dayjs.extend(utc)
 
 /**
  * Validate string
- * @function
  * @summary Non-empty string
  */
 const StringSchema = pipe(string(), trim(), nonEmpty())
@@ -45,7 +44,6 @@ type StringSchema = typeof StringSchema
 
 /**
  * Validate boolean
- * @function
  * @summary Valid boolean {@link https://developer.mozilla.org/en-US/docs/Glossary/Truthy value}
  */
 const BooleanSchema = boolean()
@@ -54,18 +52,15 @@ type BooleanSchema = typeof BooleanSchema
 
 /**
  * Custom datetime format
- * @constant {string}
  * @summary YYYY-MM-DDTHH:mm:ss.SSSZ
- * @type {string}
  * @example 2026-08-22T04:20:45.720-05:00
  */
 const DATETIME_FORMAT: string = "YYYY-MM-DDTHH:mm:ss.SSSZ"
 
 /**
  * Validate datetime
- * @function
  * @summary Non-empty string, valid {@link https://www.iso.org/iso-8601-date-and-time-format.html ISO 8601} datetime format
- * @returns {string} UTC datetime
+ * @returns UTC datetime
  */
 const DateTimeSchema = pipe(
   StringSchema,
@@ -81,7 +76,6 @@ type DateTimeSchema = typeof DateTimeSchema
 
 /**
  * Datetime short output format
- * @constant {string}
  * @summary YYYY, MMMM Do, YYYY
  * @example Saturday, August 22nd, 2026
  */
@@ -89,7 +83,6 @@ const DATETIME_FORMAT_SHORT_OUTPUT: string = "dddd, MMMM Do, YYYY"
 
 /**
  * Datetime output format
- * @constant {string}
  * @summary YYYY, MMMM Do, YYYY @ h:mm A
  * @example Saturday, August 22nd, 2026 @ 4:20 AM
  */
@@ -97,7 +90,6 @@ const DATETIME_FORMAT_OUTPUT: string = `${DATETIME_FORMAT_SHORT_OUTPUT} @ h:mm A
 
 /**
  * Validate URL
- * @function
  * @summary Non-empty string, valid {@link https://datatracker.ietf.org/doc/html/rfc3986 URL}
  */
 const UrlSchema = pipe(StringSchema, url())
@@ -108,9 +100,8 @@ const MIN_TIMEOUT: number = 200
 
 /**
  * Validate API timeout
- * @function
  * @summary Non-empty digit string, min value = {@link MIN_TIMEOUT} ms
- * @returns {number} Integer
+ * @returns Integer
  */
 const TimeoutSchema = pipe(StringSchema, digits(), toNumber(), integer(), minValue(MIN_TIMEOUT))
 
@@ -118,7 +109,6 @@ type TimeoutSchema = typeof TimeoutSchema
 
 /**
  * Validate cost
- * @function
  * @summary number, >= 0
  */
 const CostSchema = pipe(number(), minValue(0))
@@ -127,9 +117,8 @@ type CostSchema = typeof CostSchema
 
 /**
  * Validate cost input
- * @function
  * @summary Non-empty decimal string, >= 0
- * @returns {number} Number
+ * @returns Number
  */
 const CostInputSchema = pipe(StringSchema, decimal(), toNumber(), minValue(0))
 
@@ -137,15 +126,12 @@ type CostInputSchema = typeof CostInputSchema
 
 /**
  * Maximum user length
- * @constant {number}
- * @type {number}
  * @default 64
  */
 const MAX_LEN_STR: number = 64
 
 /**
  * Validate substance name
- * @function
  * @summary Non-empty string, max length = {@link MAX_LEN_STR}
  */
 const NameSchema = pipe(StringSchema, maxLength(MAX_LEN_STR))
@@ -154,10 +140,9 @@ type NameSchema = typeof NameSchema
 
 /**
  * Validate ID
- * @function
  * @summary Optional<number>, > 0
  * @default undefined
- * @returns {number} Integer
+ * @returns Integer
  */
 const IdSchema = optional(pipe(number(), integer(), gtValue(0)))
 
@@ -165,7 +150,6 @@ type IdSchema = typeof IdSchema
 
 /**
  * Validate title
- * @function
  * @summary Non-empty string, exactly two words, US English locale
  */
 const TitleSchema = pipe(StringSchema, words("en-US", 2))
@@ -174,17 +158,13 @@ type TitleSchema = typeof TitleSchema
 
 /**
  * Validate HTTP method
- * @function
  * @summary Valid HTTP method
  */
 const MethodSchema = enum_(HttpMethods)
 
 type MethodSchema = typeof MethodSchema
 
-/**
- * Cost type
- * @constant {CostType}
- */
+/** Cost type */
 const CostType = {
   Day: 1,
   Month: 3,
@@ -192,15 +172,11 @@ const CostType = {
   Year: 4
 } as const
 
-/**
- * Cost type
- * @type {CostType}
- */
+/** Cost type */
 type CostType = (typeof CostType)[keyof typeof CostType]
 
 /**
  * Validate CostType
- * @function
  * @summary Valid {@link CostType}
  */
 const CostTypeSchema = enum_(CostType)
@@ -212,7 +188,6 @@ const EXP_MAX_LEN: number = 7
 
 /**
  * Validate JWT expiration time
- * @function
  * @summary Non-empty string | Unix timestamp (seconds) | Date
  * @see {@link https://github.com/panva/jose/blob/main/docs/jwt/sign/classes/SignJWT.md#setexpirationtime setExpirationTime}
  */
