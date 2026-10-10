@@ -40,10 +40,6 @@ for _env in frontend backend; do
     export _react
     echo -e " • react: $_react"
 
-    _typescript=$(jq -r '.overrides.typescript // "❓"' package.json)
-    export _typescript
-    echo -e " • typescript: $_typescript"
-
     _valibot=$(jq -r '.dependencies.valibot // "❓"' package.json)
     export _valibot
     echo -e " • valibot: $_valibot"

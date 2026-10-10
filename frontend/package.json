@@ -24,7 +24,7 @@
   "type": "module",
   "scripts": {
     "build": "bun run --bun vite build",
-    "check": "bunx --bun depcheck --ignores=\"@postfmly/config,@types/*,bun,bun:*,html-validate,lcov-total,stylelint-config-standard\"",
+    "deps": "bunx --bun depcheck --ignores=\"@postfmly/config,@types/*,bun,bun:*,html-validate,lcov-total,stylelint-config-standard\"",
     "dev": "bun run --bun vite",
     "env": "bun run --bun src/env.ts",
     "env:test": "NODE_ENV=test bun run env",
@@ -36,7 +36,7 @@
     "lint:env": "bun run --bun dotenv-linter check .",
     "lint:html": "bun run --bun html-validate *.html",
     "lint:spell": "bun run --bun cspell --dot --verbose .",
-    "lint:ts": "bun run --bun tsc",
+    "lint:ts": "bun check",
     "prepare": "cd .. && bun run --bun husky frontend/.husky",
     "prod": "bun run build && cd dist && bunx --bun serve --no-clipboard",
     "scan": "bun run scan:audit && bun run scan:cve && bun run scan:e18e",
@@ -86,8 +86,7 @@
     "resolve-from": "5.0.0",
     "source-map": "0.8.0",
     "string-width": "8.3.0",
-    "strip-ansi": "7.2.0",
-    "typescript": "7.0.2"
+    "strip-ansi": "7.2.0"
   },
   "dependencies": {
     "@jarrodek/pluralize": "^1.0.2",
@@ -98,8 +97,8 @@
     "@mantine/hooks": "^9.7.1",
     "@mantine/modals": "^9.7.1",
     "@mantine/notifications": "^9.7.1",
-    "@postfmly/logger": "^1.1.6",
-    "@postfmly/types": "^1.0.4",
+    "@postfmly/logger": "^1.1.8",
+    "@postfmly/types": "^1.0.6",
     "@tabler/icons-react": "^3.49.0",
     "big.js": "^7.0.1",
     "dayjs": "^1.11.23",
@@ -118,8 +117,8 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^10.6.0",
-    "@happy-dom/global-registrator": "^20.14.5",
-    "@postfmly/config": "^1.6.1",
+    "@happy-dom/global-registrator": "^20.14.6",
+    "@postfmly/config": "^1.6.3",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",
@@ -139,7 +138,7 @@
     "rollup-plugin-jsx-remove-attributes": "^3.1.2",
     "stylelint": "^17.16.0",
     "stylelint-config-standard": "^40.0.0",
-    "vite": "^8.3.3",
+    "vite": "^8.3.4",
     "vite-plugin-minify": "^3.0.0",
     "vite-plugin-webfont-dl": "^3.13.1"
   },

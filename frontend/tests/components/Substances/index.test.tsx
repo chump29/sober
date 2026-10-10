@@ -1,6 +1,6 @@
 import { default as assert } from "node:assert/strict"
 
-import { beforeEach, describe, expect, jest, mock, spyOn, test } from "bun:test"
+import { beforeAll, beforeEach, describe, expect, jest, mock, spyOn, test } from "bun:test"
 
 import { MantineProvider } from "@mantine/core"
 import { ModalsProvider } from "@mantine/modals"
@@ -43,14 +43,18 @@ const fetch: FetchMock = fetchMock.enableMocks().mockResponse(
       )
 )
 
-const infoSpy: jest.Mock = spyOn(console, "info")
+let infoSpy: jest.Mock
 
 let user: Nullable<UserEvent> = null
 
 let times: number = 0
 
+beforeAll((): void => {
+  infoSpy = spyOn(console, "info").mockImplementation((): void => undefined) // suppress
+})
+
 beforeEach((): void => {
-  infoSpy.mockReset()
+  infoSpy.mockClear()
 
   user = userEvent.setup()
 
@@ -77,33 +81,29 @@ describe("Substances - index", (): void => {
     expect(await screen.findByTestId(`segment-${substance?.name}`)).toBeInTheDocument()
   })
 
-  test(
-    "add",
-    async (): Promise<void> => {
-      assert(user)
+  test("add", async (): Promise<void> => {
+    assert(user)
 
-      await user.click(await screen.findByTestId("addButton"))
+    await user.click(await screen.findByTestId("addButton"))
 
-      const nameInput: HTMLInputElement = await screen.findByTestId("substanceName")
+    const nameInput: HTMLInputElement = await screen.findByTestId("substanceName")
 
-      expect(nameInput).toBeVisible()
+    expect(nameInput).toBeVisible()
 
-      const name: string = fake.lorem.word()
+    const name: string = fake.lorem.word()
 
-      await user.type(nameInput, name)
+    await user.type(nameInput, name)
 
-      expect(nameInput).toHaveValue(name)
+    expect(nameInput).toHaveValue(name)
 
-      await user.click(await screen.findByTestId("confirmSubstance"))
+    await user.click(await screen.findByTestId("confirmSubstance"))
 
-      expect(infoSpy).toHaveBeenCalledTimes(2) // ! NOTE: sometimes fails here, haven't found root cause
+    expect(infoSpy).toHaveBeenCalledTimes(2)
 
-      expect(fetch).toHaveBeenCalledTimes(++times)
+    expect(fetch).toHaveBeenCalledTimes(++times)
 
-      expect(nameInput).not.toBeVisible()
-    },
-    { retry: 3 }
-  )
+    expect(nameInput).not.toBeVisible()
+  })
 
   test("remove", async (): Promise<void> => {
     assert(user)

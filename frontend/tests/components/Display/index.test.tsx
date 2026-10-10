@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, type jest, mock, spyOn, test } from "bun:test"
+import { beforeAll, beforeEach, describe, expect, mock, spyOn, test } from "bun:test"
 import { sleep } from "bun"
 
 import { MantineProvider } from "@mantine/core"
@@ -38,12 +38,10 @@ const fetch: FetchMock = fetchMock.enableMocks().mockResponse(
       .otherwise((): Response => new Response(null, { status: HttpStatus.IM_A_TEAPOT }))
 )
 
-const infoSpy: jest.Mock = spyOn(console, "info")
-
 const extract: ExtractNumbers = new ExtractNumbers({ removeCommas: true, string: false })
 
 beforeAll((): void => {
-  infoSpy.mockReset()
+  spyOn(console, "info").mockImplementation((): void => undefined) // suppress
 })
 
 beforeEach(async (): Promise<void> => {

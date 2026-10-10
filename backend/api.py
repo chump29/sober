@@ -172,7 +172,7 @@ class Substance(BaseModel):
     user = ForeignKeyField(User, backref="substances", field=User.user, on_delete="CASCADE")
 
     @dataclass
-    class Meta:  # pyright: ignore [reportIncompatibleVariableOverride]
+    class Meta:  # pyright: ignore [reportIncompatibleVariableOverride] # ty: ignore[invalid-attribute-override]
         """Constraints"""
 
         constraints: ClassVar[list[SQL | NodeList]] = [Check("NOT show_cost OR cost > 0")]
