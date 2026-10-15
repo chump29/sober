@@ -34,7 +34,7 @@
       "devDependencies": {
         "@faker-js/faker": "^10.6.0",
         "@happy-dom/global-registrator": "^21.0.1",
-        "@postfmly/config": "^1.6.5",
+        "@postfmly/config": "^1.6.6",
         "@testing-library/jest-dom": "^7.0.1",
         "@testing-library/react": "^16.3.3",
         "@testing-library/user-event": "^14.6.8",
@@ -340,7 +340,7 @@
 
     "@oxc-project/types": ["@oxc-project/types@0.154.0", "https://npm.postfmly.com/@oxc-project/types/-/types-0.154.0.tgz", {}, "sha512-KYOUGQFlLWR+s4QMV2Q9ko38TZm7EdO87Qm7rvZLqk/webse/cDjtyxKhg/47l0byCbs/k46LT8qc4PKjAikzA=="],
 
-    "@postfmly/config": ["@postfmly/config@1.6.5", "https://npm.postfmly.com/@postfmly/config/-/config-1.6.5.tgz", { "dependencies": { "@biomejs/biome": "^2.5.15", "@types/bun": "^1.4.3", "@types/node": "^26.6.5", "cspell": "^10.3.6", "globals": "^17.13.0" }, "bin": { "link-configs": "bin/link-configs" } }, "sha512-EJ69rDbUA82t0i+lD+nC/w31Jt2kZ/Xnnpn43EJ5UqsyYPDlM0OGrnWPoG9RDUG6Q5OD3YhEWjYtXA8EAOwkDQ=="],
+    "@postfmly/config": ["@postfmly/config@1.6.6", "https://npm.postfmly.com/@postfmly/config/-/config-1.6.6.tgz", { "dependencies": { "@biomejs/biome": "^2.5.15", "@types/bun": "^1.4.3", "@types/node": "^26.6.5", "cspell": "^10.4.0", "globals": "^17.13.0" }, "bin": { "link-configs": "bin/link-configs" } }, "sha512-KILd182UV3stDgqmTRvtvbS2fMBEgt701R40BtBfndiRvaE1xrojJU6BmlznwzMoNlK38giCA+rgRa2kWfOUYQ=="],
 
     "@postfmly/logger": ["@postfmly/logger@1.1.9", "https://npm.postfmly.com/@postfmly/logger/-/logger-1.1.9.tgz", { "dependencies": { "ansis": "^4.4.0", "browser-or-node": "^3.0.0", "dayjs": "^1.11.23", "hex-color-to-color-name": "^2.0.8", "ts-pattern": "^5.9.0" } }, "sha512-YdJD7Nf2egW2y3g7GM3TjvHH4zbqiUyPleHxnNqbrV4Oh82hjO96/q/yLyP2sUkEgQEkNuVelUvzamvzGaGb0A=="],
 

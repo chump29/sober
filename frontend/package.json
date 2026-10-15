@@ -121,7 +121,7 @@
   "devDependencies": {
     "@faker-js/faker": "^10.6.0",
     "@happy-dom/global-registrator": "^21.0.1",
-    "@postfmly/config": "^1.6.5",
+    "@postfmly/config": "^1.6.6",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.8",
