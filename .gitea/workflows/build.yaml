@@ -39,11 +39,18 @@ jobs:
       - name: Install dotenv-linter
         run: curl -sSfL https://git.io/JLbXn | sh -s -- -b /usr/local/bin
 
+      - name: cSpell
+        uses: streetsidesoftware/cspell-action@v10
+        with:
+          check_dot_files: true
+          config: node_modules/@postfmly/config/.vscode/cspell.json
+          verbose: true
+
       - name: Linting
         run: bun run lint:ci
 
       - name: Testing
-        run: bun run test:coverage
+        run: bun run test:coverage:full
 
   check-backend:
     runs-on: amd64
