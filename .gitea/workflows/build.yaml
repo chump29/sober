@@ -41,6 +41,8 @@ jobs:
         with:
           check_dot_files: true
           config: frontend/node_modules/@postfmly/config/.vscode/cspell.json
+          incremental_files_only: false
+          root: frontend
           verbose: true
 
       - name: Install dotenv-linter
