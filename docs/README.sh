@@ -12,22 +12,14 @@ getVersion() {
 
 clear
 
+echo -e "📌 Packages:\n"
+
 for _env in frontend backend; do
   pushd ../$_env > /dev/null
 
   echo -e "\e[4m${_env^^}\e[0m:\n"
 
-  echo -e "🛈 Info:\n"
-
-  if [[ $_env == "frontend" ]]; then
-    _version=$(jq -r '.version // "❓"' package.json)
-    export _version
-    echo -e " • Version: $_version"
-
-    echo -e " • Port: $_frontendPort"
-
-    echo -e "\n📌 Packages:\n"
-
+  if [[ $_env == frontend ]]; then
     _bun=$(bun -v)
     export _bun
     echo -e " • Bun: $_bun"
@@ -52,20 +44,12 @@ for _env in frontend backend; do
     bun run --bun test:coverage
 
     _coverage=0
-    if [ -f "tests/coverage/lcov.info" ]; then
+    if [[ -f tests/coverage/lcov.info ]]; then
       _coverage=$(bun run lcov-total tests/coverage/lcov.info)
     fi
     export _coverage
     echo -e "\n☂️  Coverage: $_coverage%"
   else
-    _version=$(yq '.project.version // "❓"' pyproject.toml)
-    export _version
-    echo -e " • Version: $_version"
-
-    echo -e " • Port: $_backendPort"
-
-    echo -e "\n📌 Packages:\n"
-
     _fastapi=$(yq '.project.dependencies[3] // "❓"' pyproject.toml)
     if [[ $_fastapi != "❓" ]]; then
       _fastapi=$(getVersion "$_fastapi")
@@ -88,10 +72,10 @@ for _env in frontend backend; do
     echo -e " • pydantic: $_pydantic"
 
     _name=$(jq -r .name ../frontend/package.json)
-    if [[ $HOSTNAME == "guru" ]]; then
+    if [[ $HOSTNAME == guru ]]; then
       docker context use nova > /dev/null 2>&1
     fi
-    if [ "$(docker ps -q -f name="$_name")" ]; then
+    if [[ -n $(docker ps -q -f name="$_name") ]]; then
       _sqlite=$(docker exec "$_name" apk list --no-cache sqlite | cut -d " " -f 1)
       _sqlite=${_sqlite:7:-3}
     else
@@ -112,10 +96,10 @@ for _env in frontend backend; do
     echo -e " • uv: $_uv"
 
     echo -e "\n🧪 Running $_env tests…"
-    ./test.sh
+    ./test.sh -q
 
     _coverage=0
-    if [ -f "coverage/coverage.json" ]; then
+    if [[ -f coverage/coverage.json ]]; then
       _coverage=$(jq -r .totals.percent_statements_covered_display coverage/coverage.json)
     fi
     export _coverage
