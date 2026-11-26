@@ -25,23 +25,27 @@ for _env in frontend backend; do
     echo -e " • Bun: $_bun"
 
     _mantine=$(jq -r '.dependencies."@mantine/core" // "❓"' package.json)
+    _mantine=${_mantine:1}
     export _mantine
     echo -e " • @mantine/core: $_mantine"
 
     _react=$(jq -r '.dependencies.react // "❓"' package.json)
+    _react=${_react:1}
     export _react
     echo -e " • react: $_react"
 
     _valibot=$(jq -r '.dependencies.valibot // "❓"' package.json)
+    _valibot=${_valibot:1}
     export _valibot
     echo -e " • valibot: $_valibot"
 
     _vite=$(jq -r '.devDependencies.vite // "❓"' package.json)
+    _vite=${_vite:1}
     export _vite
     echo -e " • vite: $_vite"
 
     echo -e "\n🧪 Running $_env tests…"
-    bun run --bun test:coverage
+    bun run --bun test:coverage:silent
 
     _coverage=0
     if [[ -f tests/coverage/lcov.info ]]; then
@@ -75,6 +79,7 @@ for _env in frontend backend; do
     if [[ $HOSTNAME == guru ]]; then
       docker context use nova > /dev/null 2>&1
     fi
+    _sqlite=N/A
     if [[ -n $(docker ps -q -f name="$_name") ]]; then
       _sqlite=$(docker exec "$_name" apk list --no-cache sqlite | cut -d " " -f 1)
       _sqlite=${_sqlite:7:-3}
@@ -82,14 +87,11 @@ for _env in frontend backend; do
       if command -v htmlq > /dev/null; then
         _sqlite=$(curl -s https://pkgs.alpinelinux.org/package/edge/main/x86_64/sqlite | htmlq --text "strong[aria-label='Package up-to-date']")
         _sqlite=${_sqlite:7:-3}
-      else
-        _sqlite=3.53.2
       fi
-      _static=" (*)"
     fi
     docker context use default > /dev/null 2>&1
     export _sqlite
-    echo -e " • SQLite: $_sqlite$_static"
+    echo -e " • SQLite: $_sqlite"
 
     _uv=$(uv self version | grep -Po "[0-9]+\.[0-9]+\.[0-9]+")
     export _uv

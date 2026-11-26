@@ -1,7 +1,7 @@
 #!/usr/bin/env -S docker build . --tag sober-backend --file
 # docker build --no-cache --progress plain . --tag sober-backend --file
 
-ARG PYTHON_VERSION="3.14"
+ARG PYTHON_VERSION="3.15"
 
 FROM ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-alpine AS build
 
@@ -27,7 +27,7 @@ RUN rm uv.lock
 FROM python:${PYTHON_VERSION}-alpine
 
 LABEL org.opencontainers.image.authors="Chris Post <admin@postfmly.com>" \
-    org.opencontainers.image.description="Sobriety counter (Backend)" \
+    org.opencontainers.image.description="Sobriety tracker (Backend)" \
     org.opencontainers.image.licenses="GPL-3.0-only" \
     org.opencontainers.image.title="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ (Backend)" \
     org.opencontainers.image.url="https://github.com/chump29/sober"

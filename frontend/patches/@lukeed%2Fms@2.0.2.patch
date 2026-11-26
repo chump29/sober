@@ -1,0 +1,8 @@
+diff --git a/index.d.ts b/index.d.ts
+index c69a704650e6be911eb408611b70a41cc2bd79cb..5449c5b53d4c49567dc46d9aa28349e1509370b5 100644
+--- a/index.d.ts
++++ b/index.d.ts
+@@ -1,2 +1,3 @@
+ export function format(millis: number, long?: boolean): string;
++export function parse<T extends string>(input: T extends `${number}${'s' | 'm' | 'h'}` ? T : never): number;
+ export function parse(input: string): number | undefined;

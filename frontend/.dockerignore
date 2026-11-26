@@ -1,9 +1,7 @@
 .dockerignore
-.env.*
+.env.local
 .htmlvalidate.json
-.husky/
 .npmrc
-.stylelintrc
 *.sh
 biome.json
 coverage/

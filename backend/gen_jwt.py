@@ -4,10 +4,11 @@
 
 from typing import Annotated
 
-from env import env
 from jwt import encode
 from typer import Option, run
 from whenever import Instant
+
+from env import env
 
 
 def main(

@@ -5,27 +5,27 @@
 """API Service"""
 
 from contextlib import asynccontextmanager
-from dataclasses import dataclass
 from decimal import Decimal
 from enum import CONTINUOUS, UNIQUE, IntEnum, auto, verify
-from hashlib import sha256
 from os import path
 from pathlib import Path
-from typing import TYPE_CHECKING, Annotated, ClassVar, Final, final
+from re import compile as re_compile, fullmatch
+from threading import RLock
+from typing import TYPE_CHECKING, Annotated, Final, NoReturn, cast, final
 
 from anyio import to_thread
 from cachetools import LRUCache, cached
+from cachetools.keys import hashkey
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from guard import SecurityConfig
 from guard.middleware import SecurityMiddleware
 from jwt import InvalidTokenError, decode
-from nh3 import clean  # pylint: disable=no-name-in-module
+from nh3 import clean
 from peewee import (
     AutoField,
     BooleanField,
     CharField,
-    Check,
     DecimalField,
     ForeignKeyField,
     IntegerField,
@@ -33,7 +33,7 @@ from peewee import (
     SqliteDatabase,
 )
 from playhouse.shortcuts import model_to_dict
-from playhouse.sqlite_ext import ISODateTimeField
+from playhouse.sqlite_ext import ISODateTimeField  # ty: ignore[missing-module-member] # pyright: ignore[reportAttributeAccessIssue] # pylint: disable=line-too-long
 from pluralizer import Pluralizer
 from pydantic import (
     AwareDatetime,
@@ -46,7 +46,6 @@ from pydantic import (
     TypeAdapter,
     ValidationError,
     field_validator,
-    model_validator,
 )
 from rich.console import Console
 from rich.traceback import install as catch_exceptions
@@ -54,16 +53,17 @@ from secure import ContentSecurityPolicy, Secure
 from secure.middleware import SecureASGIMiddleware
 from semver import Version
 from uvicorn import run
-from whenever import ZonedDateTime
+from whenever import OffsetDateTime, ZonedDateTime
+from xxhash import xxh3_64_hexdigest as hashed
 
-from env import MAX_PORT, MIN_PORT, env  # pylint: disable=import-error
+from env import MAX_PORT, MIN_PORT, env
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
     from datetime import datetime
+    from re import Pattern
 
-    from cachetools import _cached_wrapper_info, _CacheInfo
-    from peewee import SQL, NodeList
+    from cachetools import CacheInfo, _cached_wrapper_info
 
 CONSOLE: Final[Console] = Console()
 catch_exceptions()
@@ -86,7 +86,8 @@ DB: Final[SqliteDatabase] = SqliteDatabase(
 )
 
 
-MAX_LEN: Final[int] = 64
+MAX_LEN_HASH: Final[int] = 16
+MAX_LEN_NAME: Final[int] = 64
 
 pluralizer: Final[Pluralizer] = Pluralizer()
 
@@ -99,11 +100,10 @@ def _shorten(user: str) -> str:
 class BaseModel(DatabaseModel):
     """Base database model"""
 
-    @dataclass
     class Meta:
         """Metadata"""
 
-        database: Final[SqliteDatabase] = DB
+        database: SqliteDatabase = DB
 
 
 @verify(CONTINUOUS, UNIQUE)
@@ -121,13 +121,20 @@ def _get_datetime_now() -> datetime:
     return ZonedDateTime.now("UTC").to_stdlib()
 
 
+def _format_datetime(date_time: datetime) -> str:
+    """Format UTC datetime"""
+    dt = OffsetDateTime(date_time)
+
+    return dt.format("MM/DD/YY '@' HH:mm:ss")
+
+
 @final
 class User(BaseModel):
     """User database model"""
 
     created = ISODateTimeField(default=_get_datetime_now)
     id = AutoField()
-    user = CharField(max_length=MAX_LEN, unique=True)
+    user = CharField(max_length=MAX_LEN_HASH, unique=True)
 
     @property
     def substances(self: User) -> list[Substance]:
@@ -136,7 +143,7 @@ class User(BaseModel):
 
     def __str__(self: User) -> str:
         """Show User data as string"""
-        return f"user={_shorten(str(self.user))}, created={self.created}"
+        return f"user={_shorten(str(self.user))}, created={_format_datetime(self.created)}"
 
     def __repr__(self: User) -> str:
         """Show User data as string representation"""
@@ -163,7 +170,7 @@ class Substance(BaseModel):
     created_at = ISODateTimeField(default=_get_datetime_now)
     date = ISODateTimeField(default=_get_datetime_now)
     id = AutoField()
-    name = CharField(max_length=MAX_LEN, unique=True)
+    name = CharField(max_length=MAX_LEN_NAME, unique=True)
     show_coin = BooleanField(default=False)
     show_cost = BooleanField(default=False)
     show_decimals = BooleanField(default=True)
@@ -171,16 +178,12 @@ class Substance(BaseModel):
     updated_at = ISODateTimeField(default=_get_datetime_now)
     user = ForeignKeyField(User, backref="substances", field=User.user, on_delete="CASCADE")
 
-    @dataclass
-    class Meta:  # pyright: ignore [reportIncompatibleVariableOverride] # ty: ignore[invalid-attribute-override]
-        """Constraints"""
-
-        constraints: ClassVar[list[SQL | NodeList]] = [Check("NOT show_cost OR cost > 0")]
-
     def __str__(self: Substance) -> str:
         """Show Substance data as string"""
         return (
-            f"name={self.name}, created_at={self.created_at}, updated_at={self.updated_at}, date={self.date}, "
+            f"name={self.name}, "
+            f"created_at={_format_datetime(self.created_at)}, updated_at={_format_datetime(self.updated_at)}, "
+            f"date={_format_datetime(self.date)}, "
             f"show_coin={self.show_coin}, show_cost={self.show_cost}, show_decimals={self.show_decimals}, "
             f"show_time={self.show_time}, cost={self.cost}, cost_type={CostType(self.cost_type)}"
         )
@@ -207,7 +210,7 @@ class SubstanceDTO(BaseValidation):
     cost_type: StrictInt = Field(alias="costType", gt=0, le=len(CostType))
     date: AwareDatetime
     id: StrictInt | None = Field(gt=0, default=None)
-    name: StrictStr = Field(max_length=MAX_LEN)
+    name: StrictStr = Field(max_length=MAX_LEN_NAME)
     show_coin: bool = Field(alias="showCoin")
     show_cost: bool = Field(alias="showCost")
     show_decimals: bool = Field(alias="showDecimals")
@@ -228,15 +231,6 @@ class SubstanceDTO(BaseValidation):
             raise ValueError(msg)
 
         return date
-
-    @model_validator(mode="after")
-    def check_cost(self: SubstanceDTO) -> SubstanceDTO:
-        """Check cost"""
-        if self.show_cost and self.cost == 0:
-            msg: Final[str] = "Cost must be greater than 0"
-            raise ValueError(msg)
-
-        return self
 
     def __str__(self: SubstanceDTO) -> str:
         """Show SubstanceDTO data as string"""
@@ -341,19 +335,26 @@ def _parse_cached_user(key: tuple) -> str | None:
             return None
 
 
+HASH: Final[Pattern[str]] = re_compile(r"[\da-f]{16}")
+
+
+def _is_hash(s: str) -> bool:
+    """Determine if hash"""
+    return bool(fullmatch(HASH, s))
+
+
 def _get_cache_users(func: _cached_wrapper_info) -> list[str]:
     """Get cache users"""
     if not func.cache:
         return [NA]
 
-    found: Final[dict[str, bool]] = {}
+    found: Final[list[str]] = []
 
     for key in func.cache:
-        user: str | None = _parse_cached_user(key)
-        if user:
-            found[user] = True
+        if user := _parse_cached_user(key):
+            found.append(_shorten(user) if _is_hash(user) else user)
 
-    return list(found.keys()) if found else [NA]
+    return found or [NA]
 
 
 def _get_cache_values(func: _cached_wrapper_info) -> list[str]:
@@ -367,16 +368,24 @@ def _get_cache_values(func: _cached_wrapper_info) -> list[str]:
         if not val:
             continue
 
-        for dto in val:
-            if dto.name not in found:
-                found[dto.name] = f"{dto.name} on {dto.date}"
+        # Substance
+        if isinstance(val, list):
+            for v in val:
+                if v.name not in found:
+                    found[v.name] = f"{v.name} on {_format_datetime(v.date)}"
+
+        # User
+        elif val.user not in found:
+            found[val.user] = (
+                f"{_shorten(val.user) if _is_hash(val.user) else val.user} on {_format_datetime(val.created)}"
+            )
 
     return list(found.values()) if found else [NA]
 
 
 def _create_cache_stats(func: _cached_wrapper_info) -> dict[str, Json]:
     """Create cache stats"""
-    info: Final[_CacheInfo] = func.cache_info()
+    info: Final[CacheInfo] = func.cache_info()
     return {
         func.__name__: {
             "Hits": info.hits,
@@ -393,7 +402,7 @@ def _create_cache_stats(func: _cached_wrapper_info) -> dict[str, Json]:
 async def get_cache_stats() -> Json:
     """Get cache stats"""
     try:
-        return [_create_cache_stats(get_user), _create_cache_stats(get_substances)]
+        return [_create_cache_stats(_user_get_or_create), _create_cache_stats(get_substances)]
     except Exception:
         CONSOLE.print_exception()
 
@@ -403,7 +412,7 @@ async def get_cache_stats() -> Json:
 @ROUTER.get("/cache/clear", response_model=str)
 async def clear_cache_stats() -> str:
     """Clear cache stats"""
-    get_user.cache_clear()
+    _user_get_or_create.cache_clear()
 
     get_substances.cache_clear()
 
@@ -411,11 +420,11 @@ async def clear_cache_stats() -> str:
 
 
 @ROUTER.get("/version", response_model=str | None)
-@cached(cache=LRUCache(maxsize=1), info=True)
+@cached(cache=LRUCache(maxsize=1), info=True, lock=RLock())
 def get_version() -> str | None:
     """Get version"""
 
-    def invalid_version(version: str) -> None:
+    def invalid_version(version: str) -> NoReturn:
         """Invalid version"""
         msg: Final[str] = f"Invalid version: {version}"
         raise ValueError(msg)
@@ -437,7 +446,7 @@ def get_version() -> str | None:
 def _verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())]) -> str | None:
     """Verify unsecured JWT"""
 
-    def _invalid_jwt() -> None:
+    def _invalid_jwt() -> NoReturn:
         """Invalid JWT"""
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token", headers={"WWW-Authenticate": "Bearer"}
@@ -475,15 +484,15 @@ def _verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(HTT
     return user
 
 
-def get_user_hash(user: str) -> str:
+def _get_user_hash(user: str) -> str:
     """Get user hash"""
-    return sha256(user.encode()).hexdigest()
+    return hashed(user.encode())
 
 
 def _validate_user(user: str) -> bool:
     """Validate user"""
     try:
-        TypeAdapter(Annotated[str, Field(max_length=MAX_LEN, strict=True)]).validate_python(user)
+        TypeAdapter(Annotated[str, Field(max_length=MAX_LEN_NAME, strict=True)]).validate_python(user)
     except ValidationError:
         CONSOLE.print("[bold][red]❌ Validation Error:[/bold] Invalid user[/red]")
         return False
@@ -491,58 +500,89 @@ def _validate_user(user: str) -> bool:
     return True
 
 
-def _bad_request() -> None:
+def _bad_request() -> NoReturn:
     """Raise 400 error"""
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Bad Request")
 
 
-@API.get("/user", response_class=Response, response_model=None, status_code=status.HTTP_204_NO_CONTENT)
-@cached(cache=LRUCache(maxsize=2), info=True)
-def get_user(user: Annotated[str, Depends(_verify_jwt)]) -> None:
+@cached(cache=LRUCache(maxsize=2), key=lambda hashed_user, _=None: hashkey(hashed_user), info=True, lock=RLock())
+def _user_get_or_create(hashed_user: str, state: dict | None = None, /) -> User:
+    data: Final = cast("tuple[User, bool]", User.get_or_create(user=hashed_user))
+    user, created = data
+
+    if state is not None:
+        state["created"] = created  # mutate
+
+    return user
+
+
+@API.get("/user", response_class=Response, response_model=None)
+def get_user(user: Annotated[str, Depends(_verify_jwt)]) -> Response:
     """Get user"""
     if not _validate_user(user):
         _bad_request()
-    else:
-        try:
-            user_hash: Final[str] = get_user_hash(user)
 
-            created: Final[bool] = User.get_or_create(user=user_hash)[1]
+    state: Final[dict[str, bool]] = {"created": False}
 
-            if env.SOBER_DEBUG:
-                short_user: Final[str] = _shorten(user_hash)
+    user_hash: Final[str] = _get_user_hash(user)
 
-                if created:
-                    log(f"Created user: {short_user}")
-                else:
-                    log(f"Found user: {short_user}")
-        except Exception:
-            CONSOLE.print_exception()
+    try:
+        _user_get_or_create(user_hash, state)
 
-            _bad_request()
+    except Exception:
+        CONSOLE.print_exception()
+
+        _bad_request()
+
+    created = state["created"]
+
+    if env.SOBER_DEBUG:
+        short_user: Final[str] = _shorten(user_hash)
+
+        if created:
+            log(f"Created user: {short_user}")
+        else:
+            log(f"Found user: {short_user}")
+
+    return Response(status_code=status.HTTP_201_CREATED if created else status.HTTP_204_NO_CONTENT)
+
+
+@API.delete("/user/evict", response_class=Response, response_model=None, status_code=status.HTTP_204_NO_CONTENT)
+async def evict_user(user: Annotated[str, Depends(_verify_jwt)]) -> None:
+    """Evict user from cache"""
+    if not _validate_user(user):
+        _bad_request()
+
+    hashed_user: Final[str] = _get_user_hash(user)
+
+    key: Final[tuple[str]] = _user_get_or_create.cache_key(hashed_user)
+
+    if _user_get_or_create.cache_lock is not None:
+        with _user_get_or_create.cache_lock:
+            _user_get_or_create.cache.pop(key, None)
+
+        if env.SOBER_DEBUG:
+            log(f"{_shorten(hashed_user)} evicted")
 
 
 @API.delete("/user/delete/{user}", response_class=Response, response_model=None, status_code=status.HTTP_204_NO_CONTENT)
-async def delete_user(user: str) -> None:
-    """
-    Delete user
+async def delete_user(user: Annotated[str, Depends(_verify_jwt)]) -> None:
+    """Delete user"""
+    if not _validate_user(user):
+        _bad_request()
 
-    Args:
-        user (str): hashed user
+    user_hash: Final[str] = _get_user_hash(user)
 
-    Returns:
-        Response: 204 or 400 HTTP status code
-    """
+    if (u := _user_get_or_create(user_hash)) is None:
+        _bad_request()
+
     try:
-        u: Final[User | None] = User.get_or_none(User.user == user)
-        if u is None:
-            _bad_request()
-        else:
-            get_user.cache_clear()
+        u.delete_instance()
 
-            u.delete_instance()
+        await evict_user(user)
 
-            if env.SOBER_DEBUG:
-                log(f"Deleted user: {get_user_hash(user)}")
+        if env.SOBER_DEBUG:
+            log(f"Deleted user: {_shorten(user_hash)}")
     except Exception:
         CONSOLE.print_exception()
 
@@ -555,22 +595,26 @@ def _to_substance_dto(substance: Substance) -> SubstanceDTO:
 
 
 @API.get("/substances", response_model=list[SubstanceDTO] | None)
-@cached(cache=LRUCache(maxsize=5), info=True)
+@cached(
+    cache=LRUCache(maxsize=5),
+    key=lambda user, _=None: hashkey(_shorten(_get_user_hash(user))),
+    info=True,
+    lock=RLock(),
+)
 def get_substances(user: Annotated[str, Depends(_verify_jwt)]) -> list[SubstanceDTO] | None:
     """Get all substances"""
     if not _validate_user(user):
         return None
-    try:
-        user_hash: Final[str] = get_user_hash(user)
 
-        u: Final[User | None] = User.get_or_none(User.user == user_hash)
-        if u is None:
+    try:
+        user_hash: Final[str] = _get_user_hash(user)
+
+        if (u := _user_get_or_create(user_hash)) is None:
             return None
 
         substances: Final[list[Substance]] = u.substances
 
-        count: Final[int] = len(substances)
-        if count == 0:
+        if (count := len(substances)) == 0:
             return None
 
         if env.SOBER_DEBUG:
@@ -581,11 +625,6 @@ def get_substances(user: Annotated[str, Depends(_verify_jwt)]) -> list[Substance
         CONSOLE.print_exception()
 
         return None
-
-
-def _user_exists(user_hash: str) -> bool:
-    """Check if user exists"""
-    return User.get_or_none(User.user == user_hash) is not None
 
 
 def _validate_substance(substance: SubstanceDTO) -> bool:
@@ -607,10 +646,7 @@ async def add_substance(substance: SubstanceDTO, user: Annotated[str, Depends(_v
         return None
 
     try:
-        user_hash: Final[str] = get_user_hash(user)
-
-        if not _user_exists(user_hash):
-            return None
+        user_hash: Final[str] = _get_user_hash(user)
 
         if env.SOBER_DEBUG:
             log(f"Adding substance for {_shorten(user_hash)}:", str(substance))
@@ -641,9 +677,9 @@ async def get_substance(pk: int, user: Annotated[str, Depends(_verify_jwt)]) -> 
     """Get substance"""
     if not _validate_pk(pk) or not _validate_user(user):
         return None
+
     try:
-        substance: Final[Substance | None] = Substance.get_or_none(Substance.id == pk)
-        if substance is None:
+        if (substance := Substance.get_or_none(Substance.id == pk)) is None:
             return None
 
         if env.SOBER_DEBUG:
@@ -661,11 +697,11 @@ async def delete_substance(pk: int, user: Annotated[str, Depends(_verify_jwt)]) 
     """Delete substance"""
     if not _validate_pk(pk) or not _validate_user(user):
         return False
-    try:
-        user_hash: Final[str] = get_user_hash(user)
 
-        substance: Final[Substance | None] = Substance.get_or_none(Substance.id == pk, Substance.user == user_hash)
-        if substance is not None:
+    try:
+        user_hash: Final[str] = _get_user_hash(user)
+
+        if (substance := Substance.get_or_none(Substance.id == pk, Substance.user == user_hash)) is not None:
             if env.SOBER_DEBUG:
                 log(f"Deleting substance {substance.name} for {_shorten(user_hash)}")
 
@@ -692,11 +728,9 @@ async def update_substance(
     """Update substance"""
     if not _validate_pk(pk) or not _validate_substance(substance) or not _validate_user(user):
         return None
-    try:
-        user_hash: Final[str] = get_user_hash(user)
 
-        if not _user_exists(user_hash):
-            return None
+    try:
+        user_hash: Final[str] = _get_user_hash(user)
 
         if env.SOBER_DEBUG:
             log(f"Updating substance for {_shorten(user_hash)}:", str(substance))
@@ -742,7 +776,7 @@ def _validate_port(port: int) -> bool:
     return True
 
 
-def _invalid_port(port: int) -> None:
+def _invalid_port(port: int) -> NoReturn:
     """Invalid port"""
     msg: Final[str] = f"Invalid port: {port}"
     raise ValueError(msg)

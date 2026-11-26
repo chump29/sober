@@ -1,15 +1,15 @@
 # ![Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ (Frontend)](./public/sober.webp "Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ (Frontend)") Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ (Frontend)
 
-### Sobriety counter <!-- markdownlint-disable-line MD001 -->
+### Sobriety tracker
 
 ---
 
-![Bun](https://img.shields.io/badge/Bun-1.4.3-informational?style=plastic&logo=bun "Bun") &nbsp;
-![Mantine](https://img.shields.io/badge/Mantine-^9.7.2-informational?style=plastic&logo=mantine "Mantine") &nbsp;
-![React](https://img.shields.io/badge/React-^19.3.1-informational?style=plastic&logo=react "React") &nbsp;
-![Vite](https://img.shields.io/badge/Vite-^8.3.4-informational?style=plastic&logo=vite "Vite")
+![Bun](https://img.shields.io/badge/Bun-1.4.5-informational?style=plastic&logo=bun "Bun") &nbsp;
+![Mantine](https://img.shields.io/badge/Mantine-9.8.2-informational?style=plastic&logo=mantine "Mantine") &nbsp;
+![React](https://img.shields.io/badge/React-19.3.1-informational?style=plastic&logo=react "React") &nbsp;
+![Vite](https://img.shields.io/badge/Vite-8.3.8-informational?style=plastic&logo=vite "Vite")
 
-![Coverage](https://img.shields.io/badge/Coverage-87.88%25-success?style=plastic&logo=v8 "Coverage")
+![Coverage](https://img.shields.io/badge/Coverage-96.67%25-success?style=plastic&logo=v8 "Coverage")
 
 ---
 
@@ -20,8 +20,8 @@
 ```mermaid
 flowchart LR
 ui@{shape: rounded, label: "UI"}
-uiPort@{shape: rounded, label: ""}
-ui-->uiPort
+port@{shape: rounded, label: "89"}
+ui-->port
 ```
 
 ---
@@ -32,13 +32,22 @@ ui-->uiPort
 flowchart TD
 index(index.html)
 main(src/main.tsx)
-display(src/components/display/index.tsx)
-settings(src/components/settings/index.tsx)
-coin(src/components/coin/index.tsx)
-cost(src/components/cost/index.tsx)
-index-->main-->display
-display-->settings
-display-->coin
-display-->cost
+app(src/App.tsx)
+home(src/pages/Home.tsx)
+milestones(src/pages/Milestones.tsx)
+settings(src/pages/Settings.tsx)
+stats(src/pages/Stats.tsx)
+banner(src/components/Banner.tsx)
+coin(src/components/Coin.tsx)
+logo(src/components/Logo.tsx)
+substances(src/components/Substances.tsx)
+app-->home-->coin
+home-->substances
+app-->logo
+index-->main-->app-->banner
+app-->milestones-->substances
+app-->settings-->substances
+app-->stats-->substances
+app-->substances
 port@{shape: comment, label: "&nbsp; Nginx exposes port 80"}
 ```

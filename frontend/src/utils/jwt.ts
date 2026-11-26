@@ -7,11 +7,11 @@ import { env } from "../env.ts"
 
 const getJWT = (user: string): string =>
   new UnsecuredJWT()
-    .setExpirationTime(env.SOBER_JWT_EXPIRE_TIME)
+    .setExpirationTime(env.JWT_EXPIRE_TIME)
     .setIssuedAt()
     .setSubject(user)
     .setIssuer(name)
-    .setAudience(env.SOBER_JWT_AUDIENCE)
+    .setAudience(env.JWT_AUDIENCE)
     .encode()
 
 /**
@@ -20,7 +20,7 @@ const getJWT = (user: string): string =>
  * @param user User
  * @returns Request {@link https://developer.mozilla.org/en-US/docs/Web/API/Headers headers}
  */
-const getHeaders = (user: Optional<string>): Optional<Headers> => {
+export const getHeaders = (user: Optional<string>): Optional<Headers> => {
   if (!user || user.length === 0) {
     return
   }
@@ -30,5 +30,3 @@ const getHeaders = (user: Optional<string>): Optional<Headers> => {
     "Content-Type": "application/json"
   } satisfies HeadersInit)
 }
-
-export { getHeaders }

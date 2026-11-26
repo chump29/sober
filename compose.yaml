@@ -32,7 +32,7 @@ services:
     stop_signal: SIGINT
 
 volumes:
-  db:
+  db: {}
 
 networks: {}
 

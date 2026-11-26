@@ -1,6 +1,6 @@
 # ![Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ (Frontend)](./public/sober.webp "Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ (Frontend)") Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ (Frontend)
 
-### Sobriety counter <!-- markdownlint-disable-line MD001 -->
+### Sobriety tracker
 
 ---
 
@@ -20,8 +20,8 @@
 ```mermaid
 flowchart LR
 ui@{shape: rounded, label: "UI"}
-uiPort@{shape: rounded, label: "$_uiPort"}
-ui-->uiPort
+port@{shape: rounded, label: "$_frontendPort"}
+ui-->port
 ```
 
 ---
@@ -32,13 +32,22 @@ ui-->uiPort
 flowchart TD
 index(index.html)
 main(src/main.tsx)
-display(src/components/display/index.tsx)
-settings(src/components/settings/index.tsx)
-coin(src/components/coin/index.tsx)
-cost(src/components/cost/index.tsx)
-index-->main-->display
-display-->settings
-display-->coin
-display-->cost
+app(src/App.tsx)
+home(src/pages/Home.tsx)
+milestones(src/pages/Milestones.tsx)
+settings(src/pages/Settings.tsx)
+stats(src/pages/Stats.tsx)
+banner(src/components/Banner.tsx)
+coin(src/components/Coin.tsx)
+logo(src/components/Logo.tsx)
+substances(src/components/Substances.tsx)
+app-->home-->coin
+home-->substances
+app-->logo
+index-->main-->app-->banner
+app-->milestones-->substances
+app-->settings-->substances
+app-->stats-->substances
+app-->substances
 port@{shape: comment, label: "&nbsp; Nginx exposes port 80"}
 ```

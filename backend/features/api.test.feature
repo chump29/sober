@@ -23,19 +23,24 @@ Scenario: Get version
 			And version is cached
 
 Scenario: Create user
-		Given that a user wants to create a user record
-			When /user API endpoint is called (create)
-			Then user data is created
+	Given that a user wants to create a user record
+		When /user API endpoint is called (create)
+		Then user data is created
 
 Scenario: Get user
-		Given that a user wants to get a user record from cache
-			When /user API endpoint is called (get)
-			Then user data is found in cache
+	Given that a user wants to get a user record from cache
+		When /user API endpoint is called (get)
+		Then user data is found in cache
+
+Scenario: Evict user
+		Given that a user is evicted from cache
+			When /user/evict API endpoint is called
+			Then user data is not found in cache
 
 Scenario: Delete user by ID
-		Given that a user wants to delete a user record by ID
-			When /user/delete API endpoint is called with an ID
-			Then user data is deleted
+	Given that a user wants to delete a user record by ID
+		When /user/delete API endpoint is called with an ID
+		Then user data is deleted
 
 Scenario: Add substance
 	Given that a user wants to add a substance record

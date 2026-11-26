@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://lefthook.dev/schema.json
+
+glob_matcher: doublestar
+
+pre-commit:
+  fail_on_changes: always
+  parallel: true
+  jobs:
+    - name: cSpell
+      run: bun run --bun ./frontend/node_modules/.bin/cspell --dot --no-must-find-files {staged_files}
+
+    - name: frontend
+      root: frontend/
+      group:
+        parallel: true
+        jobs:
+          - name: TS
+            run: bun check
+
+          - name: CSS/HTML/JSON/MD/TS/TSX/YAML
+            glob: "**/*.{css,html,json,md,ts,tsx,yaml}"
+            run: ./node_modules/.bin/biome ci --no-errors-on-unmatched --error-on-warnings {staged_files}
+
+          - name: Deps
+            run: bun run deps
+
+          - name: Scan
+            run: bun run scan
+
+    - name: backend
+      root: backend/
+      group:
+        parallel: true
+        jobs:
+          - name: MD/YAML
+            glob: "**/*.{md,yaml}"
+            run: ../frontend/node_modules/.bin/biome ci --no-errors-on-unmatched --error-on-warnings {staged_files}
+
+          - name: pre-commit
+            run: uv run pre-commit run

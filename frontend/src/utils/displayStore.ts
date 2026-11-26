@@ -1,57 +1,71 @@
 import { type Nullable, type Nullish } from "@postfmly/types"
 
-import { Big } from "big.js"
-import { default as dayjs } from "dayjs"
-import { default as duration } from "dayjs/plugin/duration"
+import { type Dayjs, default as dayjs } from "dayjs"
+import { dequal as equal } from "dequal"
 import { create } from "zustand"
 
+import { calculateSavings, calculateStats } from "./calc.ts"
+import { getKeyByValue, round } from "./index.ts"
 import { type ICost } from "./interfaces/ICost.ts"
 import { defaultValues, type IDisplay, type IDisplayActions } from "./interfaces/IDisplay.ts"
 import { defaultSubstance, type ISubstance } from "./interfaces/ISubstance.ts"
+import { CostType } from "./schemas.ts"
 
-dayjs.extend(duration)
+const getCost = (substance: ISubstance, date: string, now: Dayjs): Nullable<ICost> => {
+  if (substance.cost <= 0) {
+    return null
+  }
 
-const displayStore = create<IDisplay>()(
-  (set, get) =>
+  const savings = calculateSavings(date, substance.cost, substance.costType, now)
+
+  return {
+    cost: round(savings.today),
+    costPer: round(substance.cost),
+    costType: getKeyByValue(CostType, substance.costType)
+  }
+}
+
+export const displayStore = create<IDisplay>()(
+  (set, get): IDisplay =>
     ({
       actions: {
-        getDaysNow: (): number => get().days,
-        getMonthsNow: (): number => get().months,
-        getSelectedSubstance: (): ISubstance => get().selectedSubstance,
-        getUser: (): Nullable<string> => get().user,
-        getWeeksNow: (): number => get().weeks,
-        getYearsNow: (): number => get().years,
+        getSelectedSubstanceNow: (): ISubstance => get().selectedSubstance,
+        getUserNow: (): Nullable<string> => get().user,
 
-        setCost: (data: Nullable<ICost>): void =>
+        setDisplay: (date: Nullish<string>): void => {
+          if (!date) {
+            set({
+              ...defaultValues,
+              cost: null
+            })
+
+            return
+          }
+
+          const now = dayjs()
+
+          const substance = get().selectedSubstance
+
+          // * NOTE: reducing updates
+          const currentCost = get().cost
+          const updatedCost = getCost(substance, date, now)
+
           set({
-            cost: data
-          }),
-        setDisplay: (date: Nullish<string>): void =>
-          set((): IDisplay => {
-            if (!date) {
-              return defaultValues as IDisplay
-            }
+            ...calculateStats(date, substance.showDecimals, now),
+            cost: equal(currentCost, updatedCost) ? currentCost : updatedCost
+          })
+        },
 
-            const diff: duration.Duration = dayjs.duration(dayjs().diff(dayjs(date)))
+        setSelectedSubstance: (data: ISubstance): void => {
+          const now = dayjs()
 
-            const weeksDuration: number = diff.asWeeks()
-            const monthsDuration: number = diff.asMonths()
-            const yearsDuration: number = diff.asYears()
-
-            return {
-              days: Math.floor(diff.asDays()),
-              hours: Math.floor(diff.asHours()),
-              minutes: Math.floor(diff.asMinutes()),
-              months: round(monthsDuration),
-              seconds: Math.floor(diff.asSeconds()),
-              weeks: round(weeksDuration),
-              years: round(yearsDuration)
-            } as IDisplay
-          }),
-        setSelectedSubstance: (data: ISubstance): void =>
           set({
+            ...calculateStats(data.date, get().selectedSubstance.showDecimals, now),
+            cost: getCost(data, data.date, now),
             selectedSubstance: data
-          }),
+          })
+        },
+
         setUser: (data: Nullable<string>): void =>
           set({
             user: data
@@ -61,32 +75,21 @@ const displayStore = create<IDisplay>()(
       cost: null,
       selectedSubstance: defaultSubstance,
       user: null
-    }) as IDisplay
+    }) satisfies IDisplay
 )
 
-// hoisted
-const round = (num: number): number => {
-  if (num < 1) {
-    return 0
-  }
-
-  if (displayStore.getState().selectedSubstance.showDecimals) {
-    return Number(new Big(num).toFixed(2, Big.roundDown))
-  }
-
-  return Math.floor(num)
-}
-
-export const getCost = (): Nullable<ICost> => displayStore((state: IDisplay): Nullable<ICost> => state.cost)
-export const getDays = (): number => displayStore((state: IDisplay): number => state.days)
-export const getHours = (): number => displayStore((state: IDisplay): number => state.hours)
-export const getMinutes = (): number => displayStore((state: IDisplay): number => state.minutes)
-export const getMonths = (): number => displayStore((state: IDisplay): number => state.months)
-export const getSeconds = (): number => displayStore((state: IDisplay): number => state.seconds)
-export const getWeeks = (): number => displayStore((state: IDisplay): number => state.weeks)
-export const getYears = (): number => displayStore((state: IDisplay): number => state.years)
+// atomic
+export const useCost = (): Nullable<ICost> => displayStore((state: IDisplay): Nullable<ICost> => state.cost)
+export const useDays = (): number => displayStore((state: IDisplay): number => state.days)
+export const useFortnights = (): number => displayStore((state: IDisplay): number => state.fortnights)
+export const useHours = (): number => displayStore((state: IDisplay): number => state.hours)
+export const useMinutes = (): number => displayStore((state: IDisplay): number => state.minutes)
+export const useMonths = (): number => displayStore((state: IDisplay): number => state.months)
+export const useSeconds = (): number => displayStore((state: IDisplay): number => state.seconds)
+export const useWeeks = (): number => displayStore((state: IDisplay): number => state.weeks)
+export const useYears = (): number => displayStore((state: IDisplay): number => state.years)
+export const useSelectedSubstance = (): ISubstance =>
+  displayStore((state: IDisplay): ISubstance => state.selectedSubstance)
 
 export const displayStoreActions = (): IDisplayActions =>
   displayStore((state: IDisplay): IDisplayActions => state.actions)
-
-export { displayStore, round }

@@ -1,26 +1,41 @@
 import { printVars } from "@postfmly/logger"
 
 import { parse as ms } from "@lukeed/ms"
-import { bool, cleanEnv, type ExactValidator, makeExactValidator, str, url } from "envalid"
-import { parse } from "valibot"
+import { bool, cleanEnv, makeExactValidator, str, url } from "envalid"
+import { type InferOutput, parse } from "valibot"
 
 import { ExpireTimeSchema, TimeoutSchema, TitleSchema } from "./utils/schemas.ts"
 
-const timeoutValidator: ExactValidator<number> = makeExactValidator<number>((s: string): number =>
-  parse(TimeoutSchema, s)
-)
-const expireTimeValidator: ExactValidator<string | number | Date> = makeExactValidator<string | number | Date>(
-  (s: string): string | number | Date => parse(ExpireTimeSchema, s)
-)
-const titleValidator: ExactValidator<string> = makeExactValidator<string>((s: string): string => parse(TitleSchema, s))
+type ExpireTime = InferOutput<typeof ExpireTimeSchema>
 
-const env = cleanEnv(import.meta.env, {
-  SOBER_API_TIMEOUT: timeoutValidator({ default: ms("2s") }),
-  SOBER_DEBUG: bool({ default: false }),
-  SOBER_JWT_AUDIENCE: str({ default: "sober-backend" }),
-  SOBER_JWT_EXPIRE_TIME: expireTimeValidator({ default: "30s" }),
+const timeoutValidator = makeExactValidator((s: string): number => parse(TimeoutSchema, s))
+const expireTimeValidator = makeExactValidator((s: string): ExpireTime => parse(ExpireTimeSchema, s))
+const titleValidator = makeExactValidator((s: string): string => parse(TitleSchema, s))
+
+const originalEnv = cleanEnv(import.meta.env, {
+  API_TIMEOUT: timeoutValidator({ default: ms("2s") }),
+  JWT_AUDIENCE: str({ default: "sober-backend" }),
+  JWT_EXPIRE_TIME: expireTimeValidator({ default: "30s" }),
+  TEST_FULL: bool({ default: false }),
   VITE_API_URL: url({ default: "" }),
+  VITE_DEBUG: bool({ default: false, testDefault: true }),
   VITE_TITLE: titleValidator({ default: "Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" })
+})
+
+type OriginalEnv = typeof originalEnv
+type Env = Omit<OriginalEnv, "VITE_API_URL" | "VITE_DEBUG" | "VITE_TITLE"> & {
+  readonly API_URL: string
+  readonly DEBUG: boolean
+  readonly TITLE: string
+}
+
+const { VITE_API_URL, VITE_DEBUG, VITE_TITLE, ...original }: OriginalEnv = originalEnv
+
+const env: Env = Object.freeze({
+  ...original,
+  API_URL: VITE_API_URL,
+  DEBUG: VITE_DEBUG,
+  TITLE: VITE_TITLE
 })
 
 if (import.meta.main) {

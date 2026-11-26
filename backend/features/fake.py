@@ -66,14 +66,14 @@ class Fake:
         Returns:
             datetime: Value between five years ago and now
         """
-        days_ago: Final[int] = (
+        days_ago: int = (
             ItemizedDateDelta(years=years_ago)
             .in_units(["days"], relative_to=Instant.now().to_tz("UTC").date())
             .get("days")
             or 0
         )
 
-        return self._datetime.past_datetime(days=days_ago, timezone="UTC")
+        return self._datetime.past_datetime(days=days_ago, timezone="UTC")  # ! NOTE: requires pytz
 
     def integer(self, start: int = 1, end: int = 100) -> int:
         """Get integer

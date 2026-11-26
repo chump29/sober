@@ -1,0 +1,409 @@
+// cSpell: ignore mehta,niaaa
+
+import { type JSX } from "react"
+
+import {
+  IconCalendarEvent,
+  IconChartLine,
+  IconCircleOff,
+  IconInfoCircleFilled,
+  IconPigMoney,
+  IconRibbonHealth
+} from "@tabler/icons-react"
+
+import { LineChart } from "@mantine/charts"
+import {
+  Box,
+  Group,
+  NumberFormatter,
+  Paper,
+  Progress,
+  RollingNumber,
+  SimpleGrid,
+  Stack,
+  Text,
+  Title,
+  Tooltip
+} from "@mantine/core"
+import { useMediaQuery } from "@mantine/hooks"
+
+import { type Optional } from "@postfmly/types"
+
+import { default as pluralize } from "@jarrodek/pluralize"
+import { default as dayjs } from "dayjs"
+import { match, P } from "ts-pattern"
+
+import { Substances } from "../components/Substances.tsx"
+import { calculateSavings, calculateStats, TIME } from "../utils/calc.ts"
+import { currencyFormatter, FACTOR, Per, round } from "../utils/index.ts"
+import { type IInterval } from "../utils/interfaces/IInterval.ts"
+import { type ISavings } from "../utils/interfaces/ISavings.ts"
+import { type IChart, type IHealth, type IStat } from "../utils/interfaces/IStats.ts"
+import { type ISubstancesProps } from "../utils/interfaces/ISubstancesProps.ts"
+import { DATETIME_FORMAT_SHORT } from "../utils/schemas.ts"
+
+import "@mantine/charts/styles.css"
+
+const X_ANGLE = -45
+const X_HEIGHT_MOBILE = 45
+const X_HEIGHT = 70
+
+// * NOTE: Recovery percentages are modeled using standard exponential saturation curves (1 − e⁻ᵏᵗ) calibrated to clinical abstinence milestones from The Lancet (Wood et al., 2018), BMJ Open (Mehta et al., 2018), and NIAAA/PMC organ recovery reviews.
+const K = {
+  BLOOD_PRESSURE: 0.012,
+  LONG_TERM: 0.0015,
+  OVERALL: 0.0055,
+  SLEEP: 0.1
+} as const
+
+const health = (days: number): Optional<IHealth> => {
+  if (days === 0) {
+    return undefined
+  }
+
+  const recovery = (k: number): number => round(FACTOR * (1 - Math.exp(-k * days)))
+
+  return {
+    bloodPressure: recovery(K.BLOOD_PRESSURE),
+    longTerm: recovery(K.LONG_TERM),
+    overall: recovery(K.OVERALL),
+    sleep: recovery(K.SLEEP)
+  }
+}
+
+const chart = (savings: ISavings, days: number, isMobile: boolean): IChart[] => {
+  const next = days + TIME.DAYS_PER_YEAR
+
+  const milestones: IChart[] = [
+    { days: 1, label: "1 Day", savings: savings.day },
+    { days: TIME.DAYS_PER_WEEK, label: "1 Week", savings: savings.week },
+    { days: TIME.DAYS_30, label: "30 Days", savings: savings.month },
+    { days: TIME.DAYS_60, label: "60 Days", savings: savings.months2 },
+    { days: TIME.DAYS_90, label: "90 Days", savings: savings.months3 },
+    { days: TIME.DAYS_6MO, label: "6 Months", savings: savings.months6 },
+    { days: TIME.DAYS_PER_YEAR, label: "1 Year", savings: savings.year }
+  ].filter((milestone: IChart): boolean => milestone.days !== days)
+
+  return [
+    ...milestones,
+    { days, label: isMobile ? "Today" : `Today (${pluralize("Day", days, true)})`, savings: savings.today },
+    { days: next, label: isMobile ? "+1 Year" : "1 Year From Now", savings: savings.next }
+  ].sort((a: IChart, b: IChart): number => a.days - b.days)
+}
+
+const DECIMALS = [
+  { decimals: 8, max: 0.01 },
+  { decimals: 6, max: 0.1 },
+  { decimals: 4, max: 1 }
+] as const
+
+const DEFAULT_DECIMALS = 2
+
+const getDecimalScale = (val: number): number => DECIMALS.find(({ max }) => val < max)?.decimals ?? DEFAULT_DECIMALS
+
+const Stat = (stat: IStat): JSX.Element => {
+  const Icon = stat.icon
+
+  const statValue = match<Pick<IStat, "isMoney" | "value">, JSX.Element>(stat)
+    .with({ value: 0 }, () => (
+      <IconCircleOff
+        style={{
+          height: "clamp(1rem, 2vw, 1.5rem)",
+          width: "clamp(1rem, 2vw, 1.5rem)"
+        }}
+      />
+    ))
+    .with({ isMoney: true, value: P.number }, ({ value }) => (
+      <RollingNumber decimalScale={2} fixedDecimalScale={true} prefix="$" thousandSeparator={true} value={value} />
+    ))
+    .with({ value: P.number }, ({ value }) => <RollingNumber thousandSeparator={true} value={value} />)
+    .with({ value: P.when((v): v is IHealth => v !== null && typeof v === "object") }, ({ value }) => (
+      <Stack gap="xs">
+        <Text size="xs">Sleep & Metabolic Gain</Text>
+        <Tooltip label="Sleep architecture, hydration, and insulin sensitivity gains">
+          <Progress.Root>
+            <Progress.Section value={value.sleep}>
+              {value.sleep >= 10 && <Progress.Label>{value.sleep}%</Progress.Label>}
+            </Progress.Section>
+          </Progress.Root>
+        </Tooltip>
+        <Text size="xs">Organ & Blood Pressure Gain</Text>
+        <Tooltip label="Blood pressure reduction and liver fat reversal">
+          <Progress.Root>
+            <Progress.Section value={value.bloodPressure}>
+              {value.bloodPressure >= 10 && <Progress.Label>{value.bloodPressure}%</Progress.Label>}
+            </Progress.Section>
+          </Progress.Root>
+        </Tooltip>
+        <Text size="xs">Long Term Risk Reduction</Text>
+        <Tooltip label="Long-term chronic disease risk reduction">
+          <Progress.Root>
+            <Progress.Section value={value.longTerm}>
+              {value.longTerm >= 10 && <Progress.Label>{value.longTerm}%</Progress.Label>}
+            </Progress.Section>
+          </Progress.Root>
+        </Tooltip>
+        <Text size="xs">Overall Physiological Recovery</Text>
+        <Tooltip label="Composite recovery score across sleep, organ health, and long-term risk reduction">
+          <Progress.Root>
+            <Progress.Section value={value.overall}>
+              {value.overall >= 10 && <Progress.Label>{value.overall}%</Progress.Label>}
+            </Progress.Section>
+          </Progress.Root>
+        </Tooltip>
+      </Stack>
+    ))
+    .with({ value: P.optional(undefined) }, () => <Text fs="italic">Healing in progress…</Text>)
+    .exhaustive()
+
+  return (
+    <Paper h="100%">
+      <Group align="center" wrap="nowrap">
+        <Box
+          bdrs={999}
+          bg={stat.bg}
+          c={stat.color}
+          display="flex"
+          h={48}
+          style={{
+            alignItems: "center",
+            flexShrink: 0,
+            justifyContent: "center"
+          }}
+          visibleFrom="sm"
+          w={48}>
+          <Icon size={32} />
+        </Box>
+        <Stack miw={0}>
+          <Text c="var(--text-secondary)" fw="bold" lts={1} size="xs">
+            {stat.label.toUpperCase()}
+          </Text>
+          <Title
+            c={stat.color}
+            style={{
+              fontVariantNumeric: "tabular-nums"
+            }}>
+            {statValue}
+          </Title>
+        </Stack>
+      </Group>
+      {stat.value === undefined ? null : (
+        <Box pt={16}>
+          <Group gap={8} pl={{ base: "md", md: "xl" }} wrap="nowrap">
+            <IconInfoCircleFilled color="var(--text-secondary)" size={16} />
+            <Text c="dimmed" size="xxs">
+              {stat.description}
+            </Text>
+          </Group>
+        </Box>
+      )}
+    </Paper>
+  )
+}
+
+export const Stats = ({
+  allSubstances,
+  refreshSubstances,
+  selectedSubstance,
+  setSelectedSubstance,
+  substances,
+  user
+}: ISubstancesProps): JSX.Element => {
+  const isMobile = useMediaQuery("(max-width: 48em)")
+
+  const now = dayjs()
+
+  const stats = calculateStats(selectedSubstance.date, selectedSubstance.showDecimals, now)
+
+  const savings = calculateSavings(selectedSubstance.date, selectedSubstance.cost, selectedSubstance.costType, now)
+
+  const { days } = stats
+
+  const dailyCost = savings.day
+
+  const total = round(savings.today)
+
+  const costs: IInterval[] = [
+    {
+      label: Per.SECOND,
+      value: dailyCost / TIME.SECONDS_PER_DAY
+    },
+    {
+      label: Per.MINUTE,
+      value: dailyCost / TIME.MINUTES_PER_DAY
+    },
+    {
+      label: Per.HOUR,
+      value: dailyCost / TIME.HOURS_PER_DAY
+    },
+    {
+      label: Per.DAY,
+      value: dailyCost
+    },
+    {
+      label: Per.WEEK,
+      value: dailyCost * TIME.DAYS_PER_WEEK
+    },
+    {
+      label: Per.FORTNIGHT,
+      value: dailyCost * TIME.DAYS_PER_FORTNIGHT
+    },
+    {
+      label: Per.MONTH,
+      value: dailyCost * TIME.DAYS_PER_MONTH
+    },
+    {
+      label: Per.YEAR,
+      value: dailyCost * TIME.DAYS_PER_YEAR
+    }
+  ]
+
+  const scale = getDecimalScale(dailyCost)
+  const formattedDailyCost = new Intl.NumberFormat("en-US", {
+    currency: "USD",
+    maximumFractionDigits: scale,
+    minimumFractionDigits: scale,
+    style: "currency"
+  }).format(dailyCost)
+
+  return (
+    <Stack>
+      <Substances
+        allSubstances={allSubstances}
+        refreshSubstances={refreshSubstances}
+        selectedSubstance={selectedSubstance}
+        setSelectedSubstance={setSelectedSubstance}
+        substances={substances}
+        user={user}
+      />
+      <SimpleGrid cols={{ base: 1, md: 3 }}>
+        <Stat
+          bg="var(--bg-days)"
+          color="var(--text-days)"
+          description={`Since ${dayjs(selectedSubstance.date).format(DATETIME_FORMAT_SHORT)}`}
+          icon={IconCalendarEvent}
+          label="Days Sober"
+          value={days}
+        />
+        {selectedSubstance.showCost === true && (
+          <Stat
+            bg="var(--bg-savings)"
+            color="var(--text-savings)"
+            description={`Based on ${formattedDailyCost} per day`}
+            icon={IconPigMoney}
+            isMoney={true}
+            label="Money Saved"
+            value={total}
+          />
+        )}
+        <Stat
+          bg="var(--bg-fortnights)"
+          color="var(--text-fortnights)"
+          description="Illustrative population-level estimates, not measured individual recovery or a clinical prediction."
+          icon={IconRibbonHealth}
+          label="Potential Health Gain"
+          value={health(days)}
+        />
+      </SimpleGrid>
+      {selectedSubstance.showCost === true && selectedSubstance.cost > 0 && (
+        <Paper>
+          <Stack gap="xl">
+            <Group gap="sm" wrap="nowrap">
+              <Box
+                bdrs={999}
+                bg="var(--bg-savings)"
+                c="var(--text-savings)"
+                display="flex"
+                h={48}
+                style={{
+                  alignItems: "center",
+                  flexShrink: 0,
+                  justifyContent: "center"
+                }}
+                visibleFrom="sm"
+                w={48}>
+                <IconChartLine size={28} />
+              </Box>
+              <Stack miw={0}>
+                <Title c="var(--text-secondary)">{"Savings Breakdown".toUpperCase()}</Title>
+                <Text c="dimmed" size="xs">
+                  Estimated savings based on your selected frequency and amount
+                </Text>
+              </Stack>
+            </Group>
+            <SimpleGrid cols={{ base: 1, sm: 2 }} p={16} spacing="xl">
+              <LineChart
+                curveType="monotone"
+                data={chart(savings, days, isMobile)}
+                dataKey="label"
+                h={300}
+                series={[{ color: "var(--text-savings)", label: "Savings", name: "savings" }]}
+                styles={{
+                  tooltip: {
+                    backgroundColor: "var(--bg-primary)",
+                    borderColor: "var(--text-primary)"
+                  },
+                  tooltipItemData: {
+                    color: "var(--text-savings)"
+                  },
+                  tooltipItemName: {
+                    color: "var(--text-muted)"
+                  },
+                  tooltipLabel: {
+                    color: "var(--text-secondary)"
+                  }
+                }}
+                tickLine="x"
+                valueFormatter={(value: number): string => currencyFormatter.format(value)}
+                withPointLabels={true}
+                xAxisProps={{
+                  height: isMobile ? X_HEIGHT_MOBILE : X_HEIGHT,
+                  interval: isMobile ? 1 : 0,
+                  tickMargin: 8,
+                  tick: {
+                    angle: isMobile ? 0 : X_ANGLE,
+                    fill: "var(--mantine-color-dimmed)",
+                    fontSize: 12,
+                    textAnchor: isMobile ? "middle" : "end"
+                  }
+                }}
+                yAxisProps={{
+                  tickFormatter: (value: number): string => (value === 0 ? "" : currencyFormatter.format(value))
+                }}
+              />
+              <Box pl={{ base: 0, sm: "xl" }}>
+                <Paper>
+                  <SimpleGrid cols={1} spacing={0}>
+                    {costs.map(
+                      (interval: IInterval, index: number): JSX.Element => (
+                        <Group
+                          bg={index % 2 === 1 ? "var(--bg-secondary)" : undefined}
+                          justify="space-between"
+                          key={interval.label}
+                          px="sm"
+                          py="xs"
+                          w="100^"
+                          wrap="nowrap">
+                          <Text c="var(--text-secondary)" size="sm" style={{ whiteSpace: "nowrap" }}>
+                            {interval.label}
+                          </Text>
+                          <NumberFormatter
+                            decimalScale={getDecimalScale(interval.value)}
+                            fixedDecimalScale={true}
+                            prefix="$"
+                            thousandSeparator={true}
+                            value={interval.value}
+                          />
+                        </Group>
+                      )
+                    )}
+                  </SimpleGrid>
+                </Paper>
+              </Box>
+            </SimpleGrid>
+          </Stack>
+        </Paper>
+      )}
+    </Stack>
+  )
+}

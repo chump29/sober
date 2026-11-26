@@ -16,7 +16,7 @@ RUN --mount=type=cache,target=/.bun-cache \
 FROM nginx:alpine
 
 LABEL org.opencontainers.image.authors="Chris Post <admin@postfmly.com>" \
-    org.opencontainers.image.description="Sobriety counter (Frontend)" \
+    org.opencontainers.image.description="Sobriety tracker (Frontend)" \
     org.opencontainers.image.licenses="GPL-3.0-only" \
     org.opencontainers.image.title="Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ (Frontend)" \
     org.opencontainers.image.url="https://github.com/chump29/sober"

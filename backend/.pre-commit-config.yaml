@@ -10,20 +10,9 @@ repos:
         args:
           - --directory
           - backend
+          - --locked
           - --preview-features
           - audit-command
-          - --locked
-  - repo: local
-    hooks:
-      - id: pylint
-        name: pylint
-        entry: uv run pylint
-        language: unsupported
-        types:
-          - python
-        require_serial: true
-        args:
-          - --rcfile=backend/pyproject.toml
   - repo: local
     hooks:
       - id: ty
@@ -36,19 +25,15 @@ repos:
           - check
           - --error-on-warning
         require_serial: true
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v2.4.0
-    hooks:
-      - id: mypy
   - repo: https://github.com/pyCQA/bandit
     rev: 1.9.4
     hooks:
       - id: bandit
         args:
-          - --recursive
           - --configfile
           - backend/pyproject.toml
           - --quiet
+          - --recursive
           - .
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
@@ -57,22 +42,7 @@ repos:
       - id: check-shebang-scripts-are-executable
       - id: check-toml
       - id: check-yaml
-  - repo: https://github.com/dotenv-linter/dotenv-linter
-    rev: v4.0.0
-    hooks:
-      - id: dotenv-linter
-        args:
-          - check
-  - repo: https://github.com/streetsidesoftware/cspell-cli
-    rev: v10.3.0
-    hooks:
-      - id: cspell
-        args:
-          - --no-must-find-files
-          - --no-config-search
-          - --config
-          - .vscode/cspell.json
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.17.0
+    rev: v0.17.6
     hooks:
       - id: ruff-check

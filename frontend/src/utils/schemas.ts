@@ -1,5 +1,5 @@
 // cSpell: ignore SSSZ
-
+import { parse as ms } from "@lukeed/ms"
 import { default as dayjs } from "dayjs"
 import { default as utc } from "dayjs/plugin/utc"
 import { createRegExp, digit, letter, oneOrMore } from "magic-regexp"
@@ -9,12 +9,12 @@ import {
   check,
   date,
   decimal,
-  digits,
   enum_,
   gtValue,
   integer,
   isoTimestamp,
   maxLength,
+  maxValue,
   minValue,
   nonEmpty,
   number,
@@ -30,7 +30,7 @@ import {
   words
 } from "valibot"
 
-import { HttpMethods } from "./index.ts"
+import { Endpoint, HttpMethod } from "./index.ts"
 
 dayjs.extend(utc)
 
@@ -55,7 +55,7 @@ type BooleanSchema = typeof BooleanSchema
  * @summary YYYY-MM-DDTHH:mm:ss.SSSZ
  * @example 2026-08-22T04:20:45.720-05:00
  */
-const DATETIME_FORMAT: string = "YYYY-MM-DDTHH:mm:ss.SSSZ"
+const DATETIME_FORMAT = "YYYY-MM-DDTHH:mm:ss.SSSZ"
 
 /**
  * Validate datetime
@@ -79,14 +79,28 @@ type DateTimeSchema = typeof DateTimeSchema
  * @summary YYYY, MMMM Do, YYYY
  * @example Saturday, August 22nd, 2026
  */
-const DATETIME_FORMAT_SHORT_OUTPUT: string = "dddd, MMMM Do, YYYY"
+const DATETIME_FORMAT_SHORT_OUTPUT = "dddd, MMMM Do, YYYY"
 
 /**
  * Datetime output format
  * @summary YYYY, MMMM Do, YYYY @ h:mm A
  * @example Saturday, August 22nd, 2026 @ 4:20 AM
  */
-const DATETIME_FORMAT_OUTPUT: string = `${DATETIME_FORMAT_SHORT_OUTPUT} @ h:mm A`
+const DATETIME_FORMAT_OUTPUT = `${DATETIME_FORMAT_SHORT_OUTPUT} @ h:mm A`
+
+/**
+ * Datetime short format
+ * @summary MM/DD/YY
+ * @example 09/22/26
+ */
+const DATETIME_FORMAT_SHORT = "MM/DD/YY"
+
+/**
+ * Datetime milestone format
+ * @summary MMM D, YYYY
+ * @example Aug 22, 2026
+ */
+const DATETIME_FORMAT_MILESTONE = "MMM D, YYYY"
 
 /**
  * Validate URL
@@ -96,14 +110,14 @@ const UrlSchema = pipe(StringSchema, url())
 
 type UrlSchema = typeof UrlSchema
 
-const MIN_TIMEOUT: number = 200
+const MIN_TIMEOUT = ms(".2s")
+const MAX_TIMEOUT = ms("60s")
 
 /**
  * Validate API timeout
- * @summary Non-empty digit string, min value = {@link MIN_TIMEOUT} ms
- * @returns Integer
+ * @summary Integer, min value = {@link MIN_TIMEOUT}, max value = {@link MAX_TIMEOUT}, in ms
  */
-const TimeoutSchema = pipe(StringSchema, digits(), toNumber(), integer(), minValue(MIN_TIMEOUT))
+const TimeoutSchema = pipe(number(), integer(), minValue(MIN_TIMEOUT), maxValue(MAX_TIMEOUT))
 
 type TimeoutSchema = typeof TimeoutSchema
 
@@ -125,10 +139,10 @@ const CostInputSchema = pipe(StringSchema, decimal(), toNumber(), minValue(0))
 type CostInputSchema = typeof CostInputSchema
 
 /**
- * Maximum user length
+ * Maximum length
  * @default 64
  */
-const MAX_LEN_STR: number = 64
+const MAX_LEN_STR = 64
 
 /**
  * Validate substance name
@@ -151,6 +165,7 @@ type IdSchema = typeof IdSchema
 /**
  * Validate title
  * @summary Non-empty string, exactly two words, US English locale
+ * @returns Array of two strings
  */
 const TitleSchema = pipe(StringSchema, words("en-US", 2))
 
@@ -160,7 +175,7 @@ type TitleSchema = typeof TitleSchema
  * Validate HTTP method
  * @summary Valid HTTP method
  */
-const MethodSchema = enum_(HttpMethods)
+const MethodSchema = enum_(HttpMethod)
 
 type MethodSchema = typeof MethodSchema
 
@@ -183,8 +198,8 @@ const CostTypeSchema = enum_(CostType)
 
 type CostTypeSchema = typeof CostTypeSchema
 
-const EXP_MIN_LEN: number = 1
-const EXP_MAX_LEN: number = 7
+const EXP_MIN_LEN = 1
+const EXP_MAX_LEN = 7
 
 /**
  * Validate JWT expiration time
@@ -207,6 +222,14 @@ const ExpireTimeSchema = union([
 
 type ExpireTimeSchema = typeof TitleSchema
 
+/**
+ * Validate Endpoint
+ * @summary Valid {@link Endpoints}
+ */
+const EndpointSchema = enum_(Endpoint)
+
+type EndpointSchema = typeof EndpointSchema
+
 export {
   BooleanSchema,
   CostInputSchema,
@@ -214,9 +237,12 @@ export {
   CostType,
   CostTypeSchema,
   DATETIME_FORMAT,
+  DATETIME_FORMAT_MILESTONE,
   DATETIME_FORMAT_OUTPUT,
+  DATETIME_FORMAT_SHORT,
   DATETIME_FORMAT_SHORT_OUTPUT,
   DateTimeSchema,
+  EndpointSchema,
   ExpireTimeSchema,
   IdSchema,
   MAX_LEN_STR,

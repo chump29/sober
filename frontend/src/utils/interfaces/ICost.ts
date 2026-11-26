@@ -1,6 +1,5 @@
-interface ICost {
+export interface ICost {
   cost: number
-  costPer: string
+  costPer: number
+  costType: string
 }
-
-export { type ICost }

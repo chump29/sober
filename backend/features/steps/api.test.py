@@ -5,37 +5,38 @@
 """CRUD tests"""
 
 from asyncio import run as run_async
-from json import dumps
 from typing import TYPE_CHECKING, Final
 
-# pylint: disable-next=import-error
+from behave import given, then, when
+from box import Box
+from environment import get_new_substance
+from fake import fake
+from loadfig import pyproject as load_pyproject
+
+# pylint: disable=import-private-name
 from api import (
     Substance,
     SubstanceDTO,
     User,
+    _get_user_hash,
+    _user_get_or_create,
     add_substance,
     clear_cache_stats,
     delete_substance,
     delete_user,
+    evict_user,
     get_cache_stats,
     get_favicon,
     get_substance,
     get_substances,
-    get_user,
-    get_user_hash,
     get_version,
     update_substance,
 )
-from behave import given, then, when
-from box import Box
-from environment import get_new_substance, log  # pylint: disable=import-error
-from env import env  # pylint: disable=import-error
-from fake import fake  # pylint: disable=import-error
-from loadfig import pyproject as load_pyproject
+from env import env
 
 if TYPE_CHECKING:
     from behave.runner import Context
-    from cachetools import _CacheInfo
+    from cachetools import CacheInfo
 
 
 # region Stringify a SubstanceDTO
@@ -61,9 +62,6 @@ def substance_dto_string(context: Context) -> None:
 
     assert isinstance(context.substance_dto, str), "Invalid SubstanceDTO type"
 
-    if context.config.wip:
-        log("SubstanceDTO", context.substance_dto)
-
 
 # endregion
 
@@ -88,9 +86,6 @@ def return_cache_stats(context: Context) -> None:
     """Return cache stats"""
     assert context.stats, "Invalid get_cache_stats results"
 
-    if context.config.wip:
-        log("Stats", dumps(context.stats, indent=2))
-
 
 # endregion
 
@@ -113,7 +108,9 @@ def call_clear_cache(context: Context) -> None:
 @then("Cache cleared is returned")
 def return_cache_cleared(context: Context) -> None:
     """Return cache cleared"""
-    assert context.stats == "Cache cleared", "Invalid clear_cache_stats results"
+    cache_cleared: Final[str] = "Cache cleared"
+
+    assert context.stats == cache_cleared, "Invalid clear_cache_stats results"
 
 
 # endregion
@@ -147,14 +144,12 @@ def version_returned(context: Context) -> None:
     """Return version"""
     assert context.real_version == context.version, "Invalid get_version results"
 
-    if context.config.wip:
-        log("Version", context.version)
-
 
 @then("version is cached")
 def verify_cache(_: Context) -> None:
     """Verify cache"""
-    cache: Final[_CacheInfo] = get_version.cache_info()
+    cache: Final[CacheInfo] = get_version.cache_info()
+
     assert cache.hits == 1, "Version not cached (hits)"
     assert cache.misses == 1, "Version not cached (misses)"
 
@@ -172,7 +167,7 @@ def create_user_record(_: Context) -> None:
 @when("/user API endpoint is called (create)")
 def call_create_user(context: Context) -> None:
     """Call /user API (create)"""
-    get_user(context.user)
+    _user_get_or_create(_get_user_hash(context.user), {})
 
     assert not context.failed, "/user (create) call failed"
 
@@ -180,11 +175,9 @@ def call_create_user(context: Context) -> None:
 @then("user data is created")
 def create_user_data(context: Context) -> None:
     """Create user data"""
-    user: Final[User | None] = User.get_or_none(user=get_user_hash(context.user))
-    assert user, "User not created"
+    user: Final[User | None] = User.get_or_none(User.user == _get_user_hash(context.user))
 
-    if context.config.wip:
-        log("User", str(user))
+    assert user, "User not created"
 
 
 # endregion
@@ -200,7 +193,7 @@ def get_user_record(_: Context) -> None:
 @when("/user API endpoint is called (get)")
 def call_get_user(context: Context) -> None:
     """Call /user API (get)"""
-    get_user(context.user)
+    _user_get_or_create(_get_user_hash(context.user), {})
 
     assert not context.failed, "/user (get) call failed"
 
@@ -208,12 +201,38 @@ def call_get_user(context: Context) -> None:
 @then("user data is found in cache")
 def verify_user_cache(_: Context) -> None:
     """Verify user cache"""
-    cache: Final[_CacheInfo] = get_user.cache_info()
+    cache: Final[CacheInfo] = _user_get_or_create.cache_info()
+
     assert cache.hits == 1, "User not cached (hits)"
     assert cache.misses == 1, "User not cached (misses)"
 
 
 # endregion
+
+# region Evict user
+
+
+@given("that a user is evicted from cache")
+def evict_user_record(_: Context) -> None:
+    """Evict user from cache"""
+
+
+@when("/user/evict API endpoint is called")
+def call_evict_user(context: Context) -> None:
+    """Call /user/evict API"""
+    run_async(evict_user(context.user))
+
+
+@then("user data is not found in cache")
+def verify_not_in_user_cache(context: Context) -> None:
+    """Verify not in user cache"""
+    key: Final[tuple[str]] = _user_get_or_create.cache_key(_get_user_hash(context.user))
+
+    assert key not in _user_get_or_create.cache
+
+
+# endregion
+
 
 # region Delete user
 
@@ -226,7 +245,7 @@ def delete_user_record(_: Context) -> None:
 @when("/user/delete API endpoint is called with an ID")
 def call_delete_user(context: Context) -> None:
     """Call /user/delete API"""
-    run_async(delete_user(get_user_hash(context.user)))
+    run_async(delete_user(context.user))
 
     assert not context.failed, "/user/delete call failed"
 
@@ -234,7 +253,8 @@ def call_delete_user(context: Context) -> None:
 @then("user data is deleted")
 def user_is_deleted(context: Context) -> None:
     """User deleted"""
-    user: Final[User | None] = User.get_or_none(user=get_user_hash(context.user))
+    user: Final[User | None] = User.get_or_none(User.user == _get_user_hash(context.user))
+
     assert not user, "Could not delete user"
 
 
@@ -246,7 +266,7 @@ def user_is_deleted(context: Context) -> None:
 @given("that a user wants to add a substance record")
 def add_substance_record(context: Context) -> None:
     """Add substance"""
-    get_user(context.user)  # create
+    _user_get_or_create(_get_user_hash(context.user), {})  # create
 
 
 @when("/substances/add API endpoint is called")
@@ -262,9 +282,6 @@ def call_substance_add(context: Context) -> None:
 def return_new_substance(context: Context) -> None:
     """Return new substance"""
     assert context.substance, "Invalid add_substance results"
-
-    if context.config.wip:
-        log("SubstanceDTO", context.substance)
 
 
 # endregion
@@ -297,7 +314,8 @@ def return_substances(context: Context) -> None:
 @then("substances are cached")
 def verify_substances_cache(_: Context) -> None:
     """Verify substances cache"""
-    cache: Final[_CacheInfo] = get_substances.cache_info()
+    cache: Final[CacheInfo] = get_substances.cache_info()
+
     assert cache.hits == 1, "Substances not cached (hits)"
     assert cache.misses == 1, "Substances not cached (misses)"
 
@@ -313,6 +331,7 @@ def verify_substances_cache(_: Context) -> None:
 def get_substance_by_id(context: Context) -> None:
     """Get substance by ID"""
     context.substances = get_substances(context.user)
+
     assert context.substances, "Could not get substances"
 
 
@@ -341,6 +360,7 @@ def return_substance(context: Context) -> None:
 def update_substance_by_id(context: Context) -> None:
     """Update substance"""
     context.substances = get_substances(context.user)
+
     assert context.substances, "Could not get substances"
 
 
@@ -353,7 +373,8 @@ def call_update_substance(context: Context) -> None:
 
     object.__setattr__(substance, "date", fake.date_time())  # frozen
 
-    user: Final[User | None] = User.get_or_none(user=get_user_hash(context.user))
+    user: Final[User | None] = User.get_or_none(User.user == _get_user_hash(context.user))
+
     assert user, "Invalid user"
 
     context.substance = run_async(update_substance(pk=user.id, substance=substance, user=context.user))
@@ -368,9 +389,6 @@ def return_updated_substance(context: Context) -> None:
 
     assert context.substance.date != context.date, "Could not update substance"
 
-    if context.config.wip:
-        log("SubstanceDTO", context.substance)
-
 
 # endregion
 
@@ -383,6 +401,7 @@ def return_updated_substance(context: Context) -> None:
 def delete_substance_by_id(context: Context) -> None:
     """Delete substance"""
     substance: Final[list[Substance]] = list(Substance.select())
+
     assert substance, "Could not get Substance"
 
     context.substance_id = substance[0].id

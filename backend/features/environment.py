@@ -6,11 +6,11 @@ from decimal import Decimal
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
-from fake import fake  # pylint: disable=import-error
+from fake import fake
 from rich.console import Console
 
-from api import CostType, SubstanceDTO, User  # pylint: disable=import-error
-from env import env  # pylint: disable=import-error
+from api import CostType, SubstanceDTO, User
+from env import env
 
 if TYPE_CHECKING:
     from behave.model import Feature
@@ -43,13 +43,10 @@ def get_new_substance() -> SubstanceDTO:
 
 def before_feature(context: Context, _: Feature) -> None:
     """Run before features"""
-    User.delete().execute()  # type: ignore[misc] # pylint: disable=no-value-for-parameter
+    User.delete().execute()  # pylint: disable=no-value-for-parameter
 
     context.user = fake.first_name()
     assert context.user, "Could not set user"
-
-    if context.config.wip:
-        log("User", context.user)
 
 
 def after_feature(_: Context, __: Feature) -> None:

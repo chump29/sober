@@ -51,6 +51,6 @@ const defaultSubstance: ISubstance = {
   showCost: false,
   showDecimals: true,
   showTime: true
-} satisfies ISubstance
+}
 
 export { defaultSubstance, type ISubstance, SubstanceSchema }
