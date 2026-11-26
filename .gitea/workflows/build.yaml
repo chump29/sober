@@ -32,6 +32,8 @@ jobs:
           path: ${{ env.BUN_INSTALL_CACHE_DIR }}
 
       - name: Install dependencies
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
         run: bun ci
 
       - name: CSpell
