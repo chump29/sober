@@ -46,6 +46,8 @@ jobs:
           verbose: true
 
       - name: Scanning
+        env:
+            NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
         run: bun run scan
 
       - name: Linting
