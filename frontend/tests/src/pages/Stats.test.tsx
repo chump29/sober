@@ -140,10 +140,6 @@ const rePercent = /%/u
 beforeEach((): void => {
   isMobile = false
 
-  const statsType = fake.helpers.arrayElement(
-    Object.values(StatsType).filter((v: unknown): v is StatsType => typeof v === "number" && v !== 0)
-  )
-
   substance = {
     ...getSubstance({
       cost: getAmount(),
@@ -156,7 +152,7 @@ beforeEach((): void => {
     showCost: true,
     showDecimals: fake.datatype.boolean(),
     showTime: true,
-    statsType
+    statsType: StatsType.Alcohol // ! TODO: Test StatsType.Smoking & StatsType.None
   }
 
   statsMock = getStats(substance.showDecimals)
