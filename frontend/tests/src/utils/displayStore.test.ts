@@ -6,6 +6,7 @@ import { fakerEN_US as fake } from "@faker-js/faker"
 import { renderHook } from "@testing-library/react"
 import { default as dayjs } from "dayjs"
 
+import { TIME } from "../../../src/utils/calc.ts"
 import {
   displayStore,
   displayStoreActions,
@@ -55,8 +56,9 @@ describe("displayStore", (): void => {
   })
 
   test("setSelectedSubstance, cost > 0", (): void => {
-    const cost = Number(fake.commerce.price())
-    const days = fake.number.int({ max: 30, min: 1 })
+    const cost = Number(fake.commerce.price({ min: 1 }))
+
+    const days = fake.number.int({ max: TIME.DAYS_30, min: 1 })
 
     const substance = getSubstance({
       cost,
@@ -91,7 +93,8 @@ describe("displayStore", (): void => {
 
   test("setDisplay - date = null", (): void => {
     const cost = Number(fake.commerce.price())
-    const days = fake.number.int({ max: 30, min: 1 })
+
+    const days = fake.number.int({ max: TIME.DAYS_30, min: 1 })
 
     const substance = getSubstance({
       cost,
@@ -109,7 +112,9 @@ describe("displayStore", (): void => {
 
   test("setDisplay - update", (): void => {
     const cost = Number(fake.commerce.price())
-    const days = fake.number.int({ max: 30, min: 1 })
+
+    const days = fake.number.int({ max: TIME.DAYS_30, min: 1 })
+
     let date = dayjs().subtract(days, "days").format(DATETIME_FORMAT)
 
     const substance = getSubstance({

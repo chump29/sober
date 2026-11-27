@@ -42,13 +42,15 @@ mock.module(
   })
 )
 
+const date = dayjs(fake.date.past()).format(DATETIME_FORMAT.replace(".SSS", ""))
+
 interface IDateTimePickerMockProps {
   disabled?: boolean
   onChange?: (value: string) => void
   timePickerProps?: {
     leftSection?: JSX.Element
   }
-  value?: Date | string
+  value?: string
 }
 const DateTimePicker = ({ disabled, onChange, timePickerProps, value }: IDateTimePickerMockProps): JSX.Element => (
   <div data-testid="date-time-picker">
@@ -61,6 +63,13 @@ const DateTimePicker = ({ disabled, onChange, timePickerProps, value }: IDateTim
       }}
       type="button">
       Trigger Invalid Date
+    </button>
+    <button
+      onClick={(): void => {
+        onChange?.(date)
+      }}
+      type="button">
+      Trigger Date Change
     </button>
     {timePickerProps?.leftSection}
   </div>
@@ -114,8 +123,8 @@ const fetch = fetchMock.enableMocks().mockResponse((req: Request): Response => {
   lastRequest = req
 
   return match<string, Response>(new URL(req.url).pathname)
-    .with(P.string.includes(Endpoint.update_substance), () =>
-      fetchResponse === null ? new Response(null, { status: HttpStatus.NO_CONTENT }) : Response.json(fetchResponse)
+    .with(P.string.includes(Endpoint.UpdateSubstance), () =>
+      fetchResponse === null ? new Response(null, { status: HttpStatus.NoContent }) : Response.json(fetchResponse)
     )
     .otherwise((s: string): never => {
       throw new Error(`Invalid API call: ${s}`)
@@ -289,6 +298,33 @@ describe("Home", (): void => {
     return u
   }
 
+  test("changes date", async (): Promise<void> => {
+    const updated: ISubstance = {
+      ...substance,
+      date
+    }
+
+    fetchResponse = updated
+
+    renderHome()
+
+    const user = userEvent.setup()
+
+    await user.click(screen.getByRole("button", { name: "Trigger Date Change" }))
+
+    await waitFor((): void => {
+      expect(fetch).toHaveBeenCalledTimes(1)
+    })
+
+    expect(lastRequest?.url).toContain(`/api/${Endpoint.UpdateSubstance}/${substance.id}`)
+    expect(lastRequest?.method).toBe(HttpMethod.PUT)
+    expect(await lastRequest?.json()).toStrictEqual(expect.objectContaining({ date }))
+
+    await waitFor((): void => {
+      expect(setSelectedSubstance).toHaveBeenCalledWith(validate(updated, SubstanceSchema))
+    })
+  })
+
   test("unchecks set time", async (): Promise<void> => {
     const updated: ISubstance = {
       ...substance,
@@ -303,6 +339,7 @@ describe("Home", (): void => {
     const user = await openDatePicker()
 
     const checkbox = await screen.findByRole("checkbox")
+
     expect(checkbox).toBeChecked()
 
     await user.click(checkbox)
@@ -311,7 +348,7 @@ describe("Home", (): void => {
       expect(fetch).toHaveBeenCalledTimes(1)
     })
 
-    expect(lastRequest?.url).toContain(`/api/${Endpoint.update_substance}/${substance.id}`)
+    expect(lastRequest?.url).toContain(`/api/${Endpoint.UpdateSubstance}/${substance.id}`)
     expect(lastRequest?.method).toBe(HttpMethod.PUT)
     expect(await lastRequest?.json()).toStrictEqual(
       expect.objectContaining({
@@ -343,6 +380,7 @@ describe("Home", (): void => {
     const user = await openDatePicker()
 
     const checkbox = await screen.findByRole("checkbox")
+
     expect(checkbox).not.toBeChecked()
 
     await user.click(checkbox)
@@ -351,7 +389,7 @@ describe("Home", (): void => {
       expect(fetch).toHaveBeenCalledTimes(1)
     })
 
-    expect(lastRequest?.url).toContain(`/api/${Endpoint.update_substance}/${substance.id}`)
+    expect(lastRequest?.url).toContain(`/api/${Endpoint.UpdateSubstance}/${substance.id}`)
     expect(lastRequest?.method).toBe(HttpMethod.PUT)
     expect(await lastRequest?.json()).toStrictEqual(
       expect.objectContaining({

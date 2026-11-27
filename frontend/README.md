@@ -7,9 +7,9 @@
 ![Bun](https://img.shields.io/badge/Bun-1.4.5-informational?style=plastic&logo=bun "Bun") &nbsp;
 ![Mantine](https://img.shields.io/badge/Mantine-9.8.2-informational?style=plastic&logo=mantine "Mantine") &nbsp;
 ![React](https://img.shields.io/badge/React-19.3.1-informational?style=plastic&logo=react "React") &nbsp;
-![Vite](https://img.shields.io/badge/Vite-8.3.8-informational?style=plastic&logo=vite "Vite")
+![Vite](https://img.shields.io/badge/Vite-8.4.0-informational?style=plastic&logo=vite "Vite")
 
-![Coverage](https://img.shields.io/badge/Coverage-96.67%25-success?style=plastic&logo=v8 "Coverage")
+![Coverage](https://img.shields.io/badge/Coverage-96.71%25-success?style=plastic&logo=v8 "Coverage")
 
 ---
 

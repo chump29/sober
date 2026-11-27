@@ -94,7 +94,7 @@ const loading: JSX.Element = (
 
 const apiVersion = fetchClient(
   {
-    endpoint: Endpoint.version,
+    endpoint: Endpoint.Version,
     method: HttpMethod.GET
   } satisfies IFetchClientSettings,
   StringSchema
@@ -107,23 +107,23 @@ const ApiVersion = (): JSX.Element => <>{use(apiVersion)}</>
 const navItems: readonly INav<Page>[] = [
   {
     icon: IconHome,
-    label: titleCase(Page.home),
-    value: Page.home
+    label: titleCase(Page.Home),
+    value: Page.Home
   },
   {
     icon: IconChartBar,
-    label: titleCase(Page.stats),
-    value: Page.stats
+    label: titleCase(Page.Stats),
+    value: Page.Stats
   },
   {
     icon: IconStar,
-    label: titleCase(Page.milestones),
-    value: Page.milestones
+    label: titleCase(Page.Milestones),
+    value: Page.Milestones
   },
   {
     icon: IconSettings,
-    label: titleCase(Page.settings),
-    value: Page.settings
+    label: titleCase(Page.Settings),
+    value: Page.Settings
   }
 ]
 
@@ -151,7 +151,7 @@ const UserAvatar = ({ name, ...others }: IUserAvatarProps): JSX.Element => (
 )
 
 export const App = (): JSX.Element => {
-  const [page, setPage] = useState<Page>(Page.home)
+  const [page, setPage] = useState<Page>(Page.Home)
   const [openedNav, { close: closeNav, toggle: toggleNav }] = useDisclosure(false)
 
   const [loggingIn, setLoggingIn] = useState(false)
@@ -201,7 +201,7 @@ export const App = (): JSX.Element => {
 
     const isNew = await fetchClient(
       {
-        endpoint: Endpoint.user,
+        endpoint: Endpoint.User,
         method: HttpMethod.GET,
         user
       } satisfies IFetchClientSettings,
@@ -216,7 +216,7 @@ export const App = (): JSX.Element => {
   const fetchSubstances = async ([, user]: readonly [string, string]): Promise<ISubstance[]> => {
     const data = await fetchClient(
       {
-        endpoint: Endpoint.substances,
+        endpoint: Endpoint.Substances,
         method: HttpMethod.GET,
         user
       } satisfies IFetchClientSettings,
@@ -273,6 +273,10 @@ export const App = (): JSX.Element => {
         return
       }
 
+      if (env.DEBUG) {
+        info("Found new substance… updating")
+      }
+
       setSelectedSubstance(substance)
 
       if (env.DEBUG) {
@@ -311,7 +315,7 @@ export const App = (): JSX.Element => {
 
     resetSoberUser()
 
-    setPage(Page.home)
+    setPage(Page.Home)
 
     if (env.DEBUG) {
       info(`${user} logged out`)
@@ -334,7 +338,7 @@ export const App = (): JSX.Element => {
 
       closeLogin()
 
-      setPage(Page.home)
+      setPage(Page.Home)
     } catch (e: unknown) {
       error(e)
     } finally {
@@ -379,7 +383,7 @@ export const App = (): JSX.Element => {
     try {
       // * NOTE: remove user from API cache
       await fetchClient({
-        endpoint: Endpoint.evict,
+        endpoint: Endpoint.Evict,
         method: HttpMethod.DELETE,
         user
       } satisfies IFetchClientSettings)
@@ -589,7 +593,7 @@ export const App = (): JSX.Element => {
               {navItems.map((item: INav<Page>): JSX.Element => {
                 const Icon = item.icon
                 const isActive = page === item.value
-                const isHidden = item.value !== Page.home && (!validUser || (substances?.length ?? 0) === 0)
+                const isHidden = item.value !== Page.Home && (!validUser || (substances?.length ?? 0) === 0)
 
                 return (
                   <Tooltip key={item.value} label={item.label}>
@@ -679,7 +683,7 @@ export const App = (): JSX.Element => {
                 }
 
                 switch (page) {
-                  case Page.home: {
+                  case Page.Home: {
                     if (isLoading || isValidating) {
                       return loading
                     }
@@ -701,15 +705,15 @@ export const App = (): JSX.Element => {
                       </Paper>
                     )
                   }
-                  case Page.stats:
+                  case Page.Stats:
                     return (
                       <Suspense fallback={loading}>
                         <Stats {...sharedProps} />
                       </Suspense>
                     )
-                  case Page.milestones:
+                  case Page.Milestones:
                     return <Milestones {...sharedProps} />
-                  case Page.settings:
+                  case Page.Settings:
                     return <Settings {...sharedProps} />
                   default:
                     return <StatePanel description={`Page (${page}) not defined.`} title="Unknown Page" />

@@ -29,9 +29,9 @@ let substances: ISubstance[] = [substance]
 const fetch = fetchMock.enableMocks().mockResponse(
   (req: Request): Response =>
     match<string, Response>(new URL(req.url).pathname)
-      .with(P.string.endsWith(Endpoint.version), () => Response.json(version))
-      .with(P.string.endsWith(Endpoint.user), () => new Response(null, { status: HttpStatus.CREATED }))
-      .with(P.string.endsWith(Endpoint.evict), () => new Response())
+      .with(P.string.endsWith(Endpoint.Version), () => Response.json(version))
+      .with(P.string.endsWith(Endpoint.User), () => new Response(null, { status: HttpStatus.Created }))
+      .with(P.string.endsWith(Endpoint.Evict), () => new Response())
       .otherwise((s: string): never => {
         throw new Error(`Invalid API call: ${s}`)
       })
@@ -96,7 +96,7 @@ mock.module(
   })
 )
 
-const Home = (): JSX.Element => <div data-testid={Page.home} />
+const Home = (): JSX.Element => <div data-testid={Page.Home} />
 mock.module(
   "../../src/pages/Home.tsx",
   (): MockComponent => ({
@@ -104,7 +104,7 @@ mock.module(
   })
 )
 
-const Stats = (): JSX.Element => <div data-testid={Page.stats} />
+const Stats = (): JSX.Element => <div data-testid={Page.Stats} />
 mock.module(
   "../../src/pages/Stats.tsx",
   (): MockComponent => ({
@@ -112,7 +112,7 @@ mock.module(
   })
 )
 
-const Milestones = (): JSX.Element => <div data-testid={Page.milestones} />
+const Milestones = (): JSX.Element => <div data-testid={Page.Milestones} />
 mock.module(
   "../../src/pages/Milestones.tsx",
   (): MockComponent => ({
@@ -120,7 +120,7 @@ mock.module(
   })
 )
 
-const Settings = (): JSX.Element => <div data-testid={Page.settings} />
+const Settings = (): JSX.Element => <div data-testid={Page.Settings} />
 mock.module(
   "../../src/pages/Settings.tsx",
   (): MockComponent => ({
@@ -163,7 +163,7 @@ beforeEach(async (): Promise<void> => {
 // biome-ignore lint/nursery/useLowercaseTestTitle: component name
 describe("App", (): void => {
   test("displays API version", async (): Promise<void> => {
-    expect(fetch).toHaveBeenNthCalledWith(1, expect.stringContaining(Endpoint.version), expect.anything())
+    expect(fetch).toHaveBeenNthCalledWith(1, expect.stringContaining(Endpoint.Version), expect.anything())
 
     const v = await screen.findByText(version, { exact: false })
 
@@ -247,7 +247,7 @@ describe("App", (): void => {
     await doLogin({ name })
 
     expect(localStorage.getItem("soberUser")).toBe(name)
-    expect(fetch).toHaveBeenLastCalledWith(expect.stringContaining(Endpoint.user), expect.anything())
+    expect(fetch).toHaveBeenLastCalledWith(expect.stringContaining(Endpoint.User), expect.anything())
     expect(screen.queryByPlaceholderText("Enter name…")).toBeNull()
   })
 
@@ -259,7 +259,7 @@ describe("App", (): void => {
     expect(screen.getByTestId("nav-settings")).toBeVisible()
 
     expect(screen.queryByTestId("substances")).toBeNull() // Home handles substances
-    expect(await screen.findByTestId(Page.home)).toBeInTheDocument() // lazy loaded
+    expect(await screen.findByTestId(Page.Home)).toBeInTheDocument() // lazy loaded
   })
 
   interface ILogInAndClickOptions {
@@ -278,19 +278,19 @@ describe("App", (): void => {
   test("displays Stats", async (): Promise<void> => {
     await logInAndClick({ element: "nav-stats" })
 
-    expect(await screen.findByTestId(Page.stats)).toBeInTheDocument() // lazy loaded
+    expect(await screen.findByTestId(Page.Stats)).toBeInTheDocument() // lazy loaded
   })
 
   test("displays Milestones", async (): Promise<void> => {
     await logInAndClick({ element: "nav-milestones" })
 
-    expect(screen.getByTestId(Page.milestones)).toBeInTheDocument()
+    expect(screen.getByTestId(Page.Milestones)).toBeInTheDocument()
   })
 
   test("displays Settings", async (): Promise<void> => {
     await logInAndClick({ element: "nav-settings" })
 
-    expect(screen.getByTestId(Page.settings)).toBeInTheDocument()
+    expect(screen.getByTestId(Page.Settings)).toBeInTheDocument()
   })
 
   test("displays Home", async (): Promise<void> => {
@@ -298,12 +298,12 @@ describe("App", (): void => {
 
     await logInAndClick({ element: "nav-settings", user })
 
-    expect(screen.getByTestId(Page.settings)).toBeInTheDocument()
+    expect(screen.getByTestId(Page.Settings)).toBeInTheDocument()
 
     await user.click(screen.getByTestId("nav-home"))
 
-    expect(screen.queryByTestId(Page.settings)).toBeNull()
-    expect(await screen.findByTestId(Page.home)).toBeInTheDocument() // lazy loaded
+    expect(screen.queryByTestId(Page.Settings)).toBeNull()
+    expect(await screen.findByTestId(Page.Home)).toBeInTheDocument() // lazy loaded
   })
 
   test("cancels log out", async (): Promise<void> => {
@@ -335,7 +335,7 @@ describe("App", (): void => {
     await user.click(screen.getByRole("button", { name: "Log Out" }))
 
     expect(fetch).toHaveBeenLastCalledWith(
-      expect.stringContaining(Endpoint.evict),
+      expect.stringContaining(Endpoint.Evict),
       expect.objectContaining({ method: "DELETE" })
     )
 

@@ -47,10 +47,10 @@ class Fake:
         return Decimal(str(self._numeric.float_number(start=start, end=end, precision=precision)))
 
     def enum_value(self, enum: type[Enum]) -> Any:  # noqa: ANN401
-        """Get CostType
+        """Get Enum value
 
         Args:
-            enum (Enum): Enum of values.
+            enum (Enum): Enum
 
         Returns:
             Any: Enum value

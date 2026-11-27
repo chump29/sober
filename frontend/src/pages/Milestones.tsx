@@ -1,6 +1,13 @@
 import { type JSX } from "react"
 
-import { IconChartLine, IconCircleCheckFilled, IconDots, IconLock, IconLockOpen2 } from "@tabler/icons-react"
+import {
+  IconChartLine,
+  IconCircleCheckFilled,
+  IconDots,
+  IconInfoCircleFilled,
+  IconLock,
+  IconLockOpen2
+} from "@tabler/icons-react"
 
 import { Box, Group, Paper, Progress, SimpleGrid, Stack, Text, Title } from "@mantine/core"
 
@@ -11,20 +18,20 @@ import { TIME } from "../utils/calc.ts"
 import { FACTOR, Milestone } from "../utils/index.ts"
 import { type IMilestone, type IMilestoneDefinition } from "../utils/interfaces/IMilestone.ts"
 import { type ISubstancesProps } from "../utils/interfaces/ISubstancesProps.ts"
-import { DATETIME_FORMAT_MILESTONE } from "../utils/schemas.ts"
+import { DATETIME_FORMAT_MILESTONE, DATETIME_FORMAT_SHORT } from "../utils/schemas.ts"
 
 const FIVE_YEARS = 5
 
 const milestoneDefinitions: IMilestoneDefinition[] = [
-  { days: 1, label: Milestone.DAYS_1 },
-  { days: TIME.DAYS_PER_WEEK, label: Milestone.WEEK_1 },
-  { days: TIME.DAYS_PER_FORTNIGHT, label: Milestone.FORTNIGHTS_1 },
-  { label: Milestone.MONTHS_1, months: 1 },
-  { label: Milestone.MONTHS_3, months: 3 },
-  { label: Milestone.MONTHS_6, months: 6 },
-  { label: Milestone.YEARS_1, months: TIME.MONTHS_PER_YEAR },
-  { label: Milestone.YEARS_2, months: TIME.MONTHS_PER_YEAR * 2 },
-  { label: Milestone.YEARS_5, months: TIME.MONTHS_PER_YEAR * FIVE_YEARS }
+  { days: 1, label: Milestone.Day },
+  { days: TIME.DAYS_PER_WEEK, label: Milestone.Week },
+  { days: TIME.DAYS_PER_FORTNIGHT, label: Milestone.Fortnight },
+  { label: Milestone.Month, months: 1 },
+  { label: Milestone.Months3, months: 3 },
+  { label: Milestone.Months6, months: 6 },
+  { label: Milestone.Year, months: TIME.MONTHS_PER_YEAR },
+  { label: Milestone.Years2, months: TIME.MONTHS_PER_YEAR * 2 },
+  { label: Milestone.Years5, months: TIME.MONTHS_PER_YEAR * FIVE_YEARS }
 ] as const
 
 const addMonthsClamped = (date: Dayjs, months: number): Dayjs => {
@@ -152,21 +159,31 @@ export const Milestones = ({
             <Stack miw={0}>
               <Title c="var(--text-secondary)">YOUR JOURNEY</Title>
               <Text c="dimmed" size="xs">
-                Every milestone is worth celebrating.
+                Every milestone is worth celebrating
               </Text>
             </Stack>
           </Group>
           <Group align="center" justify="space-between">
-            <Title>
-              <Text c="var(--accent-purple)" component="span" inherit={true}>
-                {completed}
-              </Text>{" "}
-              of{" "}
-              <Text c="var(--accent-purple)" component="span" inherit={true}>
-                {milestones.length}
-              </Text>{" "}
-              Milestones Reached
-            </Title>
+            <Stack gap="xl">
+              <Box>
+                <Group gap={8} pl={{ base: "md", md: "xl" }} wrap="nowrap">
+                  <IconInfoCircleFilled color="var(--text-secondary)" size={16} />
+                  <Text c="dimmed" size="xxs">
+                    Started on {dayjs(selectedSubstance.date).format(DATETIME_FORMAT_SHORT)}
+                  </Text>
+                </Group>
+              </Box>
+              <Title>
+                <Text c="var(--accent-purple)" component="span" inherit={true}>
+                  {completed}
+                </Text>{" "}
+                of{" "}
+                <Text c="var(--accent-purple)" component="span" inherit={true}>
+                  {milestones.length}
+                </Text>{" "}
+                Milestones Reached
+              </Title>
+            </Stack>
           </Group>
           <Progress.Root radius="xl" size="lg">
             <Progress.Section

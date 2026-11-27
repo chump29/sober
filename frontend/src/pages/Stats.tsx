@@ -27,8 +27,6 @@ import {
 } from "@mantine/core"
 import { useMediaQuery } from "@mantine/hooks"
 
-import { type Optional } from "@postfmly/types"
-
 import { default as pluralize } from "@jarrodek/pluralize"
 import { default as dayjs } from "dayjs"
 import { match, P } from "ts-pattern"
@@ -38,37 +36,77 @@ import { calculateSavings, calculateStats, TIME } from "../utils/calc.ts"
 import { currencyFormatter, FACTOR, Per, round } from "../utils/index.ts"
 import { type IInterval } from "../utils/interfaces/IInterval.ts"
 import { type ISavings } from "../utils/interfaces/ISavings.ts"
-import { type IChart, type IHealth, type IStat } from "../utils/interfaces/IStats.ts"
+import {
+  type IAlcohol,
+  type IChart,
+  type IHealth,
+  type IHealthMap,
+  type ISmoking,
+  type IStat
+} from "../utils/interfaces/IStats.ts"
 import { type ISubstancesProps } from "../utils/interfaces/ISubstancesProps.ts"
-import { DATETIME_FORMAT_SHORT } from "../utils/schemas.ts"
+import { DATETIME_FORMAT_SHORT, StatsType } from "../utils/schemas.ts"
 
 import "@mantine/charts/styles.css"
+import { type Optional } from "@postfmly/types"
 
 const X_ANGLE = -45
 const X_HEIGHT_MOBILE = 45
 const X_HEIGHT = 70
 
-// * NOTE: Recovery percentages are modeled using standard exponential saturation curves (1 − e⁻ᵏᵗ) calibrated to clinical abstinence milestones from The Lancet (Wood et al., 2018), BMJ Open (Mehta et al., 2018), and NIAAA/PMC organ recovery reviews.
+// NOTE: Recovery percentages are modeled using standard exponential saturation curves (1 − e⁻ᵏᵗ)
+// calibrated to clinical abstinence milestones from The Lancet (Wood et al., 2018), BMJ Open (Mehta et al., 2018),
+// NIAAA/PMC organ recovery reviews, and CDC/American Cancer Society smoking cessation timelines.
 const K = {
-  BLOOD_PRESSURE: 0.012,
-  LONG_TERM: 0.0015,
-  OVERALL: 0.0055,
-  SLEEP: 0.1
+  [StatsType.Alcohol]: {
+    BLOOD_PRESSURE: 0.012,
+    LONG_TERM: 0.0015,
+    OVERALL: 0.0055,
+    SLEEP: 0.1
+  },
+  [StatsType.Smoking]: {
+    LONG_TERM: 0.0019,
+    LUNG_FUNCTION: 0.0111,
+    OVERALL: 0.0052,
+    OXYGENATION: 0.214
+  }
 } as const
 
-const health = (days: number): Optional<IHealth> => {
+const recovery = (k: number, days: number): number => round(FACTOR * (1 - Math.exp(-k * days)))
+
+function health(type: typeof StatsType.None, days: number): undefined
+function health<T extends keyof IHealthMap>(type: T, days: number): Optional<IHealthMap[T]>
+function health(type: StatsType, days: number): Optional<IHealth>
+function health(type: StatsType, days: number): Optional<IHealth> {
   if (days === 0) {
     return undefined
   }
 
-  const recovery = (k: number): number => round(FACTOR * (1 - Math.exp(-k * days)))
+  return match<StatsType, Optional<IHealth>>(type)
+    .with(StatsType.None, () => undefined)
+    .with(StatsType.Alcohol, (): IAlcohol => {
+      const rates = K[StatsType.Alcohol]
 
-  return {
-    bloodPressure: recovery(K.BLOOD_PRESSURE),
-    longTerm: recovery(K.LONG_TERM),
-    overall: recovery(K.OVERALL),
-    sleep: recovery(K.SLEEP)
-  }
+      return {
+        bloodPressure: recovery(rates.BLOOD_PRESSURE, days),
+        longTerm: recovery(rates.LONG_TERM, days),
+        overall: recovery(rates.OVERALL, days),
+        sleep: recovery(rates.SLEEP, days),
+        type: StatsType.Alcohol
+      }
+    })
+    .with(StatsType.Smoking, (): ISmoking => {
+      const rates = K[StatsType.Smoking]
+
+      return {
+        longTerm: recovery(rates.LONG_TERM, days),
+        lungFunction: recovery(rates.LUNG_FUNCTION, days),
+        overall: recovery(rates.OVERALL, days),
+        oxygenation: recovery(rates.OXYGENATION, days),
+        type: StatsType.Smoking
+      }
+    })
+    .exhaustive()
 }
 
 const chart = (savings: ISavings, days: number, isMobile: boolean): IChart[] => {
@@ -101,6 +139,31 @@ const DEFAULT_DECIMALS = 2
 
 const getDecimalScale = (val: number): number => DECIMALS.find(({ max }) => val < max)?.decimals ?? DEFAULT_DECIMALS
 
+interface IHealthBarItem {
+  label: string
+  tooltip: string
+  value: number
+}
+
+const HealthBars = ({ items }: { items: IHealthBarItem[] }): JSX.Element => (
+  <Stack gap="xs">
+    {items.map(
+      (item: IHealthBarItem): JSX.Element => (
+        <Box key={item.label}>
+          <Text size="xs">{item.label}</Text>
+          <Tooltip label={item.tooltip}>
+            <Progress.Root>
+              <Progress.Section value={item.value}>
+                {item.value >= 10 && <Progress.Label>{item.value}%</Progress.Label>}
+              </Progress.Section>
+            </Progress.Root>
+          </Tooltip>
+        </Box>
+      )
+    )}
+  </Stack>
+)
+
 const Stat = (stat: IStat): JSX.Element => {
   const Icon = stat.icon
 
@@ -117,41 +180,57 @@ const Stat = (stat: IStat): JSX.Element => {
       <RollingNumber decimalScale={2} fixedDecimalScale={true} prefix="$" thousandSeparator={true} value={value} />
     ))
     .with({ value: P.number }, ({ value }) => <RollingNumber thousandSeparator={true} value={value} />)
-    .with({ value: P.when((v): v is IHealth => v !== null && typeof v === "object") }, ({ value }) => (
-      <Stack gap="xs">
-        <Text size="xs">Sleep & Metabolic Gain</Text>
-        <Tooltip label="Sleep architecture, hydration, and insulin sensitivity gains">
-          <Progress.Root>
-            <Progress.Section value={value.sleep}>
-              {value.sleep >= 10 && <Progress.Label>{value.sleep}%</Progress.Label>}
-            </Progress.Section>
-          </Progress.Root>
-        </Tooltip>
-        <Text size="xs">Organ & Blood Pressure Gain</Text>
-        <Tooltip label="Blood pressure reduction and liver fat reversal">
-          <Progress.Root>
-            <Progress.Section value={value.bloodPressure}>
-              {value.bloodPressure >= 10 && <Progress.Label>{value.bloodPressure}%</Progress.Label>}
-            </Progress.Section>
-          </Progress.Root>
-        </Tooltip>
-        <Text size="xs">Long Term Risk Reduction</Text>
-        <Tooltip label="Long-term chronic disease risk reduction">
-          <Progress.Root>
-            <Progress.Section value={value.longTerm}>
-              {value.longTerm >= 10 && <Progress.Label>{value.longTerm}%</Progress.Label>}
-            </Progress.Section>
-          </Progress.Root>
-        </Tooltip>
-        <Text size="xs">Overall Physiological Recovery</Text>
-        <Tooltip label="Composite recovery score across sleep, organ health, and long-term risk reduction">
-          <Progress.Root>
-            <Progress.Section value={value.overall}>
-              {value.overall >= 10 && <Progress.Label>{value.overall}%</Progress.Label>}
-            </Progress.Section>
-          </Progress.Root>
-        </Tooltip>
-      </Stack>
+    .with({ value: { type: StatsType.Alcohol } }, ({ value }) => (
+      <HealthBars
+        items={[
+          {
+            label: "Sleep & Metabolic Gain",
+            tooltip: "Sleep architecture, hydration, and insulin sensitivity gains",
+            value: value.sleep
+          },
+          {
+            label: "Organ & Blood Pressure Gain",
+            tooltip: "Blood pressure reduction and liver fat reversal",
+            value: value.bloodPressure
+          },
+          {
+            label: "Long Term Risk Reduction",
+            tooltip: "Long-term chronic disease risk reduction",
+            value: value.longTerm
+          },
+          {
+            label: "Overall Physiological Recovery",
+            tooltip: "Composite recovery score across sleep, organ health, and long-term risk reduction",
+            value: value.overall
+          }
+        ]}
+      />
+    ))
+    .with({ value: { type: StatsType.Smoking } }, ({ value }) => (
+      <HealthBars
+        items={[
+          {
+            label: "Oxygenation & Circulation",
+            tooltip: "Carbon monoxide clearance, nicotine detox, and taste/smell repair",
+            value: value.oxygenation
+          },
+          {
+            label: "Lung & Cilia Function",
+            tooltip: "Bronchial relaxation, lung cilia regrowth, and reduced coughing",
+            value: value.lungFunction
+          },
+          {
+            label: "Heart & Vascular Risk Reduction",
+            tooltip: "Long-term coronary heart disease and stroke risk reduction",
+            value: value.longTerm
+          },
+          {
+            label: "Overall Respiratory Recovery",
+            tooltip: "Composite recovery score across oxygenation, lung cilia, and cardiovascular risk",
+            value: value.overall
+          }
+        ]}
+      />
     ))
     .with({ value: P.optional(undefined) }, () => <Text fs="italic">Healing in progress…</Text>)
     .exhaustive()
@@ -225,35 +304,35 @@ export const Stats = ({
 
   const costs: IInterval[] = [
     {
-      label: Per.SECOND,
+      label: Per.Second,
       value: dailyCost / TIME.SECONDS_PER_DAY
     },
     {
-      label: Per.MINUTE,
+      label: Per.Minute,
       value: dailyCost / TIME.MINUTES_PER_DAY
     },
     {
-      label: Per.HOUR,
+      label: Per.Hour,
       value: dailyCost / TIME.HOURS_PER_DAY
     },
     {
-      label: Per.DAY,
+      label: Per.Day,
       value: dailyCost
     },
     {
-      label: Per.WEEK,
+      label: Per.Week,
       value: dailyCost * TIME.DAYS_PER_WEEK
     },
     {
-      label: Per.FORTNIGHT,
+      label: Per.Fortnight,
       value: dailyCost * TIME.DAYS_PER_FORTNIGHT
     },
     {
-      label: Per.MONTH,
+      label: Per.Month,
       value: dailyCost * TIME.DAYS_PER_MONTH
     },
     {
-      label: Per.YEAR,
+      label: Per.Year,
       value: dailyCost * TIME.DAYS_PER_YEAR
     }
   ]
@@ -302,7 +381,7 @@ export const Stats = ({
           description="Illustrative population-level estimates, not measured individual recovery or a clinical prediction."
           icon={IconRibbonHealth}
           label="Potential Health Gain"
-          value={health(days)}
+          value={health(selectedSubstance.statsType, days)}
         />
       </SimpleGrid>
       {selectedSubstance.showCost === true && selectedSubstance.cost > 0 && (
@@ -382,7 +461,7 @@ export const Stats = ({
                           key={interval.label}
                           px="sm"
                           py="xs"
-                          w="100^"
+                          w="100%"
                           wrap="nowrap">
                           <Text c="var(--text-secondary)" size="sm" style={{ whiteSpace: "nowrap" }}>
                             {interval.label}

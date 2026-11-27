@@ -22,7 +22,7 @@ const fetch = fetchMock.enableMocks().mockResponse(
   (): Response =>
     match<ResponseMode, Response>(mode)
       .with("empty", () => new Response("   "))
-      .with("error", () => new Response(null, { status: HttpStatus.IM_A_TEAPOT, statusText: "Teapot" }))
+      .with("error", () => new Response(null, { status: HttpStatus.ImATeapot, statusText: "Teapot" }))
       .exhaustive()
 )
 
@@ -34,7 +34,7 @@ describe("fetchClient", (): void => {
   test("returns null when settings are invalid", async (): Promise<void> => {
     const result = await fetchClient(
       {
-        endpoint: Endpoint.substances,
+        endpoint: Endpoint.Substances,
         id: -1,
         method: HttpMethod.GET,
         user: fake.person.firstName()
@@ -51,7 +51,7 @@ describe("fetchClient", (): void => {
 
     const result = await fetchClient(
       {
-        endpoint: Endpoint.substances,
+        endpoint: Endpoint.Substances,
         method: HttpMethod.GET,
         user: fake.person.firstName()
       },
@@ -66,7 +66,7 @@ describe("fetchClient", (): void => {
 
     const result = await fetchClient(
       {
-        endpoint: Endpoint.substances,
+        endpoint: Endpoint.Substances,
         method: HttpMethod.GET,
         user: fake.person.firstName()
       },

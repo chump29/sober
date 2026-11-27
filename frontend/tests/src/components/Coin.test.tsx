@@ -47,9 +47,9 @@ describe("Coin", (): void => {
 
     expect(screen.queryByText("AA Milestone Coin")).not.toBeInTheDocument()
 
-    const openButton = screen.getByRole("button", { name: reShowCoin })
+    const button = screen.getByRole("button", { name: reShowCoin })
 
-    fireEvent.click(openButton)
+    fireEvent.click(button)
 
     expect(openCoin).toHaveBeenCalledTimes(1)
   })
@@ -76,6 +76,7 @@ describe("Coin", (): void => {
       expect(screen.getByText(expectedLabel)).toBeInTheDocument()
 
       const recovery = screen.getByText("RECOVERY")
+
       expect(recovery).toBeInTheDocument()
 
       if (expectedNumeral.length === 0) {
@@ -94,9 +95,7 @@ describe("Coin", (): void => {
 
     renderCoin({ closeCoin, openedCoin: true })
 
-    const close = screen.getByTestId("close")
-
-    fireEvent.click(close)
+    fireEvent.click(screen.getByTestId("close"))
 
     expect(closeCoin).toHaveBeenCalledTimes(1)
   })

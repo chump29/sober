@@ -86,35 +86,35 @@ if (env.DEBUG) {
 const metrics: IMetric[] = [
   {
     icon: IconStopwatch,
-    label: Metric.seconds
+    label: Metric.Seconds
   },
   {
     icon: IconClock,
-    label: Metric.minutes
+    label: Metric.Minutes
   },
   {
     icon: IconHourglass,
-    label: Metric.hours
+    label: Metric.Hours
   },
   {
     icon: IconCalendarEvent,
-    label: Metric.days
+    label: Metric.Days
   },
   {
     icon: IconCalendarWeek,
-    label: Metric.weeks
+    label: Metric.Weeks
   },
   {
     icon: IconCalendarDue,
-    label: Metric.fortnights
+    label: Metric.Fortnights
   },
   {
     icon: IconCalendarMonth,
-    label: Metric.months
+    label: Metric.Months
   },
   {
     icon: IconCalendar,
-    label: Metric.years
+    label: Metric.Years
   }
 ] as const
 
@@ -153,7 +153,7 @@ export const Home = ({
           date,
           showTime: isShowTime ?? selectedSubstance.showTime
         } satisfies ISubstance,
-        endpoint: Endpoint.update_substance,
+        endpoint: Endpoint.UpdateSubstance,
         id,
         method: HttpMethod.PUT,
         user
@@ -169,11 +169,6 @@ export const Home = ({
 
     if (env.DEBUG) {
       info(`New sober date for ${data.name}: ${date}`)
-    }
-
-    // * NOTE: don't refresh if only choosing to set time
-    if (isShowTime === undefined) {
-      //await refreshSubstances()
     }
   }
 
@@ -215,6 +210,7 @@ export const Home = ({
           }}>
           <Substances
             allSubstances={allSubstances}
+            isHome={true}
             refreshSubstances={refreshSubstances}
             selectedSubstance={selectedSubstance}
             setSelectedSubstance={setSelectedSubstance}
@@ -235,7 +231,7 @@ export const Home = ({
                   {"Sober Since".toUpperCase()}
                 </Text>
               </Group>
-              <Tooltip label="Sober Date">
+              <Tooltip label="Set Sober Date">
                 <DateTimePicker
                   disabled={!selectedSubstance.name}
                   dropdownType="modal"
@@ -280,6 +276,9 @@ export const Home = ({
                   valueFormat={selectedSubstance.showTime ? DATETIME_FORMAT_OUTPUT : DATETIME_FORMAT_SHORT_OUTPUT}
                 />
               </Tooltip>
+              <Text c="dimmed" fs="italic" size="xxs" ta="center">
+                Click to set sober date
+              </Text>
             </Stack>
           </Paper>
         </Grid.Col>

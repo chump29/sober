@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Final
 from fake import fake
 from rich.console import Console
 
-from api import CostType, SubstanceDTO, User
+from api import CostType, StatsType, SubstanceDTO, User
 from env import env
 
 if TYPE_CHECKING:
@@ -38,6 +38,7 @@ def get_new_substance() -> SubstanceDTO:
         showCost=show_cost,
         showDecimals=fake.boolean(),
         showTime=fake.boolean(),
+        statsType=fake.enum_value(StatsType),
     )
 
 

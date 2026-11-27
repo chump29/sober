@@ -32,7 +32,7 @@ export const fetchClient = async <S extends GenericSchema>(
   }
 
   let endpoint = `${env.API_URL}/`
-  if (s.endpoint !== Endpoint.version) {
+  if (s.endpoint !== Endpoint.Version) {
     endpoint += "api/"
   }
   endpoint += s.endpoint
@@ -46,14 +46,14 @@ export const fetchClient = async <S extends GenericSchema>(
       throw new FetchError(response)
     }
 
-    if (response.status === HttpStatus.NO_CONTENT || !schema) {
+    if (response.status === HttpStatus.NoContent || !schema) {
       return null
     }
 
     const text = (await response.text()).trim()
 
-    if (settings.endpoint === Endpoint.user) {
-      return response.status === HttpStatus.CREATED
+    if (settings.endpoint === Endpoint.User) {
+      return response.status === HttpStatus.Created
     }
 
     if (text.length === 0) {

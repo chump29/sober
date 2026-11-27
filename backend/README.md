@@ -10,7 +10,7 @@
 ![SQLite](https://img.shields.io/badge/SQLite-3.53.4-informational?style=plastic&logo=sqlite "SQLite") &nbsp;
 ![uv](https://img.shields.io/badge/uv-0.13.10-informational?style=plastic&logo=uv "uv")
 
-![Coverage](https://img.shields.io/badge/Coverage-78.95%25-success?style=plastic "Coverage")
+![Coverage](https://img.shields.io/badge/Coverage-79.45%25-success?style=plastic "Coverage")
 
 ---
 

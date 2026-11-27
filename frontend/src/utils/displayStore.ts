@@ -42,9 +42,9 @@ export const displayStore = create<IDisplay>()(
             return
           }
 
-          const now = dayjs()
-
           const substance = get().selectedSubstance
+
+          const now = dayjs()
 
           // * NOTE: reducing updates
           const currentCost = get().cost
@@ -60,7 +60,7 @@ export const displayStore = create<IDisplay>()(
           const now = dayjs()
 
           set({
-            ...calculateStats(data.date, get().selectedSubstance.showDecimals, now),
+            ...calculateStats(data.date, data.showDecimals, now),
             cost: getCost(data, data.date, now),
             selectedSubstance: data
           })

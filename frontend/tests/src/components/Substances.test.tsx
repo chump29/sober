@@ -22,10 +22,10 @@ let substance = getSubstance()
 const fetch = fetchMock.enableMocks().mockResponse(
   (req: Request): Response =>
     match<string, Response>(new URL(req.url).pathname)
-      .with(P.string.endsWith(Endpoint.add_substance), P.string.includes(Endpoint.update_substance), () =>
+      .with(P.string.endsWith(Endpoint.AddSubstance), P.string.includes(Endpoint.UpdateSubstance), () =>
         Response.json(substance)
       )
-      .with(P.string.includes(Endpoint.delete_substance), () => Response.json(true))
+      .with(P.string.includes(Endpoint.DeleteSubstance), () => Response.json(true))
       .otherwise((s: string): never => {
         throw new Error(`Invalid API call: ${s}`)
       })
@@ -80,6 +80,7 @@ if (substance1.name === substance2.name) {
 const renderSubstances = (overrides: Partial<ISubstancesProps> = {}): ReturnType<typeof render> => {
   const props = {
     allSubstances: [substance1, substance2],
+    isHome: true,
     refreshSubstances,
     selectedSubstance: substance1,
     setSelectedSubstance,
@@ -165,24 +166,21 @@ describe("Substances", (): void => {
 
     await user.click(screen.getByRole("button", { name: "Add" }))
 
-    const input = screen.getByPlaceholderText("Enter substance name…")
+    const add = within(screen.getByRole("dialog")).getByRole("button", { name: "Add" })
 
-    const dialog = screen.getByRole("dialog")
-    const submit = within(dialog).getByRole("button", { name: "Add" })
-
-    expect(submit).toBeDisabled()
+    expect(add).toBeDisabled()
 
     const name = fake.lorem.word()
 
-    await user.type(input, name)
+    await user.type(screen.getByPlaceholderText("Enter substance name…"), name)
 
-    expect(submit).toBeEnabled()
+    expect(add).toBeEnabled()
 
-    await user.click(submit)
+    await user.click(add)
 
     await waitFor((): void => {
       expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining(Endpoint.add_substance),
+        expect.stringContaining(Endpoint.AddSubstance),
         expect.objectContaining({
           body: expect.stringContaining(titleCase(name)),
           method: HttpMethod.POST
@@ -225,12 +223,10 @@ describe("Substances", (): void => {
     renderSubstances()
 
     await user.click(screen.getByRole("button", { name: "Add" }))
+
     await user.type(screen.getByPlaceholderText("Enter substance name…"), `  ${substance1.name.toUpperCase()}  `)
 
-    const dialog = screen.getByRole("dialog")
-    const submit = within(dialog).getByRole("button", { name: "Add" })
-
-    await user.click(submit)
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Add" }))
 
     expect(await screen.findByText("Substance already added")).toBeInTheDocument()
     expect(fetch).not.toHaveBeenCalled()
@@ -240,7 +236,9 @@ describe("Substances", (): void => {
     const user = userEvent.setup()
 
     const name = fake.lorem.word()
+
     const title = titleCase(name)
+
     substance = { ...substance1, name: title }
 
     renderSubstances()
@@ -250,6 +248,7 @@ describe("Substances", (): void => {
     expect(screen.getByText("Rename Substance")).toBeInTheDocument()
 
     const input = screen.getByPlaceholderText("Enter substance name…")
+
     expect(input).toHaveValue(substance1.name)
 
     await user.clear(input)
@@ -260,7 +259,7 @@ describe("Substances", (): void => {
 
     await waitFor((): void => {
       expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining(`${Endpoint.update_substance}/${substance1.id}`),
+        expect.stringContaining(`${Endpoint.UpdateSubstance}/${substance1.id}`),
         expect.objectContaining({
           body: expect.stringContaining(title),
           method: HttpMethod.PUT
@@ -286,8 +285,7 @@ describe("Substances", (): void => {
 
     await user.type(input, substance2.name.toLowerCase())
 
-    const dialog = screen.getByRole("dialog")
-    await user.click(within(dialog).getByRole("button", { name: "Rename" }))
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Rename" }))
 
     expect(await screen.findByText("Substance already added")).toBeInTheDocument()
     expect(fetch).not.toHaveBeenCalled()
@@ -301,6 +299,7 @@ describe("Substances", (): void => {
     await user.click(screen.getByRole("button", { name: "Remove" }))
 
     const dialog = screen.getByRole("dialog")
+
     expect(within(dialog).getByText("Remove Substance")).toBeInTheDocument()
 
     await user.click(within(dialog).getByRole("button", { name: "Remove" }))
@@ -309,7 +308,7 @@ describe("Substances", (): void => {
 
     await waitFor((): void => {
       expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining(`${Endpoint.delete_substance}/${substance1.id}`),
+        expect.stringContaining(`${Endpoint.DeleteSubstance}/${substance1.id}`),
         expect.objectContaining({
           method: HttpMethod.DELETE
         })
@@ -332,8 +331,7 @@ describe("Substances", (): void => {
 
     await user.click(screen.getByRole("button", { name: "Remove" }))
 
-    const dialog = screen.getByRole("dialog")
-    await user.click(within(dialog).getByRole("button", { name: "Remove" }))
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Remove" }))
 
     await waitFor((): void => {
       expect(setSelectedSubstance).toHaveBeenCalledWith(defaultSubstance)
@@ -347,8 +345,7 @@ describe("Substances", (): void => {
 
     await user.click(screen.getByRole("button", { name: "Remove" }))
 
-    const dialog = screen.getByRole("dialog")
-    await user.click(within(dialog).getByRole("button", { name: "Cancel" }))
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Cancel" }))
 
     expect(screen.queryByRole("dialog")).toBeNull()
     expect(fetch).not.toHaveBeenCalled()

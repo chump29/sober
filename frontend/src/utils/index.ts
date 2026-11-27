@@ -69,18 +69,6 @@ type UpdateType = (typeof UpdateType)[keyof typeof UpdateType]
 const getKeyByValue = <T extends Record<string, number>>(obj: T, value: number): string =>
   Object.keys(obj).find((key: string): boolean => obj[key] === value) ?? ""
 
-/** Save type */
-const SaveType = {
-  COST: 1,
-  COST_TYPE: 2,
-  SHOW_COIN: 3,
-  SHOW_COST: 4,
-  SHOW_DECIMALS: 5
-} as const
-
-/** Save type */
-type SaveType = (typeof SaveType)[keyof typeof SaveType]
-
 /**
  * HTTP Methods
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods HTTP request methods}
@@ -98,9 +86,9 @@ const HttpMethod = {
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status HTTP status codes}
  */
 const HttpStatus = {
-  CREATED: 201,
-  IM_A_TEAPOT: 418,
-  NO_CONTENT: 204
+  Created: 201,
+  ImATeapot: 418,
+  NoContent: 204
 } as const
 
 /** Percentage multiplier (0-100) */
@@ -121,23 +109,23 @@ const round = (num: number): number => Math.round((num + Number.EPSILON) * FACTO
 const roundDown = (num: number): number => Math.floor(num)
 
 const Page = {
-  home: "home",
-  milestones: "milestones",
-  settings: "settings",
-  stats: "stats"
+  Home: "home",
+  Milestones: "milestones",
+  Settings: "settings",
+  Stats: "stats"
 } as const
 
 type Page = (typeof Page)[keyof typeof Page]
 
 /** Endpoints */
 const Endpoint = {
-  add_substance: "substances/add",
-  delete_substance: "substances/delete",
-  evict: "user/evict",
-  substances: "substances",
-  update_substance: "substances/update",
-  user: "user",
-  version: "version"
+  AddSubstance: "substances/add",
+  DeleteSubstance: "substances/delete",
+  Evict: "user/evict",
+  Substances: "substances",
+  UpdateSubstance: "substances/update",
+  User: "user",
+  Version: "version"
 } as const
 
 /** Maximum number of substances allowed */
@@ -145,39 +133,39 @@ const MAX_SUBSTANCES = 5
 
 /** Metrics */
 const Metric = {
-  days: "days",
-  fortnights: "fortnights",
-  hours: "hours",
-  minutes: "minutes",
-  months: "months",
-  seconds: "seconds",
-  weeks: "weeks",
-  years: "years"
+  Days: "days",
+  Fortnights: "fortnights",
+  Hours: "hours",
+  Minutes: "minutes",
+  Months: "months",
+  Seconds: "seconds",
+  Weeks: "weeks",
+  Years: "years"
 } as const
 
 /** Milestones */
 const Milestone = {
-  DAYS_1: "1 Day",
-  FORTNIGHTS_1: "1 Fortnight",
-  MONTHS_1: "1 Month",
-  MONTHS_3: "3 Months",
-  MONTHS_6: "6 Months",
-  WEEK_1: "1 Week",
-  YEARS_1: "1 Year",
-  YEARS_2: "2 Years",
-  YEARS_5: "5 Years"
+  Day: "1 Day",
+  Fortnight: "1 Fortnight",
+  Month: "1 Month",
+  Months3: "3 Months",
+  Months6: "6 Months",
+  Week: "1 Week",
+  Year: "1 Year",
+  Years2: "2 Years",
+  Years5: "5 Years"
 } as const
 
 /** Per X */
 const Per = {
-  DAY: "Per Day",
-  FORTNIGHT: "Per Fortnight",
-  HOUR: "Per Hour",
-  MINUTE: "Per Minute",
-  MONTH: "Per Month",
-  SECOND: "Per Second",
-  WEEK: "Per Week",
-  YEAR: "Per Year"
+  Day: "Per Day",
+  Fortnight: "Per Fortnight",
+  Hour: "Per Hour",
+  Minute: "Per Minute",
+  Month: "Per Month",
+  Second: "Per Second",
+  Week: "Per Week",
+  Year: "Per Year"
 } as const
 
 /**
@@ -202,7 +190,6 @@ export {
   Per,
   round,
   roundDown,
-  SaveType,
   UpdateType,
   validate
 }

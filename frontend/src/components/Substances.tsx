@@ -30,6 +30,7 @@ import { BooleanSchema, MAX_LEN_STR } from "../utils/schemas.ts"
 
 export const Substances = ({
   allSubstances,
+  isHome = false,
   refreshSubstances,
   selectedSubstance,
   setSelectedSubstance,
@@ -81,7 +82,7 @@ export const Substances = ({
           ...defaultSubstance,
           name
         } satisfies ISubstance,
-        endpoint: Endpoint.add_substance,
+        endpoint: Endpoint.AddSubstance,
         method: HttpMethod.POST,
         user
       } satisfies IFetchClientSettings,
@@ -145,7 +146,7 @@ export const Substances = ({
         const data = await fetchClient(
           {
             body: updatedSubstance,
-            endpoint: Endpoint.update_substance,
+            endpoint: Endpoint.UpdateSubstance,
             id,
             method: HttpMethod.PUT,
             user
@@ -225,7 +226,7 @@ export const Substances = ({
 
       const data = await fetchClient(
         {
-          endpoint: Endpoint.delete_substance,
+          endpoint: Endpoint.DeleteSubstance,
           id,
           method: HttpMethod.DELETE,
           user
@@ -403,30 +404,32 @@ export const Substances = ({
                 {"Substances".toUpperCase()}
               </Text>
             </Group>
-            <Group justify="flex-end">
-              <Tooltip label="Add">
-                <Button
-                  color="var(--accent-green)"
-                  disabled={isSubmitting || isRemoving || !canAddSubstance()}
-                  leftSection={<IconSquareRoundedPlus size={20} />}
-                  onClick={handleOpen}
-                  size="xs"
-                  variant="outline">
-                  Add
-                </Button>
-              </Tooltip>
-              <Tooltip label="Remove">
-                <Button
-                  color="var(--accent-red)"
-                  disabled={!(allSubstances?.length && selectedSubstance) || isRemoving}
-                  leftSection={<IconSquareRoundedMinus size={20} />}
-                  onClick={openRemove}
-                  size="xs"
-                  variant="outline">
-                  Remove
-                </Button>
-              </Tooltip>
-            </Group>
+            {isHome === true && (
+              <Group justify="flex-end">
+                <Tooltip label="Add">
+                  <Button
+                    color="var(--accent-green)"
+                    disabled={isSubmitting || isRemoving || !canAddSubstance()}
+                    leftSection={<IconSquareRoundedPlus size={20} />}
+                    onClick={handleOpen}
+                    size="xs"
+                    variant="outline">
+                    Add
+                  </Button>
+                </Tooltip>
+                <Tooltip label="Remove">
+                  <Button
+                    color="var(--accent-red)"
+                    disabled={!(allSubstances?.length && selectedSubstance) || isRemoving}
+                    leftSection={<IconSquareRoundedMinus size={20} />}
+                    onClick={openRemove}
+                    size="xs"
+                    variant="outline">
+                    Remove
+                  </Button>
+                </Tooltip>
+              </Group>
+            )}
           </Group>
           <SegmentedControl<string>
             data={substances}
@@ -449,7 +452,7 @@ export const Substances = ({
             }}
             value={selectedSubstance.name}
           />
-          {substances.length > 0 && (
+          {isHome === true && substances.length > 0 && (
             <Text c="dimmed" fs="italic" size="xxs" ta="center">
               {isTouch ? "Hold" : "Double-click"} to rename
             </Text>

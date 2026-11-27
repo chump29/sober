@@ -68,7 +68,7 @@ describe("Milestones", (): void => {
 
     expect(screen.getByTestId("substances")).toBeInTheDocument()
     expect(screen.getByText("YOUR JOURNEY")).toBeInTheDocument()
-    expect(screen.getByText("Every milestone is worth celebrating.")).toBeInTheDocument()
+    expect(screen.getByText("Every milestone is worth celebrating")).toBeInTheDocument()
   })
 
   test("displays milestones", (): void => {

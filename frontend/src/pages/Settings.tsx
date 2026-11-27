@@ -14,16 +14,24 @@ import { env } from "../env.ts"
 import { fetchClient } from "../services/fetchClient.ts"
 import { Endpoint, getKeyByValue, HttpMethod, validate } from "../utils/index.ts"
 import { type IFetchClientSettings } from "../utils/interfaces/IFetchClientSettings.ts"
+import { type ISelectOption } from "../utils/interfaces/ISelectOption.ts"
 import { type ISubstance, SubstanceSchema } from "../utils/interfaces/ISubstance.ts"
 import { type ISubstancesProps } from "../utils/interfaces/ISubstancesProps.ts"
-import { CostType, CostTypeSchema } from "../utils/schemas.ts"
+import { CostType, CostTypeSchema, StatsType, StatsTypeSchema } from "../utils/schemas.ts"
 
-const costTypeOptions = [
-  { label: "Day", value: String(CostType.Day) },
-  { label: "Week", value: String(CostType.Week) },
-  { label: "Month", value: String(CostType.Month) },
-  { label: "Year", value: String(CostType.Year) }
-]
+const toOptions = <T extends Record<string, number>>(obj: T): readonly ISelectOption[] =>
+  Object.entries(obj)
+    .sort(([, a], [, b]): number => a - b)
+    .map(
+      ([label, value]): ISelectOption => ({
+        label,
+        value: String(value)
+      })
+    )
+
+const costTypeOptions = toOptions(CostType)
+
+const statsTypeOptions = toOptions(StatsType)
 
 export const Settings = ({
   allSubstances,
@@ -42,7 +50,7 @@ export const Settings = ({
 
     const data = await fetchClient(
       {
-        endpoint: Endpoint.update_substance,
+        endpoint: Endpoint.UpdateSubstance,
         body: {
           ...selectedSubstance,
           ...updates
@@ -105,6 +113,23 @@ export const Settings = ({
               </Stack>
             </Group>
             <Stack>
+              <Tooltip label="Stats Type">
+                <Select
+                  allowDeselect={false}
+                  data={statsTypeOptions}
+                  label="Stats Type"
+                  onChange={async (value: Nullable<string>): Promise<void> => {
+                    const statsType = validate(Number(value), StatsTypeSchema)
+
+                    if (statsType !== null) {
+                      await updateSubstance({ statsType })
+                    }
+                  }}
+                  value={String(selectedSubstance.statsType)}
+                  withAlignedLabels={true}
+                  withScrollArea={false}
+                />
+              </Tooltip>
               <Tooltip label="Show Coin" refProp="rootRef">
                 <Switch
                   checked={selectedSubstance.showCoin}
@@ -184,11 +209,10 @@ export const Settings = ({
                   onChange={async (value: Nullable<string>): Promise<void> => {
                     const costType = validate(Number(value), CostTypeSchema)
 
-                    if (costType) {
+                    if (costType !== null) {
                       await updateSubstance({ costType })
                     }
                   }}
-                  placeholder="Choose frequency…"
                   value={String(selectedSubstance.costType)}
                   withAlignedLabels={true}
                   withScrollArea={false}

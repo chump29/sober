@@ -20,7 +20,7 @@ import { type ISavings } from "../../../src/utils/interfaces/ISavings.ts"
 import { type IChart } from "../../../src/utils/interfaces/IStats.ts"
 import { type ISubstance } from "../../../src/utils/interfaces/ISubstance.ts"
 import { type ISubstancesProps } from "../../../src/utils/interfaces/ISubstancesProps.ts"
-import { CostType, DATETIME_FORMAT, DATETIME_FORMAT_SHORT } from "../../../src/utils/schemas.ts"
+import { CostType, DATETIME_FORMAT, DATETIME_FORMAT_SHORT, StatsType } from "../../../src/utils/schemas.ts"
 import { getSubstance, toDisplay } from "../utils/helpers.ts"
 
 type MockComponent = Record<string, unknown>
@@ -140,18 +140,23 @@ const rePercent = /%/u
 beforeEach((): void => {
   isMobile = false
 
+  const statsType = fake.helpers.arrayElement(
+    Object.values(StatsType).filter((v: unknown): v is StatsType => typeof v === "number" && v !== 0)
+  )
+
   substance = {
     ...getSubstance({
       cost: getAmount(),
       costType: CostType.Day,
       date: dayjs()
-        .subtract(fake.number.int({ max: TIME.DAYS_PER_YEAR, min: 1 }), "days")
+        .subtract(fake.number.int({ max: Math.floor(TIME.DAYS_PER_YEAR), min: 1 }), "days")
         .format(DATETIME_FORMAT)
     }),
     showCoin: true,
     showCost: true,
     showDecimals: fake.datatype.boolean(),
-    showTime: true
+    showTime: true,
+    statsType
   }
 
   statsMock = getStats(substance.showDecimals)
@@ -226,7 +231,7 @@ describe("Stats", (): void => {
   test("displays bars", (): void => {
     statsMock = {
       ...statsMock,
-      days: fake.number.int({ max: 365, min: 65 })
+      days: fake.number.int({ max: Math.floor(TIME.DAYS_PER_YEAR), min: 65 })
     }
     // * NOTE: >= 65 days ensures all four bars are > 10%
 

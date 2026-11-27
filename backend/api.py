@@ -116,6 +116,15 @@ class CostType(IntEnum):
     YEAR = auto()
 
 
+@verify(CONTINUOUS, UNIQUE)
+class StatsType(IntEnum):
+    """StatsType lookup"""
+
+    NONE = 0
+    ALCOHOL = auto()
+    SMOKING = auto()
+
+
 def _get_datetime_now() -> datetime:
     """Get current UTC datetime"""
     return ZonedDateTime.now("UTC").to_stdlib()
@@ -175,6 +184,7 @@ class Substance(BaseModel):
     show_cost = BooleanField(default=False)
     show_decimals = BooleanField(default=True)
     show_time = BooleanField(default=True)
+    stats_type = IntegerField(default=StatsType.NONE.value)
     updated_at = ISODateTimeField(default=_get_datetime_now)
     user = ForeignKeyField(User, backref="substances", field=User.user, on_delete="CASCADE")
 
@@ -185,7 +195,7 @@ class Substance(BaseModel):
             f"created_at={_format_datetime(self.created_at)}, updated_at={_format_datetime(self.updated_at)}, "
             f"date={_format_datetime(self.date)}, "
             f"show_coin={self.show_coin}, show_cost={self.show_cost}, show_decimals={self.show_decimals}, "
-            f"show_time={self.show_time}, cost={self.cost}, cost_type={CostType(self.cost_type)}"
+            f"show_time={self.show_time}, cost={self.cost}, cost_type={CostType(self.cost_type)}, stats_type={StatsType(self.stats_type)}"  # pylint: disable=line-too-long # noqa: E501
         )
 
     def __repr__(self: Substance) -> str:
@@ -215,6 +225,7 @@ class SubstanceDTO(BaseValidation):
     show_cost: bool = Field(alias="showCost")
     show_decimals: bool = Field(alias="showDecimals")
     show_time: bool = Field(alias="showTime")
+    stats_type: StrictInt = Field(alias="statsType", ge=0, le=len(StatsType))
 
     @classmethod
     @field_validator("name", mode="before")
@@ -237,7 +248,7 @@ class SubstanceDTO(BaseValidation):
         return (
             f"name={self.name}, date={self.date}, "
             f"showCoin={self.show_coin}, showCost={self.show_cost}, showDecimals={self.show_decimals}, "
-            f"showTime={self.show_time}, cost={self.cost}, costType={CostType(self.cost_type).name.title()}"
+            f"showTime={self.show_time}, cost={self.cost}, costType={CostType(self.cost_type).name.title()}, statsType={StatsType(self.stats_type).name.title()}"  # pylint: disable=line-too-long # noqa: E501
         )
 
     def __repr__(self: SubstanceDTO) -> str:
@@ -507,6 +518,7 @@ def _bad_request() -> NoReturn:
 
 @cached(cache=LRUCache(maxsize=2), key=lambda hashed_user, _=None: hashkey(hashed_user), info=True, lock=RLock())
 def _user_get_or_create(hashed_user: str, state: dict | None = None, /) -> User:
+    """Get or create user"""
     data: Final = cast("tuple[User, bool]", User.get_or_create(user=hashed_user))
     user, created = data
 

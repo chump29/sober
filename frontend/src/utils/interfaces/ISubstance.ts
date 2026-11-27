@@ -9,7 +9,9 @@ import {
   DATETIME_FORMAT,
   DateTimeSchema,
   IdSchema,
-  NameSchema
+  NameSchema,
+  StatsType,
+  StatsTypeSchema
 } from "../schemas.ts"
 
 /** Validate an {@link ISubstance} object */
@@ -22,7 +24,8 @@ const SubstanceSchema = object({
   showCoin: BooleanSchema,
   showCost: BooleanSchema,
   showDecimals: BooleanSchema,
-  showTime: BooleanSchema
+  showTime: BooleanSchema,
+  statsType: StatsTypeSchema
 })
 
 /**
@@ -50,7 +53,8 @@ const defaultSubstance: ISubstance = {
   showCoin: false,
   showCost: false,
   showDecimals: true,
-  showTime: true
+  showTime: true,
+  statsType: StatsType.None
 }
 
 export { defaultSubstance, type ISubstance, SubstanceSchema }

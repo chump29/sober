@@ -230,6 +230,24 @@ const EndpointSchema = enum_(Endpoint)
 
 type EndpointSchema = typeof EndpointSchema
 
+/** Stats type */
+const StatsType = {
+  Alcohol: 1,
+  None: 0,
+  Smoking: 2
+} as const
+
+/** Stats type */
+type StatsType = (typeof StatsType)[keyof typeof StatsType]
+
+/**
+ * Validate StatsType
+ * @summary Valid {@link StatsType}
+ */
+const StatsTypeSchema = enum_(StatsType)
+
+type StatsTypeSchema = typeof StatsTypeSchema
+
 export {
   BooleanSchema,
   CostInputSchema,
@@ -248,6 +266,8 @@ export {
   MAX_LEN_STR,
   MethodSchema,
   NameSchema,
+  StatsType,
+  StatsTypeSchema,
   StringSchema,
   TimeoutSchema,
   TitleSchema,

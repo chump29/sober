@@ -17,7 +17,7 @@ import { match, P } from "ts-pattern"
 import { Endpoint, getKeyByValue, HttpMethod, HttpStatus, validate } from "../../../src/utils/index.ts"
 import { type ISubstance, SubstanceSchema } from "../../../src/utils/interfaces/ISubstance.ts"
 import { type ISubstancesProps } from "../../../src/utils/interfaces/ISubstancesProps.ts"
-import { CostType } from "../../../src/utils/schemas.ts"
+import { CostType, StatsType } from "../../../src/utils/schemas.ts"
 import { getSubstance, toDisplay } from "../utils/helpers.ts"
 
 const Substances = (): JSX.Element => <div data-testid="substances" />
@@ -39,8 +39,8 @@ const fetch = fetchMock.enableMocks().mockResponse((req: Request): Response => {
   lastRequest = req
 
   return match<string, Response>(new URL(req.url).pathname)
-    .with(P.string.includes(Endpoint.update_substance), () =>
-      fetchResponse === null ? new Response(null, { status: HttpStatus.NO_CONTENT }) : Response.json(fetchResponse)
+    .with(P.string.includes(Endpoint.UpdateSubstance), () =>
+      fetchResponse === null ? new Response(null, { status: HttpStatus.NoContent }) : Response.json(fetchResponse)
     )
     .otherwise((s: string): never => {
       throw new Error(`Invalid API call: ${s}`)
@@ -81,7 +81,8 @@ beforeEach((): void => {
     costType: CostType.Day,
     showCoin: true,
     showCost: true,
-    showDecimals: true
+    showDecimals: true,
+    statsType: StatsType.None
   }
 
   fetchResponse = substance
@@ -102,6 +103,38 @@ describe("Settings", (): void => {
     expect(screen.getByText("Customize these settings to your preference")).toBeInTheDocument()
   })
 
+  // * NOTE: StatsType.Smoking has same logic
+  test("changes statsType to Alcohol", async (): Promise<void> => {
+    const updated = {
+      ...substance
+    }
+
+    fetchResponse = updated
+
+    await renderSettings()
+
+    const user: UserEvent = userEvent.setup()
+
+    await user.click(screen.getByLabelText("Stats Type", { selector: "input:not([type='hidden'])" }))
+
+    await user.click(await screen.findByText(getKeyByValue(StatsType, StatsType.Alcohol)))
+
+    await waitFor((): void => {
+      expect(fetch).toHaveBeenCalledTimes(1)
+    })
+
+    expect(await lastRequest?.json()).toStrictEqual(
+      expect.objectContaining({
+        statsType: StatsType.Alcohol
+      })
+    )
+
+    await waitFor((): void => {
+      expect(setSelectedSubstance).toHaveBeenCalledWith(validate(updated, SubstanceSchema))
+      expect(refreshSubstances).toHaveBeenCalledTimes(1)
+    })
+  })
+
   test("toggles showCoin", async (): Promise<void> => {
     const updated = {
       ...substance,
@@ -114,16 +147,17 @@ describe("Settings", (): void => {
 
     const user = userEvent.setup()
 
-    const switchInput = screen.getByLabelText(reShowCoin)
-    expect(switchInput).toBeChecked()
+    const toggle = screen.getByLabelText(reShowCoin)
 
-    await user.click(switchInput)
+    expect(toggle).toBeChecked()
+
+    await user.click(toggle)
 
     await waitFor((): void => {
       expect(fetch).toHaveBeenCalledTimes(1)
     })
 
-    expect(lastRequest?.url).toContain(`/api/${Endpoint.update_substance}/${substance.id}`)
+    expect(lastRequest?.url).toContain(`/api/${Endpoint.UpdateSubstance}/${substance.id}`)
     expect(lastRequest?.method).toBe(HttpMethod.PUT)
     expect(await lastRequest?.json()).toStrictEqual(
       expect.objectContaining({
@@ -149,10 +183,11 @@ describe("Settings", (): void => {
 
     const user = userEvent.setup()
 
-    const switchInput = screen.getByLabelText(reShowDecimals)
-    expect(switchInput).toBeChecked()
+    const toggle = screen.getByLabelText(reShowDecimals)
 
-    await user.click(switchInput)
+    expect(toggle).toBeChecked()
+
+    await user.click(toggle)
 
     await waitFor((): void => {
       expect(fetch).toHaveBeenCalledTimes(1)
@@ -182,10 +217,11 @@ describe("Settings", (): void => {
 
     const user = userEvent.setup()
 
-    const switchInput = screen.getByLabelText(reShowCost)
-    expect(switchInput).toBeChecked()
+    const toggle = screen.getByLabelText(reShowCost)
 
-    await user.click(switchInput)
+    expect(toggle).toBeChecked()
+
+    await user.click(toggle)
 
     await waitFor((): void => {
       expect(fetch).toHaveBeenCalledTimes(1)
@@ -225,11 +261,11 @@ describe("Settings", (): void => {
 
     expect(screen.getByText("Cost must be greater than zero")).toBeInTheDocument()
 
-    const costInput = screen.getByRole("textbox", {
-      name: `Cost Per ${getKeyByValue(CostType, substance.costType)}`
-    })
-
-    fireEvent.blur(costInput)
+    fireEvent.blur(
+      screen.getByRole("textbox", {
+        name: `Cost Per ${getKeyByValue(CostType, substance.costType)}`
+      })
+    )
 
     expect(fetch).not.toHaveBeenCalled()
     expect(refreshSubstances).not.toHaveBeenCalled()
@@ -247,11 +283,11 @@ describe("Settings", (): void => {
 
     await renderSettings()
 
-    const costInput = screen.getByRole("textbox", {
+    const input = screen.getByRole("textbox", {
       name: `Cost Per ${getKeyByValue(CostType, substance.costType)}`
     })
 
-    fireEvent.change(costInput, { target: { value: String(newCost) } })
+    fireEvent.change(input, { target: { value: String(newCost) } })
 
     expect(setSelectedSubstance).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -259,7 +295,7 @@ describe("Settings", (): void => {
       })
     )
 
-    fireEvent.blur(costInput)
+    fireEvent.blur(input)
 
     await waitFor((): void => {
       expect(fetch).toHaveBeenCalledTimes(1)
@@ -279,11 +315,12 @@ describe("Settings", (): void => {
   test("clears cost", async (): Promise<void> => {
     await renderSettings()
 
-    const costInput = screen.getByRole("textbox", {
-      name: `Cost Per ${getKeyByValue(CostType, substance.costType)}`
-    })
-
-    fireEvent.change(costInput, { target: { value: "" } })
+    fireEvent.change(
+      screen.getByRole("textbox", {
+        name: `Cost Per ${getKeyByValue(CostType, substance.costType)}`
+      }),
+      { target: { value: "" } }
+    )
 
     expect(setSelectedSubstance).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -304,9 +341,7 @@ describe("Settings", (): void => {
 
     const user: UserEvent = userEvent.setup()
 
-    const selectInput = screen.getByLabelText("Cost Frequency", { selector: "input:not([type='hidden'])" })
-
-    await user.click(selectInput)
+    await user.click(screen.getByLabelText("Cost Frequency", { selector: "input:not([type='hidden'])" }))
 
     await user.click(await screen.findByText("Month"))
 

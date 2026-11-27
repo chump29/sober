@@ -3,7 +3,7 @@ import { default as dayjs } from "dayjs"
 
 import { type ISubstance } from "../../../src/utils/interfaces/ISubstance.ts"
 import { type ISubstanceDisplay } from "../../../src/utils/interfaces/ISubstanceDisplay.ts"
-import { CostType, DATETIME_FORMAT } from "../../../src/utils/schemas.ts"
+import { CostType, DATETIME_FORMAT, StatsType } from "../../../src/utils/schemas.ts"
 
 export const getSubstance = (options: Partial<Pick<ISubstance, "cost" | "costType" | "date">> = {}): ISubstance => ({
   cost: options.cost ?? Number(fake.commerce.price()),
@@ -14,7 +14,8 @@ export const getSubstance = (options: Partial<Pick<ISubstance, "cost" | "costTyp
   showCoin: fake.datatype.boolean(),
   showCost: fake.datatype.boolean(),
   showDecimals: fake.datatype.boolean(),
-  showTime: fake.datatype.boolean()
+  showTime: fake.datatype.boolean(),
+  statsType: fake.helpers.enumValue(StatsType)
 })
 
 export const toDisplay = (substance: ISubstance): ISubstanceDisplay => ({

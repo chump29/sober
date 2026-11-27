@@ -1,9 +1,9 @@
 .dockerignore
 .env.local
-.htmlvalidate.json
 .npmrc
 *.sh
 biome.json
+bunfig.toml
 coverage/
 dist/
 Dockerfile

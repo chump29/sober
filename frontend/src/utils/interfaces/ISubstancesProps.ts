@@ -7,6 +7,7 @@ import { type ISubstanceDisplay } from "./ISubstanceDisplay.ts"
 
 export interface ISubstancesProps {
   allSubstances: Optional<ISubstance[]>
+  isHome?: boolean
   refreshSubstances: KeyedMutator<ISubstance[]>
   selectedSubstance: ISubstance
   setSelectedSubstance: (data: ISubstance) => void

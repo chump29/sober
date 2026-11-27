@@ -25,13 +25,14 @@ content-type: application/json
 
 {
   "cost": 90,
-  "cost_type": 2,
+  "costType": 2,
   "date": "2025-10-11T00:00Z",
   "name": "Alcohol",
   "showCoin": true,
   "showCost": true,
   "showDecimals": true,
-  "showTime": false
+  "showTime": false,
+  "statsType": 1
 }
 
 ###
@@ -44,11 +45,12 @@ content-type: application/json
 
 {
   "cost": 14,
-  "cost_type": 1,
+  "costType": 1,
   "date": "2026-03-10T00:00Z",
   "name": "Cigarettes",
   "showCoin": false,
   "showCost": true,
   "showDecimals": true,
-  "showTime": false
+  "showTime": false,
+  "statsType": 2
 }
