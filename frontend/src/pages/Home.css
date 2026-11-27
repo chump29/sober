@@ -1,3 +1,40 @@
 .mantine-DateTimePicker-input {
-  background-color: var(--bg-cost);
+  background-color: var(--bg-secondary);
+}
+
+.mantine-DateTimePicker-day,
+.mantine-DateTimePicker-monthsListControl,
+.mantine-DateTimePicker-yearsListControl,
+.mantine-TimePicker-control {
+  &[data-selected],
+  &[data-active] {
+    font-weight: bold;
+    color: var(--text-dark);
+    background: var(--gradient-primary);
+  }
+
+  &:hover:not([data-disabled], [data-selected], [data-active]) {
+    font-weight: bold;
+    color: var(--text-primary);
+    background-color: var(--bg-active);
+  }
+}
+
+.mantine-Checkbox-input {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-default);
+
+  &:checked,
+  &:indeterminate {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-default);
+  }
+}
+
+.mantine-DateTimePicker-submitButton {
+  border-color: var(--border-default);
+
+  svg {
+    color: var(--accent-green);
+  }
 }

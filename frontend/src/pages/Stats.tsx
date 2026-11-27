@@ -50,6 +50,8 @@ import { DATETIME_FORMAT_SHORT, StatsType } from "../utils/schemas.ts"
 import "@mantine/charts/styles.css"
 import { type Optional } from "@postfmly/types"
 
+import { type IHealthBarItem } from "../utils/interfaces/IHealthBarItem.ts"
+
 const X_ANGLE = -45
 const X_HEIGHT_MOBILE = 45
 const X_HEIGHT = 70
@@ -138,12 +140,6 @@ const DECIMALS = [
 const DEFAULT_DECIMALS = 2
 
 const getDecimalScale = (val: number): number => DECIMALS.find(({ max }) => val < max)?.decimals ?? DEFAULT_DECIMALS
-
-interface IHealthBarItem {
-  label: string
-  tooltip: string
-  value: number
-}
 
 const HealthBars = ({ items }: { items: IHealthBarItem[] }): JSX.Element => (
   <Stack gap="xs">
@@ -235,9 +231,11 @@ const Stat = (stat: IStat): JSX.Element => {
     .with({ value: P.optional(undefined) }, () => <Text fs="italic">Healing in progress…</Text>)
     .exhaustive()
 
+  const isHealthBars = typeof stat.value === "object" && stat.value !== undefined
+
   return (
     <Paper h="100%">
-      <Group align="center" wrap="nowrap">
+      <Group align={isHealthBars ? "flex-start" : "center"} wrap="nowrap">
         <Box
           bdrs={999}
           bg={stat.bg}
@@ -253,24 +251,28 @@ const Stat = (stat: IStat): JSX.Element => {
           w={48}>
           <Icon size={32} />
         </Box>
-        <Stack miw={0}>
+        <Stack miw={0} w="100%">
           <Text c="var(--text-secondary)" fw="bold" lts={1} size="xs">
             {stat.label.toUpperCase()}
           </Text>
-          <Title
-            c={stat.color}
-            style={{
-              fontVariantNumeric: "tabular-nums"
-            }}>
-            {statValue}
-          </Title>
+          {isHealthBars ? (
+            <Box c={stat.color}>{statValue}</Box>
+          ) : (
+            <Title
+              c={stat.color}
+              style={{
+                fontVariantNumeric: "tabular-nums"
+              }}>
+              {statValue}
+            </Title>
+          )}
         </Stack>
       </Group>
       {stat.value === undefined ? null : (
         <Box pt={16}>
           <Group gap={8} pl={{ base: "md", md: "xl" }} wrap="nowrap">
             <IconInfoCircleFilled color="var(--text-secondary)" size={16} />
-            <Text c="dimmed" size="xxs">
+            <Text c="var(--text-muted)" size="xxs">
               {stat.description}
             </Text>
           </Group>
@@ -345,6 +347,8 @@ export const Stats = ({
     style: "currency"
   }).format(dailyCost)
 
+  const THREE_WIDE = 3
+
   return (
     <Stack>
       <Substances
@@ -355,7 +359,7 @@ export const Stats = ({
         substances={substances}
         user={user}
       />
-      <SimpleGrid cols={{ base: 1, md: 3 }}>
+      <SimpleGrid cols={{ base: 1, md: selectedSubstance.showCost === true ? THREE_WIDE : 2 }}>
         <Stat
           bg="var(--bg-days)"
           color="var(--text-days)"
@@ -405,7 +409,7 @@ export const Stats = ({
               </Box>
               <Stack miw={0}>
                 <Title c="var(--text-secondary)">{"Savings Breakdown".toUpperCase()}</Title>
-                <Text c="dimmed" size="xs">
+                <Text c="var(--text-muted)" size="xs">
                   Estimated savings based on your selected frequency and amount
                 </Text>
               </Stack>
@@ -441,7 +445,7 @@ export const Stats = ({
                   tickMargin: 8,
                   tick: {
                     angle: isMobile ? 0 : X_ANGLE,
-                    fill: "var(--mantine-color-dimmed)",
+                    fill: "var(--text-muted)",
                     fontSize: 12,
                     textAnchor: isMobile ? "middle" : "end"
                   }

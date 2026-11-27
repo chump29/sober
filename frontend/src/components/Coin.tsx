@@ -133,7 +133,7 @@ export const Coin = memo(({ closeCoin, months, openCoin, openedCoin, years }: IC
               </Text>
               <Stack align="center" c="var(--text-secondary)" maw={320}>
                 <Text ta="center">Your commitment, strength, and perseverance brought you here.</Text>
-                <Text c="dimmed" fs="italic" size="sm" ta="center">
+                <Text c="var(--text-muted)" fs="italic" size="sm" ta="center">
                   Keep moving forward, <b>one day at a time</b>.
                 </Text>
               </Stack>

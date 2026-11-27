@@ -10,11 +10,9 @@
 
   --bg-aa: oklch(18% 0.04 255deg / 22%);
   --bg-active: oklch(29.3% 0.074 255.97deg);
-  --bg-cost: oklch(17.95% 0.0578 254.37deg);
   --bg-days: oklch(80% 0.15 65deg / 18%);
   --bg-fortnights: oklch(75% 0.14 250deg / 18%);
   --bg-hours: oklch(74% 0.16 285deg / 18%);
-  --bg-input: oklch(22.99% 0.0525 256.32deg);
   --bg-login-input: oklch(23.81% 0.0713 252.01deg / 75%);
   --bg-minutes: oklch(76% 0.16 225deg / 18%);
   --bg-months: oklch(74% 0.18 355deg / 18%);
@@ -35,9 +33,6 @@
   --border-default: oklch(32.19% 0.0784 253.52deg);
   --border-login-input: oklch(42.39% 0.1155 249.9deg);
   --border-modal: oklch(55.36% 0.1541 250.06deg);
-  --border-savings: oklch(83.34% 0.1566 165.61deg / 35%);
-
-  --glow-blue: 0 0 18px oklch(62.33% 0.2056 256.33deg / 18%);
 
   --gradient-add: linear-gradient(110deg in oklch, oklch(62% 0.19 145deg), oklch(78% 0.16 165deg));
   --gradient-coin: radial-gradient(
@@ -91,7 +86,6 @@
   --text-coin-title: oklch(43.5% 0.108 72.84);
   --text-dark: oklch(19.31% 0.0552 250.39deg);
   --text-days: oklch(87% 0.15 65deg);
-  --text-disabled: oklch(51.44% 0.0552 255.28deg);
   --text-fortnights: oklch(84% 0.13 250deg);
   --text-hours: oklch(83% 0.15 285deg);
   --text-minutes: oklch(84% 0.15 225deg);

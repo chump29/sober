@@ -1,0 +1,19 @@
+.mantine-SegmentedControl-control {
+  position: relative;
+}
+
+.mantine-SegmentedControl-control:not(:first-of-type)::before {
+  position: absolute;
+  top: 25%;
+  left: 0;
+  width: 1px;
+  height: 50%;
+  content: "";
+  background-color: var(--border-default);
+  transition: opacity 250ms linear;
+}
+
+.mantine-SegmentedControl-control:has(input:checked)::before,
+.mantine-SegmentedControl-control:has(input:checked) + .mantine-SegmentedControl-control::before {
+  opacity: 0;
+}

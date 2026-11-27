@@ -28,6 +28,8 @@ import { defaultSubstance, type ISubstance, SubstanceSchema } from "../utils/int
 import { type ISubstancesProps } from "../utils/interfaces/ISubstancesProps.ts"
 import { BooleanSchema, MAX_LEN_STR } from "../utils/schemas.ts"
 
+import "./Substances.css"
+
 export const Substances = ({
   allSubstances,
   isHome = false,
@@ -431,7 +433,7 @@ export const Substances = ({
               </Group>
             )}
           </Group>
-          <SegmentedControl<string>
+          <SegmentedControl
             data={substances}
             disabled={isSubmitting || isRemoving}
             fullWidth={true}
@@ -451,9 +453,10 @@ export const Substances = ({
               }
             }}
             value={selectedSubstance.name}
+            withItemsBorders={false}
           />
           {isHome === true && substances.length > 0 && (
-            <Text c="dimmed" fs="italic" size="xxs" ta="center">
+            <Text c="var(--text-muted)" fs="italic" size="xxs" ta="center">
               {isTouch ? "Hold" : "Double-click"} to rename
             </Text>
           )}

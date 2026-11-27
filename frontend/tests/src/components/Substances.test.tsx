@@ -291,7 +291,7 @@ describe("Substances", (): void => {
     expect(fetch).not.toHaveBeenCalled()
   })
 
-  test("removes selected substance, selects next substance", async (): Promise<void> => {
+  test("removes selected substance", async (): Promise<void> => {
     const user = userEvent.setup()
 
     renderSubstances()

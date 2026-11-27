@@ -134,7 +134,8 @@ export const theme = createTheme({
       },
       styles: {
         root: {
-          backgroundColor: "var(--bg-panel)"
+          backgroundColor: "var(--bg-panel)",
+          boxShadow: "var(--shadow-paper)"
         }
       }
     }),

@@ -107,7 +107,7 @@ export const Settings = ({
               </Box>
               <Stack miw={0}>
                 <Title c="var(--text-secondary)">{"Settings".toUpperCase()}</Title>
-                <Text c="dimmed" size="xs">
+                <Text c="var(--text-muted)" size="xs">
                   Customize these settings to your preference
                 </Text>
               </Stack>

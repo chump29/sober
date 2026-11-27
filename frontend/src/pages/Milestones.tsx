@@ -158,7 +158,7 @@ export const Milestones = ({
             </Box>
             <Stack miw={0}>
               <Title c="var(--text-secondary)">YOUR JOURNEY</Title>
-              <Text c="dimmed" size="xs">
+              <Text c="var(--text-muted)" size="xs">
                 Every milestone is worth celebrating
               </Text>
             </Stack>
@@ -168,7 +168,7 @@ export const Milestones = ({
               <Box>
                 <Group gap={8} pl={{ base: "md", md: "xl" }} wrap="nowrap">
                   <IconInfoCircleFilled color="var(--text-secondary)" size={16} />
-                  <Text c="dimmed" size="xxs">
+                  <Text c="var(--text-muted)" size="xxs">
                     Started on {dayjs(selectedSubstance.date).format(DATETIME_FORMAT_SHORT)}
                   </Text>
                 </Group>

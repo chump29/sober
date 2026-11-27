@@ -276,7 +276,7 @@ export const Home = ({
                   valueFormat={selectedSubstance.showTime ? DATETIME_FORMAT_OUTPUT : DATETIME_FORMAT_SHORT_OUTPUT}
                 />
               </Tooltip>
-              <Text c="dimmed" fs="italic" size="xxs" ta="center">
+              <Text c="var(--text-muted)" fs="italic" size="xxs" ta="center">
                 Click to set sober date
               </Text>
             </Stack>
