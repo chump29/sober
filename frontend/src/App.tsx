@@ -699,7 +699,7 @@ export const App = (): JSX.Element => {
                     return (
                       <Paper>
                         <Stack>
-                          <Substances {...sharedProps} />
+                          <Substances {...sharedProps} isHome={true} />
                           <StatePanel description="Please add a substance to continue." title="No Substances Found" />
                         </Stack>
                       </Paper>
