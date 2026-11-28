@@ -16,7 +16,7 @@ clear
 echo -e "${_title} ${_red}Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ FRONTEND${_nc} ${_title}\n"
 
 echo -e "${_task} ${_yellow}Installing dependencies${_nc}:\n"
-bun install --frozen-lockfile --ignore-scripts
+bun ci
 
 echo -e "\n${_lint} ${_yellow}Linting${_nc}:"
 bun run lint

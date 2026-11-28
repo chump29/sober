@@ -15,6 +15,7 @@ pre-commit:
         parallel: true
         jobs:
           - name: TS
+            glob: "**/*.{ts,tsx}"
             run: bun check
 
           - name: CSS/HTML/JSON/MD/TS/TSX/YAML
@@ -22,9 +23,11 @@ pre-commit:
             run: ./node_modules/.bin/biome ci --no-errors-on-unmatched --error-on-warnings {staged_files}
 
           - name: Deps
+            glob: "{package.json,bun.lock}"
             run: bun run deps
 
           - name: Scan
+            glob: "{package.json,bun.lock}"
             run: bun run scan
 
     - name: backend
@@ -37,4 +40,5 @@ pre-commit:
             run: ../frontend/node_modules/.bin/biome ci --no-errors-on-unmatched --error-on-warnings {staged_files}
 
           - name: pre-commit
-            run: uv run pre-commit run
+            glob: "**/*.{py,sh,toml,yaml}"
+            run: uv run pre-commit run --files {staged_files}

@@ -30,6 +30,10 @@ import { BooleanSchema, MAX_LEN_STR } from "../utils/schemas.ts"
 
 import "./Substances.css"
 
+const spaceRegex = /\s+/gu
+
+const formatName = (s: string): string => titleCase(s.trim().replace(spaceRegex, " "))
+
 export const Substances = ({
   allSubstances,
   isHome = false,
@@ -76,7 +80,7 @@ export const Substances = ({
       return false
     }
 
-    const name = titleCase(substanceName)
+    const name = formatName(substanceName)
 
     const data = await fetchClient(
       {
@@ -115,62 +119,71 @@ export const Substances = ({
     return true
   }
 
+  const doRename = async (name: string): Promise<void> => {
+    if (!(user && selectedSubstance)) {
+      return
+    }
+
+    if (name === selectedSubstance.name) {
+      handleClose()
+
+      return
+    }
+
+    const { id } = selectedSubstance
+
+    if (
+      allSubstances?.some(
+        (substance: ISubstance): boolean => substance.id !== id && substance.name.toLowerCase() === name.toLowerCase()
+      )
+    ) {
+      substanceNameField.setError("Substance already added")
+
+      return
+    }
+
+    const updatedSubstance = { ...selectedSubstance, name }
+
+    const data = await fetchClient(
+      {
+        body: updatedSubstance,
+        endpoint: Endpoint.UpdateSubstance,
+        id,
+        method: HttpMethod.PUT,
+        user
+      } satisfies IFetchClientSettings,
+      SubstanceSchema
+    )
+
+    if (!data) {
+      error(`Could not update ID ${id}`)
+
+      return
+    }
+
+    setSelectedSubstance(data)
+
+    if (env.DEBUG) {
+      info(`Updated ID ${id} to ${data.name}`)
+    }
+
+    await refreshAllSubstances()
+
+    handleClose()
+  }
+
   const handleAdd = async (): Promise<void> => {
     if (isSubmitting) {
       return
     }
 
-    const name = substanceNameField.getValue().trim()
+    const name = formatName(substanceNameField.getValue())
 
     setIsSubmitting(true)
 
     try {
       if (isRenaming) {
-        if (!(user && selectedSubstance)) {
-          return
-        }
-
-        const { id } = selectedSubstance
-
-        if (
-          allSubstances?.some(
-            (substance: ISubstance): boolean =>
-              substance.id !== id && substance.name.toLowerCase() === name.toLowerCase()
-          )
-        ) {
-          substanceNameField.setError("Substance already added")
-
-          return
-        }
-
-        const updatedSubstance = { ...selectedSubstance, name: titleCase(name) }
-
-        const data = await fetchClient(
-          {
-            body: updatedSubstance,
-            endpoint: Endpoint.UpdateSubstance,
-            id,
-            method: HttpMethod.PUT,
-            user
-          } satisfies IFetchClientSettings,
-          SubstanceSchema
-        )
-
-        if (!data) {
-          error(`Could not update ID ${id}`)
-
-          return
-        }
-
-        setSelectedSubstance(data)
-
-        if (env.DEBUG) {
-          info(`Updated ID ${id} to ${data.name}`)
-        }
-
-        await refreshAllSubstances()
-
-        handleClose()
+        await doRename(name)
 
         return
       }
@@ -288,6 +301,10 @@ export const Substances = ({
   }
 
   const handleRename = (): void => {
+    if (!(isHome && selectedSubstance.name)) {
+      return
+    }
+
     setIsRenaming(true)
 
     substanceNameField.setValue(selectedSubstance.name)
@@ -301,7 +318,7 @@ export const Substances = ({
 
   useEffect((): void => {
     if (openedAdd && !isRenaming) {
-      substanceNameField.validate()
+      substanceNameField.validate().catch(error)
     }
   }, [openedAdd, isRenaming, substanceNameField.validate])
 
@@ -422,7 +439,7 @@ export const Substances = ({
                 <Tooltip label="Remove">
                   <Button
                     color="var(--accent-red)"
-                    disabled={!(allSubstances?.length && selectedSubstance) || isRemoving}
+                    disabled={!(allSubstances?.length && selectedSubstance) || isRemoving || isSubmitting}
                     leftSection={<IconSquareRoundedMinus size={20} />}
                     onClick={openRemove}
                     size="xs"
@@ -433,28 +450,30 @@ export const Substances = ({
               </Group>
             )}
           </Group>
-          <SegmentedControl
-            data={substances}
-            disabled={isSubmitting || isRemoving}
-            fullWidth={true}
-            onChange={handleChange}
-            onDoubleClick={handleRename}
-            {...buttonHandler}
-            size="xl"
-            style={{ userSelect: "none", WebkitTouchCallout: "none" }}
-            styles={{
-              indicator: {
-                background: "var(--gradient-primary)"
-              },
-              root: {
-                background: "var(--bg-substances)",
-                border: "1px solid var(--border-default)",
-                padding: 2
-              }
-            }}
-            value={selectedSubstance.name}
-            withItemsBorders={false}
-          />
+          {substances.length > 0 && (
+            <SegmentedControl
+              data={substances}
+              disabled={isSubmitting || isRemoving}
+              fullWidth={true}
+              onChange={handleChange}
+              onDoubleClick={isHome ? handleRename : undefined}
+              {...(isHome ? buttonHandler : {})}
+              size="xl"
+              style={{ userSelect: "none", WebkitTouchCallout: "none" }}
+              styles={{
+                indicator: {
+                  background: "var(--gradient-primary)"
+                },
+                root: {
+                  background: "var(--bg-substances)",
+                  border: "1px solid var(--border-default)",
+                  padding: 2
+                }
+              }}
+              value={selectedSubstance.name}
+              withItemsBorders={false}
+            />
+          )}
           {isHome === true && substances.length > 0 && (
             <Text c="var(--text-muted)" fs="italic" size="xxs" ta="center">
               {isTouch ? "Hold" : "Double-click"} to rename

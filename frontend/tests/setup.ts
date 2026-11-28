@@ -1,3 +1,5 @@
+import "../src/utils/dayjs.ts"
+
 import { afterAll, afterEach, expect, mock, spyOn } from "bun:test"
 
 // biome-ignore lint/performance/noNamespaceImport: proper setup

@@ -1,3 +1,4 @@
-#!/usr/bin/env -S bash -e
+#!/bin/sh
+set -e
 
-exit 0
+wget -q --spider http://localhost:5560/version

@@ -21,12 +21,14 @@ const getJWT = (user: string): string =>
  * @returns Request {@link https://developer.mozilla.org/en-US/docs/Web/API/Headers headers}
  */
 export const getHeaders = (user: Optional<string>): Optional<Headers> => {
-  if (!user || user.length === 0) {
+  const u = user?.trim()
+  if (!u) {
+    // * NOTE: checks undefined && .length=0
     return
   }
 
   return new Headers({
-    Authorization: `Bearer ${getJWT(user)}`,
+    Authorization: `Bearer ${getJWT(u)}`,
     "Content-Type": "application/json"
   } satisfies HeadersInit)
 }

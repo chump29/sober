@@ -1,15 +1,4 @@
-import {
-  type JSX,
-  type KeyboardEvent,
-  lazy,
-  Suspense,
-  use,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState
-} from "react"
+import { type JSX, type KeyboardEvent, lazy, Suspense, useEffect, useMemo, useState } from "react"
 
 import {
   IconChartBar,
@@ -50,22 +39,16 @@ import { type Nullable, type Optional } from "@postfmly/types"
 
 import { default as pluralize } from "@jarrodek/pluralize"
 import { parse as ms } from "@lukeed/ms"
-import { default as dayjs } from "dayjs"
-import { default as advancedFormat } from "dayjs/plugin/advancedFormat"
-import { default as timezone } from "dayjs/plugin/timezone"
-import { default as utc } from "dayjs/plugin/utc"
 import { dequal as equal } from "dequal/lite"
 import { default as useSWR } from "swr/immutable"
 import { titleCase } from "title-case"
-import { array } from "valibot"
+import { array, safeParse } from "valibot"
 
 import { version } from "../package.json" with { type: "json" }
 import { Banner } from "./components/Banner.tsx"
 import { Logo } from "./components/Logo.tsx"
 import { Substances } from "./components/Substances.tsx"
 import { env } from "./env.ts"
-import { Milestones } from "./pages/Milestones.tsx"
-import { Settings } from "./pages/Settings.tsx"
 import { fetchClient } from "./services/fetchClient.ts"
 import { displayStoreActions, useSelectedSubstance } from "./utils/displayStore.ts"
 import { Endpoint, HttpMethod, Page, validate } from "./utils/index.ts"
@@ -77,12 +60,10 @@ import { type ISubstanceDisplay } from "./utils/interfaces/ISubstanceDisplay.ts"
 import { type IUserAvatarProps } from "./utils/interfaces/IUserAvatarProps.ts"
 import { BooleanSchema, MAX_LEN_STR, NameSchema, StringSchema } from "./utils/schemas.ts"
 
-dayjs.extend(utc) // * NOTE: required for timezone
-dayjs.extend(timezone)
-dayjs.extend(advancedFormat) // * NOTE: for Do format option
-
 const Home = lazy(() => import("./pages/Home.tsx").then((m) => ({ default: m.Home })))
 const Stats = lazy(() => import("./pages/Stats.tsx").then((m) => ({ default: m.Stats })))
+const Milestones = lazy(() => import("./pages/Milestones.tsx").then((m) => ({ default: m.Milestones })))
+const Settings = lazy(() => import("./pages/Settings.tsx").then((m) => ({ default: m.Settings })))
 
 const loading: JSX.Element = (
   <Paper>
@@ -92,17 +73,27 @@ const loading: JSX.Element = (
   </Paper>
 )
 
-const apiVersion = fetchClient(
-  {
-    endpoint: Endpoint.Version,
-    method: HttpMethod.GET
-  } satisfies IFetchClientSettings,
-  StringSchema
-)
-  .then((data: Nullable<string>): string => (data ? `v${data}` : "N/A"))
-  .catch((): string => "N/A")
+const fetchVersion = async (): Promise<string> => {
+  try {
+    const data = await fetchClient(
+      {
+        endpoint: Endpoint.Version,
+        method: HttpMethod.GET
+      } satisfies IFetchClientSettings,
+      StringSchema
+    )
 
-const ApiVersion = (): JSX.Element => <>{use(apiVersion)}</>
+    return data ? `v${data}` : "N/A"
+  } catch {
+    return "N/A"
+  }
+}
+
+const ApiVersion = (): JSX.Element => {
+  const { data } = useSWR(Endpoint.Version, fetchVersion, { suspense: true })
+
+  return <>{data}</>
+}
 
 const navItems: readonly INav<Page>[] = [
   {
@@ -155,6 +146,7 @@ export const App = (): JSX.Element => {
   const [openedNav, { close: closeNav, toggle: toggleNav }] = useDisclosure(false)
 
   const [loggingIn, setLoggingIn] = useState(false)
+  const [loggingOut, setLoggingOut] = useState(false)
 
   const [soberUser, setSoberUser, resetSoberUser] = useLocalStorage<Optional<string>>({
     defaultValue: undefined,
@@ -172,12 +164,21 @@ export const App = (): JSX.Element => {
 
   const validUser = soberUser === INVALID_USER ? undefined : soberUser
 
-  const pendingUserRef = useRef<Optional<string>>(undefined)
-
   const nameField = useField<string>({
     initialValue: "",
     validateOnChange: true,
-    validate: (s: string): Nullable<string> => (s.trim().length > 0 ? null : "Must enter a name")
+    validate: (s: string): Nullable<string> => {
+      if (s.trim().length === 0) {
+        return "Must enter a name"
+      }
+
+      if (s !== s.trim()) {
+        return "Name cannot start or end with spaces"
+      }
+
+      // * NOTE: validate() would log invalid keystrokes to console
+      return safeParse(NameSchema, s).success ? null : "Invalid name"
+    }
   })
 
   const [openedLogin, { open: openLogin, close: closeLogin }] = useDisclosure(false)
@@ -238,18 +239,10 @@ export const App = (): JSX.Element => {
     mutate: refreshSubstances,
     isLoading,
     isValidating
-  } = useSWR<ISubstance[]>(validUser ? ["substances", validUser] : null, fetchSubstances, {
+  } = useSWR<ISubstance[]>(validUser ? [Endpoint.Substances, validUser] : null, fetchSubstances, {
     onSuccess: (s: ISubstance[]): void => {
       const subs = validate(s, array(SubstanceSchema))
-      if (!subs) {
-        return
-      }
-
-      if (pendingUserRef.current === validUser) {
-        return
-      }
-
-      if (subs.length === 0) {
+      if (!subs || subs.length === 0) {
         setSelectedSubstance(defaultSubstance)
 
         return
@@ -285,28 +278,7 @@ export const App = (): JSX.Element => {
     }
   })
 
-  const setUserAndRefresh = async (): Promise<void> => {
-    const user = nameField.getValue()
-
-    setUser(user)
-
-    pendingUserRef.current = user
-
-    setSelectedSubstance(defaultSubstance)
-
-    try {
-      await fetchUser()
-
-      setSoberUser(user)
-    } catch (e: unknown) {
-      pendingUserRef.current = undefined
-      throw e
-    }
-  }
-
   const resetUserAndRefresh = (): void => {
-    pendingUserRef.current = undefined
-
     const user = getUser() // capture before reset
 
     setUser(null)
@@ -331,15 +303,30 @@ export const App = (): JSX.Element => {
       return
     }
 
+    const err = await nameField.validate()
+    if (err) {
+      return
+    }
+
+    const user = nameField.getValue().trim()
+
     setLoggingIn(true)
 
     try {
-      await setUserAndRefresh()
+      setUser(user)
+
+      setSelectedSubstance(defaultSubstance)
+
+      await fetchUser()
+
+      setSoberUser(user)
 
       closeLogin()
 
       setPage(Page.Home)
     } catch (e: unknown) {
+      setUserFromSoberUser()
+
       error(e)
     } finally {
       setLoggingIn(false)
@@ -375,10 +362,16 @@ export const App = (): JSX.Element => {
   }
 
   const handleLogout = async (): Promise<void> => {
+    if (loggingOut) {
+      return
+    }
+
     const user = getUser()
     if (!user) {
       return
     }
+
+    setLoggingOut(true)
 
     try {
       // * NOTE: remove user from API cache
@@ -393,6 +386,8 @@ export const App = (): JSX.Element => {
       closeLogout()
     } catch (e: unknown) {
       error(e)
+    } finally {
+      setLoggingOut(false)
     }
   }
 
@@ -416,53 +411,86 @@ export const App = (): JSX.Element => {
     [substances]
   )
 
-  const init = async (): Promise<void> => {
-    setUserFromSoberUser()
-    if (!getUser()) {
+  const renderPage = (): JSX.Element => {
+    if (!validUser) {
+      return <StatePanel description="Please log in to continue." title="Not Logged In" />
+    }
+
+    const sharedProps = {
+      allSubstances: substances,
+      refreshSubstances,
+      selectedSubstance,
+      setSelectedSubstance,
+      substances: substancesDisplay,
+      user: validUser
+    }
+
+    switch (page) {
+      case Page.Home: {
+        if (isLoading || isValidating) {
+          return loading
+        }
+
+        if (substances && substances.length > 0) {
+          return (
+            <Suspense fallback={loading}>
+              <Home {...sharedProps} />
+            </Suspense>
+          )
+        }
+
+        return (
+          <Paper>
+            <Stack>
+              <Substances {...sharedProps} isHome={true} />
+              <StatePanel description="Please add a substance to continue." title="No Substances Found" />
+            </Stack>
+          </Paper>
+        )
+      }
+      case Page.Stats:
+        return (
+          <Suspense fallback={loading}>
+            <Stats {...sharedProps} />
+          </Suspense>
+        )
+      case Page.Milestones:
+        return (
+          <Suspense fallback={loading}>
+            <Milestones {...sharedProps} />
+          </Suspense>
+        )
+      case Page.Settings:
+        return (
+          <Suspense fallback={loading}>
+            <Settings {...sharedProps} />
+          </Suspense>
+        )
+      default:
+        return <StatePanel description={`Page (${page}) not defined.`} title="Unknown Page" />
+    }
+  }
+
+  useSWR(validUser ? [Endpoint.User, validUser] : null, fetchUser, {
+    onError: (e: unknown): void => error(e)
+  })
+
+  useEffect((): (() => void) | undefined => {
+    if (!validUser) {
       return
     }
 
-    await fetchUser()
-  }
-
-  const initRef = useRef(init)
-
-  useLayoutEffect((): void => {
-    initRef.current = init
-  })
-
-  useEffect((): (() => void) => {
-    let isMounted = true
-    let interval: Optional<NodeJS.Timeout>
-
-    ;(async (): Promise<void> => {
-      try {
-        await initRef.current()
-
-        if (isMounted) {
-          interval = setInterval((): void => {
-            const { date } = getSelectedSubstanceNow()
-
-            if (date) {
-              setDisplay(date)
-            }
-          }, INTERVAL_MS)
-        }
-      } catch (e: unknown) {
-        if (isMounted) {
-          error(e)
-        }
+    const interval = setInterval((): void => {
+      const { date } = getSelectedSubstanceNow()
+      if (date) {
+        setDisplay(date)
       }
-    })()
+    }, INTERVAL_MS)
 
     return (): void => {
-      isMounted = false
-
-      if (interval) {
-        clearInterval(interval)
-      }
+      clearInterval(interval)
     }
-  }, [getSelectedSubstanceNow, setDisplay])
+  }, [validUser, getSelectedSubstanceNow, setDisplay])
 
   useEffect((): void => {
     if (soberUser === INVALID_USER) {
@@ -470,22 +498,10 @@ export const App = (): JSX.Element => {
     }
   }, [resetSoberUser, soberUser])
 
-  useEffect((): void => {
-    if (!validUser || pendingUserRef.current !== validUser || substances === undefined) {
-      return
-    }
-
-    const subs = validate(substances, array(SubstanceSchema))
-
-    setSelectedSubstance(subs?.[0] ?? defaultSubstance)
-
-    pendingUserRef.current = undefined
-  }, [validUser, substances, setSelectedSubstance])
-
   // biome-ignore lint/correctness/useExhaustiveDependencies: not needed
   useEffect((): void => {
     if (openedLogin) {
-      nameField.validate()
+      nameField.validate().catch(error)
     }
   }, [openedLogin])
 
@@ -520,7 +536,7 @@ export const App = (): JSX.Element => {
               bd={0}
               bg="var(--gradient-primary)"
               c="var(--text-dark)"
-              disabled={loggingIn || nameField.getValue().length === 0}
+              disabled={loggingIn || Boolean(nameField.error) || nameField.getValue().trim().length === 0}
               fullWidth={true}
               fw="bold"
               loading={loggingIn}
@@ -536,7 +552,7 @@ export const App = (): JSX.Element => {
           </Tooltip>
         </Stack>
       </Modal>
-      <Modal onClose={closeLogout} opened={openedLogout}>
+      <Modal closeOnClickOutside={!loggingOut} closeOnEscape={!loggingOut} onClose={closeLogout} opened={openedLogout}>
         <FocusTrap.InitialFocus />
         <Stack>
           <Text c="var(--text-primary)" fw="bold" size="xl">
@@ -547,6 +563,7 @@ export const App = (): JSX.Element => {
             <Tooltip label="Cancel">
               <Button
                 c="var(--text-primary)"
+                disabled={loggingOut}
                 leftSection={<IconX size={20} />}
                 onClick={closeLogout}
                 style={{
@@ -560,7 +577,9 @@ export const App = (): JSX.Element => {
               <Button
                 bg="var(--gradient-remove)"
                 c="var(--text-primary)"
+                disabled={loggingOut}
                 leftSection={<IconLogout size={20} />}
+                loading={loggingOut}
                 onClick={handleLogout}>
                 Log Out
               </Button>
@@ -668,57 +687,7 @@ export const App = (): JSX.Element => {
             }}>
             <Stack>
               <Banner page={page} />
-              {((): JSX.Element => {
-                if (!validUser) {
-                  return <StatePanel description="Please log in to continue." title="Not Logged In" />
-                }
-
-                const sharedProps = {
-                  allSubstances: substances,
-                  refreshSubstances,
-                  selectedSubstance,
-                  setSelectedSubstance,
-                  substances: substancesDisplay,
-                  user: validUser
-                }
-
-                switch (page) {
-                  case Page.Home: {
-                    if (isLoading || isValidating) {
-                      return loading
-                    }
-
-                    if (substances && substances.length > 0) {
-                      return (
-                        <Suspense fallback={loading}>
-                          <Home {...sharedProps} />
-                        </Suspense>
-                      )
-                    }
-
-                    return (
-                      <Paper>
-                        <Stack>
-                          <Substances {...sharedProps} isHome={true} />
-                          <StatePanel description="Please add a substance to continue." title="No Substances Found" />
-                        </Stack>
-                      </Paper>
-                    )
-                  }
-                  case Page.Stats:
-                    return (
-                      <Suspense fallback={loading}>
-                        <Stats {...sharedProps} />
-                      </Suspense>
-                    )
-                  case Page.Milestones:
-                    return <Milestones {...sharedProps} />
-                  case Page.Settings:
-                    return <Settings {...sharedProps} />
-                  default:
-                    return <StatePanel description={`Page (${page}) not defined.`} title="Unknown Page" />
-                }
-              })()}
+              {renderPage()}
             </Stack>
           </Box>
         </AppShell.Main>

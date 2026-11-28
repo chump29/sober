@@ -47,7 +47,7 @@ jobs:
 
       - name: Scanning
         env:
-            NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
         run: bun run scan
 
       - name: Linting
@@ -122,8 +122,8 @@ jobs:
         run: ./test.sh
 
   amd64:
+    if: github.event_name != 'pull_request'
     needs: [check-frontend, check-backend]
-
     runs-on: amd64
 
     steps:
@@ -138,18 +138,16 @@ jobs:
           password: ${{ secrets.PASSWORD }}
 
       - name: Build and push frontend
-        run: |
-          cd frontend
-          docker buildx build --platform linux/amd64 --tag git.postfmly.com/admin/sober-frontend:amd64 --push .
+        working-directory: frontend
+        run: docker buildx build --platform linux/amd64 --tag git.postfmly.com/admin/sober-frontend:amd64 --push .
 
       - name: Build and push backend
-        run: |
-          cd backend
-          docker buildx build --platform linux/amd64 --tag git.postfmly.com/admin/sober-backend:amd64 --push .
+        working-directory: backend
+        run: docker buildx build --platform linux/amd64 --tag git.postfmly.com/admin/sober-backend:amd64 --push .
 
   arm64:
+    if: github.event_name != 'pull_request'
     needs: [check-frontend, check-backend]
-
     runs-on: arm64
 
     steps:
@@ -164,18 +162,16 @@ jobs:
           password: ${{ secrets.PASSWORD }}
 
       - name: Build and push frontend
-        run: |
-          cd frontend
-          docker buildx build --platform linux/arm64 --tag git.postfmly.com/admin/sober-frontend:arm64 --push .
+        working-directory: frontend
+        run: docker buildx build --platform linux/arm64 --tag git.postfmly.com/admin/sober-frontend:arm64 --push .
 
       - name: Build and push backend
-        run: |
-          cd backend
-          docker buildx build --platform linux/arm64 --tag git.postfmly.com/admin/sober-backend:arm64 --push .
+        working-directory: backend
+        run: docker buildx build --platform linux/arm64 --tag git.postfmly.com/admin/sober-backend:arm64 --push .
 
   manifest:
+    if: github.event_name != 'pull_request'
     needs: [amd64, arm64]
-
     runs-on: amd64
 
     steps:
@@ -186,22 +182,16 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
 
-      - name: Create frontend manifest
+      - name: Create and push frontend manifest
         run: |
-          docker manifest create \
-            git.postfmly.com/admin/sober-frontend:latest \
+          docker buildx imagetools create \
+            --tag git.postfmly.com/admin/sober-frontend:latest \
             git.postfmly.com/admin/sober-frontend:amd64 \
             git.postfmly.com/admin/sober-frontend:arm64
 
-      - name: Push frontend manifest
-        run: docker manifest push git.postfmly.com/admin/sober-frontend:latest
-
-      - name: Create backend manifest
+      - name: Create and push backend manifest
         run: |
-          docker manifest create \
-            git.postfmly.com/admin/sober-backend:latest \
+          docker buildx imagetools create \
+            --tag git.postfmly.com/admin/sober-backend:latest \
             git.postfmly.com/admin/sober-backend:amd64 \
             git.postfmly.com/admin/sober-backend:arm64
-
-      - name: Push backend manifest
-        run: docker manifest push git.postfmly.com/admin/sober-backend:latest

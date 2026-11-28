@@ -1,21 +1,24 @@
 import { fakerEN_US as fake } from "@faker-js/faker"
 import { default as dayjs } from "dayjs"
+import { titleCase } from "title-case"
 
 import { type ISubstance } from "../../../src/utils/interfaces/ISubstance.ts"
 import { type ISubstanceDisplay } from "../../../src/utils/interfaces/ISubstanceDisplay.ts"
 import { CostType, DATETIME_FORMAT, StatsType } from "../../../src/utils/schemas.ts"
 
-export const getSubstance = (options: Partial<Pick<ISubstance, "cost" | "costType" | "date">> = {}): ISubstance => ({
+let nextId = 1
+
+export const getSubstance = (options: Partial<ISubstance> = {}): ISubstance => ({
   cost: options.cost ?? Number(fake.commerce.price()),
   costType: options.costType ?? fake.helpers.enumValue(CostType),
   date: options.date ?? dayjs(fake.date.past()).format(DATETIME_FORMAT),
-  id: fake.number.int({ max: 100, min: 1 }),
-  name: fake.lorem.word(),
-  showCoin: fake.datatype.boolean(),
-  showCost: fake.datatype.boolean(),
-  showDecimals: fake.datatype.boolean(),
-  showTime: fake.datatype.boolean(),
-  statsType: fake.helpers.enumValue(StatsType)
+  id: options.id ?? nextId++,
+  name: options.name ?? titleCase(fake.lorem.word()),
+  showCoin: options.showCoin ?? fake.datatype.boolean(),
+  showCost: options.showCost ?? fake.datatype.boolean(),
+  showDecimals: options.showDecimals ?? fake.datatype.boolean(),
+  showTime: options.showTime ?? fake.datatype.boolean(),
+  statsType: options.statsType ?? fake.helpers.enumValue(StatsType)
 })
 
 export const toDisplay = (substance: ISubstance): ISubstanceDisplay => ({

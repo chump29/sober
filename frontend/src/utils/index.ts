@@ -51,15 +51,6 @@ const validate = <S extends GenericSchema>(o: unknown, s: S): Nullable<InferOutp
   }
 }
 
-/** Update type */
-const UpdateType = {
-  ShowCoin: "ShowCoin",
-  ShowCost: "ShowCost"
-} as const
-
-/** Update type */
-type UpdateType = (typeof UpdateType)[keyof typeof UpdateType]
-
 /**
  * Get key by value
  * @param obj Const literal
@@ -99,7 +90,7 @@ const FACTOR = 100
  * @param num Number
  * @returns Rounded number
  */
-const round = (num: number): number => Math.round((num + Number.EPSILON) * FACTOR) / FACTOR
+const round = (num: number): number => Math.round((num + Math.sign(num) * Number.EPSILON) * FACTOR) / FACTOR
 
 /**
  * Rounds number down to nearest whole number
@@ -190,6 +181,5 @@ export {
   Per,
   round,
   roundDown,
-  UpdateType,
   validate
 }

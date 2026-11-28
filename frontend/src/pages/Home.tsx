@@ -1,4 +1,4 @@
-import { type ChangeEvent, type JSX } from "react"
+import { type ChangeEvent, type JSX, useState } from "react"
 
 import {
   IconCalendar,
@@ -34,15 +34,11 @@ import { info } from "@postfmly/logger"
 import { type Nullable } from "@postfmly/types"
 
 import { default as dayjs } from "dayjs"
-import { default as advancedFormat } from "dayjs/plugin/advancedFormat"
-import { default as timezone } from "dayjs/plugin/timezone"
-import { default as utc } from "dayjs/plugin/utc"
 
 import { Coin } from "../components/Coin.tsx"
 import { Substances } from "../components/Substances.tsx"
 import { env } from "./../env.ts"
 import { fetchClient } from "../services/fetchClient.ts"
-import { calculateStats } from "../utils/calc.ts"
 import {
   useCost,
   useDays,
@@ -69,19 +65,6 @@ import {
 
 import "@mantine/dates/styles.css"
 import "./Home.css"
-
-dayjs.extend(utc) // * NOTE: required for timezone
-dayjs.extend(timezone)
-dayjs.extend(advancedFormat) // * NOTE: for Do format option
-
-if (env.DEBUG) {
-  info("Debug is ON")
-}
-
-dayjs.tz.setDefault(dayjs.tz.guess())
-if (env.DEBUG) {
-  info(`Timezone set to: ${dayjs.tz.guess()}`)
-}
 
 const metrics: IMetric[] = [
   {
@@ -130,12 +113,12 @@ export const Home = ({
 
   const cost = useCost()
 
-  const { months, years } = calculateStats(selectedSubstance.date, selectedSubstance.showDecimals)
+  const [updatingDate, setUpdatingDate] = useState(false)
 
   const handleChangeDate = async (datetime: Nullable<string>, isShowTime?: boolean): Promise<void> => {
     const { id } = selectedSubstance
 
-    if (!user || id === undefined) {
+    if (!user || id === undefined || datetime === null || updatingDate) {
       return
     }
 
@@ -146,29 +129,35 @@ export const Home = ({
       return
     }
 
-    const data = await fetchClient(
-      {
-        body: {
-          ...selectedSubstance,
-          date,
-          showTime: isShowTime ?? selectedSubstance.showTime
-        } satisfies ISubstance,
-        endpoint: Endpoint.UpdateSubstance,
-        id,
-        method: HttpMethod.PUT,
-        user
-      } satisfies IFetchClientSettings,
-      SubstanceSchema
-    )
+    try {
+      const data = await fetchClient(
+        {
+          body: {
+            ...selectedSubstance,
+            date,
+            showTime: isShowTime ?? selectedSubstance.showTime
+          } satisfies ISubstance,
+          endpoint: Endpoint.UpdateSubstance,
+          id,
+          method: HttpMethod.PUT,
+          user
+        } satisfies IFetchClientSettings,
+        SubstanceSchema
+      )
 
-    if (!data) {
-      return
-    }
+      if (!data) {
+        return
+      }
 
-    setSelectedSubstance(data)
+      setSelectedSubstance(data)
 
-    if (env.DEBUG) {
-      info(`New sober date for ${data.name}: ${date}`)
+      await refreshSubstances()
+
+      if (env.DEBUG) {
+        info(`New sober date for ${data.name}: ${date}`)
+      }
+    } finally {
+      setUpdatingDate(false)
     }
   }
 
@@ -184,7 +173,7 @@ export const Home = ({
           .set("second", now.second())
           .set("millisecond", now.millisecond())
           .format(DATETIME_FORMAT)
-      : dayjs(selectedSubstance.date).startOf("day").format(DATETIME_FORMAT.replace("hh", "HH"))
+      : dayjs(selectedSubstance.date).startOf("day").format(DATETIME_FORMAT)
 
     await handleChangeDate(newDate, checked)
   }
@@ -233,14 +222,16 @@ export const Home = ({
               </Group>
               <Tooltip label="Set Sober Date">
                 <DateTimePicker
-                  disabled={!selectedSubstance.name}
+                  disabled={!selectedSubstance.name || updatingDate}
                   dropdownType="modal"
                   firstDayOfWeek={0}
                   highlightToday={true}
                   maxDate={dayjs().toDate()}
-                  onChange={async (val: Nullable<string>): Promise<void> =>
-                    await handleChangeDate(dayjs(val).format(DATETIME_FORMAT))
-                  }
+                  onChange={async (val: Nullable<string>): Promise<void> => {
+                    if (val !== null) {
+                      await handleChangeDate(val)
+                    }
+                  }}
                   pointer={true}
                   styles={{
                     calendarHeaderLevel: {
@@ -255,11 +246,15 @@ export const Home = ({
                   }}
                   timePickerProps={{
                     clearable: true,
-                    disabled: !selectedSubstance.showTime,
+                    disabled: !selectedSubstance.showTime || updatingDate,
                     format: "12h",
                     leftSection: (
                       <Tooltip label="Set time?">
-                        <Checkbox checked={selectedSubstance.showTime} onChange={handleSetTime} />
+                        <Checkbox
+                          checked={selectedSubstance.showTime}
+                          disabled={updatingDate}
+                          onChange={handleSetTime}
+                        />
                       </Tooltip>
                     ),
                     withDropdown: true,
@@ -384,13 +379,13 @@ export const Home = ({
           </Group>
         </Paper>
       )}
-      {selectedSubstance.showCoin === true && months > 0 && (
+      {selectedSubstance.showCoin === true && stats.months > 0 && (
         <Coin
           closeCoin={closeCoin}
-          months={Math.trunc(months)}
+          months={Math.trunc(stats.months)}
           openCoin={openCoin}
           openedCoin={openedCoin}
-          years={Math.trunc(years)}
+          years={Math.trunc(stats.years)}
         />
       )}
     </Stack>

@@ -5,12 +5,10 @@ __pycache__/
 .python-version
 .venv/
 *.sh
-api.rest
 coverage/
 db/
 Dockerfile
 features/
-gen_jwt.py
 README.md
 
 !healthcheck.sh

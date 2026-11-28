@@ -15,6 +15,7 @@ import { type Dayjs, default as dayjs } from "dayjs"
 
 import { Substances } from "../components/Substances.tsx"
 import { TIME } from "../utils/calc.ts"
+import { useMinutes } from "../utils/displayStore.ts"
 import { FACTOR, Milestone } from "../utils/index.ts"
 import { type IMilestone, type IMilestoneDefinition } from "../utils/interfaces/IMilestone.ts"
 import { type ISubstancesProps } from "../utils/interfaces/ISubstancesProps.ts"
@@ -47,7 +48,7 @@ const getMilestones = (date: string, now: Dayjs): IMilestone[] => {
   return milestoneDefinitions.map((milestone: IMilestoneDefinition): IMilestone => {
     const targetDate =
       milestone.days === undefined
-        ? addMonthsClamped(startDate, milestone.months ?? 0)
+        ? addMonthsClamped(startDate, milestone.months)
         : startDate.add(milestone.days, "days")
 
     // biome-ignore lint/nursery/noMapSpread: not mutating milestone
@@ -120,6 +121,8 @@ export const Milestones = ({
   substances,
   user
 }: ISubstancesProps): JSX.Element => {
+  useMinutes() // trigger render every minute
+
   const now = dayjs()
 
   const milestones = getMilestones(selectedSubstance.date, now)
@@ -194,7 +197,7 @@ export const Milestones = ({
                 background: "var(--gradient-primary)"
               }}
               value={percentage}>
-              {percentage}%
+              {percentage >= 10 ? `${percentage}%` : null}
             </Progress.Section>
           </Progress.Root>
         </Stack>

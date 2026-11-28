@@ -72,3 +72,54 @@ Scenario: Get favicon
 	Given that a browser makes a request for favicon
 		When /favicon.ico API endpoint is called
 		Then Nothing is returned
+
+Scenario: Reject unauthenticated and invalid JWT requests
+	Given an HTTP test client
+		When /api/user is called without a token
+		Then HTTP status 401 is returned
+		When /api/user is called with an invalid token
+		Then HTTP status 401 is returned
+
+Scenario: Create and fetch user via HTTP
+	Given an HTTP test client
+		When /api/user is called via HTTP (first time)
+		Then HTTP status 201 is returned
+		When /api/user is called via HTTP (second time)
+		Then HTTP status 204 is returned
+
+Scenario: Enforce per-user unique substance name and reject future dates
+	Given an HTTP test client
+		When a substance is added via HTTP
+		Then HTTP status 201 is returned
+		When the same substance name is added again for the same user via HTTP
+		Then HTTP status 400 is returned
+		When the same substance name is added for another user via HTTP
+		Then HTTP status 201 is returned
+		When a substance with a future date is added via HTTP
+		Then HTTP status 422 is returned
+
+Scenario: Return 404 for missing or cross-user substances
+	Given an HTTP test client
+		When a substance is added via HTTP
+		Then HTTP status 201 is returned
+		When another user requests the created substance via HTTP
+		Then HTTP status 404 is returned
+		When another user updates the created substance via HTTP
+		Then HTTP status 404 is returned
+		When another user deletes the created substance via HTTP
+		Then HTTP status 404 is returned
+
+Scenario: Get empty substances via HTTP
+	Given an HTTP test client
+		When /api/substances is called via HTTP for a user with no substances
+		Then HTTP status 200 is returned
+			And JSON response is null
+
+Scenario: Delete user via HTTP
+	Given an HTTP test client
+		When /api/user/delete is called via HTTP for a nonexistent user
+		Then HTTP status 404 is returned
+		When /api/user is called via HTTP (first time)
+		Then HTTP status 201 is returned
+		When /api/user/delete is called via HTTP for that user
+		Then HTTP status 204 is returned

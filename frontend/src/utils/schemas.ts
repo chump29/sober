@@ -1,14 +1,12 @@
 // cSpell: ignore SSSZ
 import { parse as ms } from "@lukeed/ms"
 import { default as dayjs } from "dayjs"
-import { default as utc } from "dayjs/plugin/utc"
 import { createRegExp, digit, letter, oneOrMore } from "magic-regexp"
 import {
   boolean,
   type CheckIssue,
   check,
   date,
-  decimal,
   enum_,
   gtValue,
   integer,
@@ -22,17 +20,13 @@ import {
   pipe,
   regex,
   string,
-  toNumber,
   transform,
   trim,
   union,
-  url,
-  words
+  url
 } from "valibot"
 
 import { Endpoint, HttpMethod } from "./index.ts"
-
-dayjs.extend(utc)
 
 /**
  * Validate string
@@ -66,7 +60,7 @@ const DateTimeSchema = pipe(
   StringSchema,
   isoTimestamp("Not a valid ISO 8601 datetime format"),
   check(
-    (s: string): boolean => dayjs(s, DATETIME_FORMAT, true).isValid(),
+    (s: string): boolean => dayjs(s).isValid(),
     (e: CheckIssue<string>): string => `Invalid date: ${e.input}`
   ),
   transform((d: string): string => dayjs(d).utc().format())
@@ -76,7 +70,7 @@ type DateTimeSchema = typeof DateTimeSchema
 
 /**
  * Datetime short output format
- * @summary YYYY, MMMM Do, YYYY
+ * @summary dddd, MMMM Do, YYYY
  * @example Saturday, August 22nd, 2026
  */
 const DATETIME_FORMAT_SHORT_OUTPUT = "dddd, MMMM Do, YYYY"
@@ -130,15 +124,6 @@ const CostSchema = pipe(number(), minValue(0))
 type CostSchema = typeof CostSchema
 
 /**
- * Validate cost input
- * @summary Non-empty decimal string, >= 0
- * @returns Number
- */
-const CostInputSchema = pipe(StringSchema, decimal(), toNumber(), minValue(0))
-
-type CostInputSchema = typeof CostInputSchema
-
-/**
  * Maximum length
  * @default 64
  */
@@ -161,15 +146,6 @@ type NameSchema = typeof NameSchema
 const IdSchema = optional(pipe(number(), integer(), gtValue(0)))
 
 type IdSchema = typeof IdSchema
-
-/**
- * Validate title
- * @summary Non-empty string, exactly two words, US English locale
- * @returns Array of two strings
- */
-const TitleSchema = pipe(StringSchema, words("en-US", 2))
-
-type TitleSchema = typeof TitleSchema
 
 /**
  * Validate HTTP method
@@ -216,11 +192,18 @@ const ExpireTimeSchema = union([
       )
     )
   ),
-  pipe(number(), integer(), gtValue(dayjs().unix())),
-  pipe(date(), minValue(dayjs().toDate()))
+  pipe(
+    number(),
+    integer(),
+    check((t: number): boolean => t > dayjs().unix(), "Expiration time must be in the future")
+  ),
+  pipe(
+    date(),
+    check((d: Date): boolean => d.getTime() >= Date.now(), "Expiration date must be in the future")
+  )
 ])
 
-type ExpireTimeSchema = typeof TitleSchema
+type ExpireTimeSchema = typeof ExpireTimeSchema
 
 /**
  * Validate Endpoint
@@ -250,7 +233,6 @@ type StatsTypeSchema = typeof StatsTypeSchema
 
 export {
   BooleanSchema,
-  CostInputSchema,
   CostSchema,
   CostType,
   CostTypeSchema,
@@ -270,6 +252,5 @@ export {
   StatsTypeSchema,
   StringSchema,
   TimeoutSchema,
-  TitleSchema,
   UrlSchema
 }

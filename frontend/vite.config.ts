@@ -12,6 +12,8 @@ import { default as removeAttributes } from "rollup-plugin-jsx-remove-attributes
 import { defineConfig } from "vite"
 import { ViteMinifyPlugin as minifyHtml } from "vite-plugin-minify"
 
+const cssRegex = /<link rel="stylesheet"[^>]*href="[^"]*mantine-(?:charts|dates)[^"]*\.css"[^>]*>/gu
+
 export default defineConfig({
   build: {
     cssMinify: "lightningcss",
@@ -93,12 +95,22 @@ export default defineConfig({
               return false
             }
 
-            const hasLightSelector = rule.value.selectors.some((selector: Selector): boolean =>
-              selector.some(hasLightComponent)
+            const remainingSelectors = rule.value.selectors.filter(
+              (selector: Selector): boolean => !selector.some(hasLightComponent)
             )
 
-            if (hasLightSelector) {
+            if (remainingSelectors.length === 0) {
               return []
+            }
+
+            if (remainingSelectors.length !== rule.value.selectors.length) {
+              return {
+                ...rule,
+                value: {
+                  ...rule.value,
+                  selectors: remainingSelectors
+                }
+              }
             }
           }
         }
@@ -119,8 +131,7 @@ export default defineConfig({
     {
       enforce: "post",
       name: "mantine-css",
-      transformIndexHtml: (html: string): string =>
-        html.replace(/<link rel="stylesheet"[^>]*href="[^"]*mantine-(?:charts|dates)[^"]*\.css"[^>]*>/gu, "")
+      transformIndexHtml: (html: string): string => html.replace(cssRegex, "")
     },
     {
       enforce: "post",
@@ -132,7 +143,7 @@ export default defineConfig({
 
         const tasks = files
           .filter((f: string): boolean => f.endsWith(".css") || f.endsWith(".html"))
-          .map(async (f: string) => {
+          .map(async (f: string): Promise<void> => {
             const filePath = path.join(dist, f)
 
             const file = Bun.file(filePath)
@@ -158,7 +169,7 @@ export default defineConfig({
     {
       enforce: "post",
       name: "size",
-      async writeBundle(): Promise<void> {
+      async closeBundle(): Promise<void> {
         console.info(
           `\nTotal Size: ${prettyBytes(await getDirSize("dist"), {
             maximumFractionDigits: 2

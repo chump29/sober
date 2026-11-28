@@ -5,11 +5,11 @@ import { dequal as equal } from "dequal"
 import { create } from "zustand"
 
 import { calculateSavings, calculateStats } from "./calc.ts"
-import { getKeyByValue, round } from "./index.ts"
+import { getKeyByValue, round, validate } from "./index.ts"
 import { type ICost } from "./interfaces/ICost.ts"
 import { defaultValues, type IDisplay, type IDisplayActions } from "./interfaces/IDisplay.ts"
 import { defaultSubstance, type ISubstance } from "./interfaces/ISubstance.ts"
-import { CostType } from "./schemas.ts"
+import { CostType, NameSchema } from "./schemas.ts"
 
 const getCost = (substance: ISubstance, date: string, now: Dayjs): Nullable<ICost> => {
   if (substance.cost <= 0) {
@@ -25,6 +25,8 @@ const getCost = (substance: ISubstance, date: string, now: Dayjs): Nullable<ICos
   }
 }
 
+const getUser = (): Nullable<string> => validate(localStorage.getItem("soberUser"), NameSchema)
+
 export const displayStore = create<IDisplay>()(
   (set, get): IDisplay =>
     ({
@@ -33,16 +35,18 @@ export const displayStore = create<IDisplay>()(
         getUserNow: (): Nullable<string> => get().user,
 
         setDisplay: (date: Nullish<string>): void => {
+          const substance = get().selectedSubstance
+
           if (!date) {
-            set({
-              ...defaultValues,
-              cost: null
-            })
+            if (substance !== defaultSubstance || get().cost !== null) {
+              set({
+                ...defaultValues,
+                cost: null
+              })
+            }
 
             return
           }
-
-          const substance = get().selectedSubstance
 
           const now = dayjs()
 
@@ -74,7 +78,7 @@ export const displayStore = create<IDisplay>()(
       ...defaultValues,
       cost: null,
       selectedSubstance: defaultSubstance,
-      user: null
+      user: getUser()
     }) satisfies IDisplay
 )
 

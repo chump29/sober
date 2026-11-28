@@ -81,18 +81,6 @@ mock.module(
   })
 )
 
-type MYStats = Pick<IDisplayStats, "months" | "years">
-
-let statsResult: MYStats = { months: 0, years: 0 }
-
-const calculateStats = mock((): MYStats => statsResult)
-mock.module(
-  "../../../src/utils/calc.ts",
-  (): MockComponent => ({
-    calculateStats
-  })
-)
-
 let currentCost: Nullable<ICost> = null
 
 let currentMetrics: IDisplayStats = { ...defaultValues }
@@ -154,14 +142,12 @@ beforeEach((): void => {
 
   yearRegex = new RegExp(String(pastDate.year()), "u")
 
-  substance = {
-    ...getSubstance({
-      date: pastDate.format(DATETIME_FORMAT)
-    }),
+  substance = getSubstance({
+    date: pastDate.format(DATETIME_FORMAT),
     showCoin: true,
     showCost: true,
     showTime: true
-  }
+  })
 
   fetchResponse = substance
 
@@ -188,11 +174,6 @@ beforeEach((): void => {
     seconds: fake.number.int({ max: 9999, min: 1000 }),
     weeks: fake.number.int({ max: 99, min: 80 }),
     years: 0
-  }
-
-  statsResult = {
-    months: fake.number.float({ fractionDigits: 2, max: 11, min: 1 }),
-    years: fake.number.float({ fractionDigits: 2, max: 5, min: 0 })
   }
 })
 
@@ -236,12 +217,7 @@ describe("Home", (): void => {
   })
 
   test("hides savings when showCost is false", (): void => {
-    renderHome({
-      selectedSubstance: {
-        ...substance,
-        showCost: false
-      }
-    })
+    renderHome({ selectedSubstance: getSubstance({ showCost: false }) })
 
     expect(screen.queryByText("ESTIMATED SAVINGS")).toBeNull()
   })
@@ -261,18 +237,13 @@ describe("Home", (): void => {
   })
 
   test("hides coin button when showCoin is false", (): void => {
-    renderHome({
-      selectedSubstance: {
-        ...substance,
-        showCoin: false
-      }
-    })
+    renderHome({ selectedSubstance: getSubstance({ showCoin: false }) })
 
     expect(screen.queryByTestId("coin")).toBeNull()
   })
 
   test("hides coin when months is 0", (): void => {
-    statsResult = { months: 0, years: 0 }
+    currentMetrics.months = 0
 
     renderHome()
 
@@ -280,12 +251,7 @@ describe("Home", (): void => {
   })
 
   test("disables date picker when selectedSubstance has no name", (): void => {
-    renderHome({
-      selectedSubstance: {
-        ...substance,
-        name: ""
-      }
-    })
+    renderHome({ selectedSubstance: getSubstance({ date: substance.date, name: "" }) })
 
     expect(screen.getByRole("button", { name: yearRegex })).toBeDisabled()
   })
@@ -322,6 +288,7 @@ describe("Home", (): void => {
 
     await waitFor((): void => {
       expect(setSelectedSubstance).toHaveBeenCalledWith(validate(updated, SubstanceSchema))
+      expect(refreshSubstances).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -359,6 +326,7 @@ describe("Home", (): void => {
 
     await waitFor((): void => {
       expect(setSelectedSubstance).toHaveBeenCalledWith(validate(updated, SubstanceSchema))
+      expect(refreshSubstances).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -399,6 +367,7 @@ describe("Home", (): void => {
 
     await waitFor((): void => {
       expect(setSelectedSubstance).toHaveBeenCalledWith(validate(updated, SubstanceSchema))
+      expect(refreshSubstances).toHaveBeenCalledTimes(1)
     })
   })
 

@@ -1,4 +1,4 @@
-import { type ChangeEvent, type JSX } from "react"
+import { type ChangeEvent, type JSX, useState } from "react"
 
 import { IconSettings } from "@tabler/icons-react"
 
@@ -41,38 +41,53 @@ export const Settings = ({
   substances,
   user
 }: ISubstancesProps): JSX.Element => {
+  const [updating, setUpdating] = useState(false)
+  const [costInput, setCostInput] = useState<number>(selectedSubstance.cost)
+  const [prevCost, setPrevCost] = useState<number>(selectedSubstance.cost)
+
+  if (prevCost !== selectedSubstance.cost) {
+    setPrevCost(selectedSubstance.cost)
+    setCostInput(selectedSubstance.cost)
+  }
+
   const updateSubstance = async (updates: Partial<ISubstance>): Promise<void> => {
     const { id } = selectedSubstance
 
-    if (!user || id === undefined) {
+    if (!user || id === undefined || updating) {
       return
     }
 
-    const data = await fetchClient(
-      {
-        endpoint: Endpoint.UpdateSubstance,
-        body: {
-          ...selectedSubstance,
-          ...updates
-        },
-        id,
-        method: HttpMethod.PUT,
-        user
-      } satisfies IFetchClientSettings,
-      SubstanceSchema
-    )
+    setUpdating(true)
 
-    if (!data) {
-      return
+    try {
+      const data = await fetchClient(
+        {
+          endpoint: Endpoint.UpdateSubstance,
+          body: {
+            ...selectedSubstance,
+            ...updates
+          },
+          id,
+          method: HttpMethod.PUT,
+          user
+        } satisfies IFetchClientSettings,
+        SubstanceSchema
+      )
+
+      if (!data) {
+        return
+      }
+
+      setSelectedSubstance(data)
+
+      if (env.DEBUG) {
+        info(`${data.name} updated`)
+      }
+
+      await refreshSubstances()
+    } finally {
+      setUpdating(false)
     }
-
-    setSelectedSubstance(data)
-
-    if (env.DEBUG) {
-      info(`${data.name} updated`)
-    }
-
-    await refreshSubstances()
   }
 
   return (
@@ -117,9 +132,10 @@ export const Settings = ({
                 <Select
                   allowDeselect={false}
                   data={statsTypeOptions}
+                  disabled={updating}
                   label="Stats Type"
                   onChange={async (value: Nullable<string>): Promise<void> => {
-                    const statsType = validate(Number(value), StatsTypeSchema)
+                    const statsType = validate(value === null ? null : Number(value), StatsTypeSchema)
 
                     if (statsType !== null) {
                       await updateSubstance({ statsType })
@@ -134,6 +150,7 @@ export const Settings = ({
                 <Switch
                   checked={selectedSubstance.showCoin}
                   description="Display AA Coin"
+                  disabled={updating}
                   label="Show Coin"
                   onChange={async (e: ChangeEvent<HTMLInputElement>): Promise<void> =>
                     await updateSubstance({ showCoin: e.currentTarget.checked })
@@ -144,6 +161,7 @@ export const Settings = ({
                 <Switch
                   checked={selectedSubstance.showDecimals}
                   description="Show decimal places"
+                  disabled={updating}
                   label="Show Decimals"
                   onChange={async (e: ChangeEvent<HTMLInputElement>): Promise<void> =>
                     await updateSubstance({ showDecimals: e.currentTarget.checked })
@@ -154,6 +172,7 @@ export const Settings = ({
                 <Switch
                   checked={selectedSubstance.showCost}
                   description="Display cost savings"
+                  disabled={updating}
                   label="Show Cost"
                   onChange={async (e: ChangeEvent<HTMLInputElement>): Promise<void> =>
                     await updateSubstance({ showCost: e.currentTarget.checked })
@@ -169,35 +188,33 @@ export const Settings = ({
                   allowNegative={false}
                   data-autofocus={true}
                   decimalScale={2}
-                  error={selectedSubstance.cost === 0 ? "Cost must be greater than zero" : undefined}
+                  disabled={updating}
+                  error={costInput <= 0 ? "Cost must be greater than zero" : undefined}
                   fixedDecimalScale={true}
                   hideControls={true}
                   label={`Cost Per ${getKeyByValue(CostType, selectedSubstance.costType)}`}
                   min={0}
                   onBlur={async (): Promise<void> => {
-                    if (selectedSubstance.cost === 0) {
+                    if (costInput <= 0 || costInput === selectedSubstance.cost) {
                       return
                     }
 
                     await updateSubstance({
-                      cost: selectedSubstance.cost
+                      cost: costInput
                     })
                   }}
                   onChange={(value: string | number): void => {
                     const cost = match<string | number, number>(value)
                       .with(P.number, (num: number) => num)
                       .with("", () => 0)
-                      .with(P.string, (str: string) => Number(str))
+                      .with(P.string, (str: string) => Number(str)) // could return NaN
                       .exhaustive()
 
-                    setSelectedSubstance({
-                      ...selectedSubstance,
-                      cost
-                    })
+                    setCostInput(Number.isNaN(cost) ? 0 : cost)
                   }}
                   placeholder="Enter cost…"
                   prefix="$ "
-                  value={selectedSubstance.cost}
+                  value={costInput}
                   withAsterisk={true}
                 />
               </Tooltip>
@@ -205,9 +222,10 @@ export const Settings = ({
                 <Select
                   allowDeselect={false}
                   data={costTypeOptions}
+                  disabled={updating}
                   label="Cost Frequency"
                   onChange={async (value: Nullable<string>): Promise<void> => {
-                    const costType = validate(Number(value), CostTypeSchema)
+                    const costType = validate(value === null ? null : Number(value), CostTypeSchema)
 
                     if (costType !== null) {
                       await updateSubstance({ costType })

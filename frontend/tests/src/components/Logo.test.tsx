@@ -14,7 +14,7 @@ describe("Logo", (): void => {
 
     render(<Logo />, { wrapper: MantineProvider })
 
-    expect(screen.getByRole("img")).toHaveAttribute("src", "sober.webp")
+    expect(screen.getByRole("img")).toHaveAttribute("src", "/sober.webp")
 
     if (!(firstWord && secondWord)) {
       throw new Error("Invalid title")

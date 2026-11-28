@@ -36,25 +36,32 @@ import { calculateSavings, calculateStats, TIME } from "../utils/calc.ts"
 import { currencyFormatter, FACTOR, Per, round } from "../utils/index.ts"
 import { type IInterval } from "../utils/interfaces/IInterval.ts"
 import { type ISavings } from "../utils/interfaces/ISavings.ts"
-import {
-  type IAlcohol,
-  type IChart,
-  type IHealth,
-  type IHealthMap,
-  type ISmoking,
-  type IStat
-} from "../utils/interfaces/IStats.ts"
+import { type IAlcohol, type IChart, type IHealth, type ISmoking, type IStat } from "../utils/interfaces/IStats.ts"
 import { type ISubstancesProps } from "../utils/interfaces/ISubstancesProps.ts"
 import { DATETIME_FORMAT_SHORT, StatsType } from "../utils/schemas.ts"
 
 import "@mantine/charts/styles.css"
+
 import { type Optional } from "@postfmly/types"
 
+import { useMinutes } from "../utils/displayStore.ts"
 import { type IHealthBarItem } from "../utils/interfaces/IHealthBarItem.ts"
 
 const X_ANGLE = -45
 const X_HEIGHT_MOBILE = 45
 const X_HEIGHT = 70
+
+const THREE_WIDE = 3
+
+const DECIMALS = [
+  { decimals: 8, max: 0.01 },
+  { decimals: 6, max: 0.1 },
+  { decimals: 4, max: 1 }
+] as const
+
+const DEFAULT_DECIMALS = 2
+
+const getDecimalScale = (val: number): number => DECIMALS.find(({ max }) => val < max)?.decimals ?? DEFAULT_DECIMALS
 
 // NOTE: Recovery percentages are modeled using standard exponential saturation curves (1 − e⁻ᵏᵗ)
 // calibrated to clinical abstinence milestones from The Lancet (Wood et al., 2018), BMJ Open (Mehta et al., 2018),
@@ -76,10 +83,7 @@ const K = {
 
 const recovery = (k: number, days: number): number => round(FACTOR * (1 - Math.exp(-k * days)))
 
-function health(type: typeof StatsType.None, days: number): undefined
-function health<T extends keyof IHealthMap>(type: T, days: number): Optional<IHealthMap[T]>
-function health(type: StatsType, days: number): Optional<IHealth>
-function health(type: StatsType, days: number): Optional<IHealth> {
+const health = (type: StatsType, days: number): Optional<IHealth> => {
   if (days === 0) {
     return undefined
   }
@@ -95,7 +99,7 @@ function health(type: StatsType, days: number): Optional<IHealth> {
         overall: recovery(rates.OVERALL, days),
         sleep: recovery(rates.SLEEP, days),
         type: StatsType.Alcohol
-      }
+      } satisfies IAlcohol
     })
     .with(StatsType.Smoking, (): ISmoking => {
       const rates = K[StatsType.Smoking]
@@ -106,40 +110,37 @@ function health(type: StatsType, days: number): Optional<IHealth> {
         overall: recovery(rates.OVERALL, days),
         oxygenation: recovery(rates.OXYGENATION, days),
         type: StatsType.Smoking
-      }
+      } satisfies ISmoking
     })
     .exhaustive()
 }
 
+// * NOTE: not being exact
+const DAYS_IN_MONTH = 30
+const DAYS_IN_TWO_MONTHS = 60
+const DAYS_IN_QUARTER = 90
+const DAYS_IN_HALF_YEAR = 180
+const DAYS_IN_YEAR = 365
+
 const chart = (savings: ISavings, days: number, isMobile: boolean): IChart[] => {
-  const next = days + TIME.DAYS_PER_YEAR
+  const intDays = Math.trunc(days)
 
   const milestones: IChart[] = [
     { days: 1, label: "1 Day", savings: savings.day },
     { days: TIME.DAYS_PER_WEEK, label: "1 Week", savings: savings.week },
-    { days: TIME.DAYS_30, label: "30 Days", savings: savings.month },
-    { days: TIME.DAYS_60, label: "60 Days", savings: savings.months2 },
-    { days: TIME.DAYS_90, label: "90 Days", savings: savings.months3 },
-    { days: TIME.DAYS_6MO, label: "6 Months", savings: savings.months6 },
-    { days: TIME.DAYS_PER_YEAR, label: "1 Year", savings: savings.year }
-  ].filter((milestone: IChart): boolean => milestone.days !== days)
+    { days: DAYS_IN_MONTH, label: "30 Days", savings: savings.month },
+    { days: DAYS_IN_TWO_MONTHS, label: "60 Days", savings: savings.months2 },
+    { days: DAYS_IN_QUARTER, label: "90 Days", savings: savings.months3 },
+    { days: DAYS_IN_HALF_YEAR, label: "6 Months", savings: savings.months6 },
+    { days: DAYS_IN_YEAR, label: "1 Year", savings: savings.year }
+  ].filter((milestone: IChart): boolean => milestone.days !== intDays)
 
   return [
     ...milestones,
-    { days, label: isMobile ? "Today" : `Today (${pluralize("Day", days, true)})`, savings: savings.today },
-    { days: next, label: isMobile ? "+1 Year" : "1 Year From Now", savings: savings.next }
+    { days, label: isMobile ? "Today" : `Today (${pluralize("Day", intDays, true)})`, savings: savings.today },
+    { days: intDays + TIME.DAYS_PER_YEAR, label: isMobile ? "+1 Year" : "1 Year From Now", savings: savings.next }
   ].sort((a: IChart, b: IChart): number => a.days - b.days)
 }
-
-const DECIMALS = [
-  { decimals: 8, max: 0.01 },
-  { decimals: 6, max: 0.1 },
-  { decimals: 4, max: 1 }
-] as const
-
-const DEFAULT_DECIMALS = 2
-
-const getDecimalScale = (val: number): number => DECIMALS.find(({ max }) => val < max)?.decimals ?? DEFAULT_DECIMALS
 
 const HealthBars = ({ items }: { items: IHealthBarItem[] }): JSX.Element => (
   <Stack gap="xs">
@@ -231,7 +232,7 @@ const Stat = (stat: IStat): JSX.Element => {
     .with({ value: P.optional(undefined) }, () => <Text fs="italic">Healing in progress…</Text>)
     .exhaustive()
 
-  const isHealthBars = typeof stat.value === "object" && stat.value !== undefined
+  const isHealthBars = typeof stat.value === "object" // not undefined | number
 
   return (
     <Paper h="100%">
@@ -290,6 +291,8 @@ export const Stats = ({
   substances,
   user
 }: ISubstancesProps): JSX.Element => {
+  useMinutes() // trigger render every minute
+
   const isMobile = useMediaQuery("(max-width: 48em)")
 
   const now = dayjs()
@@ -340,14 +343,15 @@ export const Stats = ({
   ]
 
   const scale = getDecimalScale(dailyCost)
-  const formattedDailyCost = new Intl.NumberFormat("en-US", {
-    currency: "USD",
-    maximumFractionDigits: scale,
-    minimumFractionDigits: scale,
-    style: "currency"
-  }).format(dailyCost)
-
-  const THREE_WIDE = 3
+  const formattedDailyCost =
+    scale === DEFAULT_DECIMALS
+      ? currencyFormatter.format(dailyCost)
+      : new Intl.NumberFormat("en-US", {
+          currency: "USD",
+          maximumFractionDigits: scale,
+          minimumFractionDigits: scale,
+          style: "currency"
+        }).format(dailyCost)
 
   return (
     <Stack>

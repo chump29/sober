@@ -1,11 +1,12 @@
 // biome-ignore-all lint/style/useComponentExportOnlyModules: mocks
 
-import { beforeEach, describe, expect, mock, test } from "bun:test"
+import { beforeEach, describe, expect, mock, spyOn, test } from "bun:test"
 
 import { act, type JSX } from "react"
 
 import { createTheme, MantineProvider, Modal } from "@mantine/core"
 
+import { error } from "@postfmly/logger"
 import { type Nullable } from "@postfmly/types"
 
 import { fakerEN_US as fake } from "@faker-js/faker"
@@ -17,6 +18,7 @@ import { match, P } from "ts-pattern"
 import { Endpoint, HttpStatus, Page } from "../../src/utils/index.ts"
 import { type IDisplayActions } from "../../src/utils/interfaces/IDisplay.ts"
 import { type ISubstance } from "../../src/utils/interfaces/ISubstance.ts"
+import { MAX_LEN_STR } from "../../src/utils/schemas.ts"
 import { getSubstance } from "./utils/helpers.ts"
 
 const version = fake.system.semver()
@@ -39,15 +41,40 @@ const fetch = fetchMock.enableMocks().mockResponse(
 
 type MockComponent = Record<string, unknown>
 
+let hasFetchedVersion = false
+
 mock.module(
   "swr/immutable",
   (): MockComponent => ({
-    default: mock((key: unknown) => ({
-      data: key ? substances : undefined,
-      isLoading: false,
-      isValidating: false,
-      mutate: mock()
-    }))
+    default: mock(
+      (key: unknown, fetchVersion?: () => Promise<unknown>, options?: { onSuccess?: (data: ISubstance[]) => void }) => {
+        if (key === Endpoint.Version) {
+          if (!hasFetchedVersion) {
+            hasFetchedVersion = true
+
+            fetchVersion?.().catch(error)
+          }
+
+          return {
+            data: `v${version}`,
+            isLoading: false,
+            isValidating: false,
+            mutate: mock()
+          }
+        }
+
+        if (key) {
+          options?.onSuccess?.(substances)
+        }
+
+        return {
+          data: key ? substances : undefined,
+          isLoading: false,
+          isValidating: false,
+          mutate: mock()
+        }
+      }
+    )
   })
 )
 
@@ -147,6 +174,8 @@ beforeEach(async (): Promise<void> => {
 
   currentUser = null
 
+  hasFetchedVersion = false
+
   substances = [substance]
 
   await act((): Promise<void> => {
@@ -226,6 +255,16 @@ describe("App", (): void => {
     expect(screen.getByRole("button", { name: "Log In" })).toBeEnabled()
   })
 
+  test("disables login button when name has leading or trailing spaces", async (): Promise<void> => {
+    const user = userEvent.setup()
+
+    await openLogin(user)
+    await typeUserName(user, ` ${fake.person.firstName()} `)
+
+    expect(screen.getByRole("button", { name: "Log In" })).toBeDisabled()
+    expect(screen.getByText("Name cannot start or end with spaces")).toBeInTheDocument()
+  })
+
   interface ILoginOptions {
     name?: string
     user?: UserEvent
@@ -240,6 +279,15 @@ describe("App", (): void => {
 
     await user.click(screen.getByRole("button", { name: "Log In" }))
   }
+
+  test("disables login button when only spaces are entered", async (): Promise<void> => {
+    const user = userEvent.setup()
+
+    await openLogin(user)
+    await typeUserName(user, " ")
+
+    expect(screen.getByRole("button", { name: "Log In" })).toBeDisabled()
+  })
 
   test("logs in when a valid user name submitted", async (): Promise<void> => {
     const name = fake.person.firstName()
@@ -278,19 +326,19 @@ describe("App", (): void => {
   test("displays Stats", async (): Promise<void> => {
     await logInAndClick({ element: "nav-stats" })
 
-    expect(await screen.findByTestId(Page.Stats)).toBeInTheDocument() // lazy loaded
+    expect(await screen.findByTestId(Page.Stats)).toBeInTheDocument()
   })
 
   test("displays Milestones", async (): Promise<void> => {
     await logInAndClick({ element: "nav-milestones" })
 
-    expect(screen.getByTestId(Page.Milestones)).toBeInTheDocument()
+    expect(await screen.findByTestId(Page.Milestones)).toBeInTheDocument()
   })
 
   test("displays Settings", async (): Promise<void> => {
     await logInAndClick({ element: "nav-settings" })
 
-    expect(screen.getByTestId(Page.Settings)).toBeInTheDocument()
+    expect(await screen.findByTestId(Page.Settings)).toBeInTheDocument()
   })
 
   test("displays Home", async (): Promise<void> => {
@@ -298,12 +346,12 @@ describe("App", (): void => {
 
     await logInAndClick({ element: "nav-settings", user })
 
-    expect(screen.getByTestId(Page.Settings)).toBeInTheDocument()
+    expect(await screen.findByTestId(Page.Settings)).toBeInTheDocument()
 
     await user.click(screen.getByTestId("nav-home"))
 
     expect(screen.queryByTestId(Page.Settings)).toBeNull()
-    expect(await screen.findByTestId(Page.Home)).toBeInTheDocument() // lazy loaded
+    expect(await screen.findByTestId(Page.Home)).toBeInTheDocument()
   })
 
   test("cancels log out", async (): Promise<void> => {
@@ -373,7 +421,7 @@ describe("App", (): void => {
     expect(screen.getByPlaceholderText("Enter name…")).toHaveValue("") // verify cleared
   })
 
-  test("displays empty substances when logged in", async (): Promise<void> => {
+  test("displays empty substances", async (): Promise<void> => {
     substances = []
 
     await doLogin()
@@ -385,5 +433,58 @@ describe("App", (): void => {
     expect(screen.getByTestId("nav-stats")).not.toBeVisible()
     expect(screen.getByTestId("nav-milestones")).not.toBeVisible()
     expect(screen.getByTestId("nav-settings")).not.toBeVisible()
+  })
+
+  test("clears invalid user from localStorage", async (): Promise<void> => {
+    localStorage.setItem("soberUser", fake.string.alpha({ length: MAX_LEN_STR + 1 }))
+
+    await act((): Promise<void> => {
+      render(
+        <MantineProvider theme={theme}>
+          <App />
+        </MantineProvider>
+      )
+
+      return Promise.resolve()
+    })
+
+    expect(localStorage.getItem("soberUser")).toBeNull()
+    expect(screen.getAllByText("Not Logged In").length).toBeGreaterThan(0)
+  })
+
+  test("does not save user when login fails", async (): Promise<void> => {
+    const fetchSpy = spyOn(await import("../../src/services/fetchClient.ts"), "fetchClient").mockRejectedValueOnce(
+      new Error("API down")
+    )
+
+    const name = fake.person.firstName()
+
+    await doLogin({ name })
+
+    expect(localStorage.getItem("soberUser")).toBeNull()
+    expect(screen.getByPlaceholderText("Enter name…")).toBeInTheDocument()
+
+    fetchSpy.mockRestore()
+  })
+
+  test("keeps user logged in when logout fails", async (): Promise<void> => {
+    const user = userEvent.setup()
+
+    const name = fake.person.firstName()
+
+    await doLogin({ name, user })
+
+    const fetchSpy = spyOn(await import("../../src/services/fetchClient.ts"), "fetchClient").mockRejectedValueOnce(
+      new Error("API down")
+    )
+
+    await user.click(screen.getByText(name.charAt(0).toUpperCase()))
+
+    await user.click(screen.getByRole("button", { name: "Log Out" }))
+
+    expect(localStorage.getItem("soberUser")).toBe(name)
+    expect(screen.queryByText("Not Logged In")).toBeNull()
+
+    fetchSpy.mockRestore()
   })
 })

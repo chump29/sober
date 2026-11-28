@@ -3,9 +3,9 @@
 """Provides fake data"""
 
 from decimal import Decimal
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING, Final
 
-from mimesis import Datetime, Development, Numeric, Person, Text, random
+from mimesis import Development, Numeric, Person, Text, random
 from whenever import Instant, ItemizedDateDelta
 
 if TYPE_CHECKING:
@@ -21,7 +21,6 @@ class Fake:
         self._development = Development()
         self._numeric = Numeric()
         self._random = random.Random()
-        self._datetime = Datetime()
         self._text = Text()
         self._person = Person()
 
@@ -44,9 +43,11 @@ class Fake:
         Returns:
             Decimal: Value between `start` and `end`
         """
-        return Decimal(str(self._numeric.float_number(start=start, end=end, precision=precision)))
+        val = Decimal(str(self._numeric.float_number(start=start, end=end, precision=precision)))
 
-    def enum_value(self, enum: type[Enum]) -> Any:  # noqa: ANN401
+        return val.quantize(Decimal(f"1e-{precision}"))
+
+    def enum_value[E: Enum](self, enum: type[E]) -> E:
         """Get Enum value
 
         Args:
@@ -73,7 +74,7 @@ class Fake:
             or 0
         )
 
-        return self._datetime.past_datetime(days=days_ago, timezone="UTC")  # ! NOTE: requires pytz
+        return Instant.now().subtract(hours=self._numeric.integer_number(1, days_ago * 24)).to_stdlib()
 
     def integer(self, start: int = 1, end: int = 100) -> int:
         """Get integer

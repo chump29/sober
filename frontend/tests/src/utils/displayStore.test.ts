@@ -58,7 +58,7 @@ describe("displayStore", (): void => {
   test("setSelectedSubstance, cost > 0", (): void => {
     const cost = Number(fake.commerce.price({ min: 1 }))
 
-    const days = fake.number.int({ max: TIME.DAYS_30, min: 1 })
+    const days = fake.number.int({ max: TIME.DAYS_PER_MONTH, min: 1 })
 
     const substance = getSubstance({
       cost,
@@ -94,7 +94,7 @@ describe("displayStore", (): void => {
   test("setDisplay - date = null", (): void => {
     const cost = Number(fake.commerce.price())
 
-    const days = fake.number.int({ max: TIME.DAYS_30, min: 1 })
+    const days = fake.number.int({ max: TIME.DAYS_PER_MONTH, min: 1 })
 
     const substance = getSubstance({
       cost,
@@ -113,7 +113,7 @@ describe("displayStore", (): void => {
   test("setDisplay - update", (): void => {
     const cost = Number(fake.commerce.price())
 
-    const days = fake.number.int({ max: TIME.DAYS_30, min: 1 })
+    const days = fake.number.int({ max: TIME.DAYS_PER_MONTH, min: 1 })
 
     let date = dayjs().subtract(days, "days").format(DATETIME_FORMAT)
 

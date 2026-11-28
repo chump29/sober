@@ -1,7 +1,7 @@
 services:
   sober-frontend:
     container_name: sober-frontend
-    image: git.postfmly.com/admin/sober-frontend:arm64
+    image: git.postfmly.com/admin/sober-frontend
     restart: unless-stopped
     depends_on:
       - sober-backend
@@ -19,10 +19,10 @@ services:
 
   sober-backend:
     container_name: sober-backend
-    image: git.postfmly.com/admin/sober-backend:arm64
+    image: git.postfmly.com/admin/sober-backend
     restart: unless-stopped
     ports:
-      - "5560:5560"
+      - "127.0.0.1:5560:5560"
     volumes:
       - db:/backend/db
     environment:
@@ -33,8 +33,6 @@ services:
 
 volumes:
   db: {}
-
-networks: {}
 
 x-dockge:
   urls:

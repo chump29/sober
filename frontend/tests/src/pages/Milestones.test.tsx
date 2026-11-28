@@ -82,14 +82,10 @@ describe("Milestones", (): void => {
   test("displays no MilestoneItems", (): void => {
     const startDate = dayjs().subtract(1, "hour")
 
-    renderMilestones({
-      selectedSubstance: {
-        ...substance,
-        date: startDate.format(DATETIME_FORMAT)
-      }
-    })
+    renderMilestones({ selectedSubstance: getSubstance({ date: startDate.format(DATETIME_FORMAT) }) })
 
-    expect(screen.getByText("0%")).toBeInTheDocument()
+    expect(screen.queryByText("0%")).toBeNull()
+    expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "0")
     expect(screen.getAllByText("Upcoming")).toHaveLength(TOTAL_MILESTONES)
     expect(screen.queryByText("Completed")).toBeNull()
     expect(screen.getByText(`Target ${startDate.add(1, "day").format(DATETIME_FORMAT_MILESTONE)}`)).toBeInTheDocument()
@@ -101,12 +97,7 @@ describe("Milestones", (): void => {
     const completedCount = 4
     const expectedPct = Math.trunc((completedCount / TOTAL_MILESTONES) * FACTOR)
 
-    renderMilestones({
-      selectedSubstance: {
-        ...substance,
-        date: startDate.format(DATETIME_FORMAT)
-      }
-    })
+    renderMilestones({ selectedSubstance: getSubstance({ date: startDate.format(DATETIME_FORMAT) }) })
 
     expect(screen.getByText(`${expectedPct}%`)).toBeInTheDocument()
     expect(screen.getAllByText("Completed")).toHaveLength(completedCount)
@@ -121,12 +112,7 @@ describe("Milestones", (): void => {
     const SIX_YEARS = 6
     const sixYearsAgo = dayjs().subtract(SIX_YEARS, "years")
 
-    renderMilestones({
-      selectedSubstance: {
-        ...substance,
-        date: sixYearsAgo.format(DATETIME_FORMAT)
-      }
-    })
+    renderMilestones({ selectedSubstance: getSubstance({ date: sixYearsAgo.format(DATETIME_FORMAT) }) })
 
     expect(screen.getByText("100%")).toBeInTheDocument()
     expect(screen.getAllByText("Completed")).toHaveLength(TOTAL_MILESTONES)
@@ -137,12 +123,7 @@ describe("Milestones", (): void => {
     // * NOTE: 1/31/26 + 1 month should be 2/28/26 (not 30 days, 3/3/26)
     const jan31 = dayjs("2026-01-31T12:00:00.000") // local
 
-    renderMilestones({
-      selectedSubstance: {
-        ...substance,
-        date: jan31.format(DATETIME_FORMAT)
-      }
-    })
+    renderMilestones({ selectedSubstance: getSubstance({ date: jan31.format(DATETIME_FORMAT) }) })
 
     expect(screen.getByText("Reached Feb 28, 2026")).toBeInTheDocument()
   })

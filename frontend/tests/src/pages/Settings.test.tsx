@@ -75,15 +75,14 @@ const reShowDecimals = /Show Decimals/u
 const reShowCost = /Show Cost/u
 
 beforeEach((): void => {
-  substance = {
-    ...getSubstance(),
+  substance = getSubstance({
     cost: Number(fake.finance.amount({ dec: 2, max: 100, min: 10 })),
     costType: CostType.Day,
     showCoin: true,
     showCost: true,
     showDecimals: true,
     statsType: StatsType.None
-  }
+  })
 
   fetchResponse = substance
   lastRequest = null
@@ -240,24 +239,14 @@ describe("Settings", (): void => {
   })
 
   test("hides cost", async (): Promise<void> => {
-    await renderSettings({
-      selectedSubstance: {
-        ...substance,
-        showCost: false
-      }
-    })
+    await renderSettings({ selectedSubstance: getSubstance({ showCost: false }) })
 
     expect(screen.queryByLabelText(reCostPer)).toBeNull()
     expect(screen.queryByLabelText("Cost Frequency")).toBeNull()
   })
 
   test("shows cost error", async (): Promise<void> => {
-    await renderSettings({
-      selectedSubstance: {
-        ...substance,
-        cost: 0
-      }
-    })
+    await renderSettings({ selectedSubstance: getSubstance({ cost: 0, costType: substance.costType, showCost: true }) })
 
     expect(screen.getByText("Cost must be greater than zero")).toBeInTheDocument()
 
@@ -289,12 +278,6 @@ describe("Settings", (): void => {
 
     fireEvent.change(input, { target: { value: String(newCost) } })
 
-    expect(setSelectedSubstance).toHaveBeenCalledWith(
-      expect.objectContaining({
-        cost: newCost
-      })
-    )
-
     fireEvent.blur(input)
 
     await waitFor((): void => {
@@ -303,11 +286,12 @@ describe("Settings", (): void => {
 
     expect(await lastRequest?.json()).toStrictEqual(
       expect.objectContaining({
-        cost: substance.cost
+        cost: newCost
       })
     )
 
     await waitFor((): void => {
+      expect(setSelectedSubstance).toHaveBeenCalledWith(validate(updated, SubstanceSchema))
       expect(refreshSubstances).toHaveBeenCalledTimes(1)
     })
   })
@@ -315,18 +299,19 @@ describe("Settings", (): void => {
   test("clears cost", async (): Promise<void> => {
     await renderSettings()
 
-    fireEvent.change(
-      screen.getByRole("textbox", {
-        name: `Cost Per ${getKeyByValue(CostType, substance.costType)}`
-      }),
-      { target: { value: "" } }
-    )
+    const input = screen.getByRole("textbox", {
+      name: `Cost Per ${getKeyByValue(CostType, substance.costType)}`
+    })
 
-    expect(setSelectedSubstance).toHaveBeenCalledWith(
-      expect.objectContaining({
-        cost: 0
-      })
-    )
+    fireEvent.change(input, { target: { value: "" } })
+
+    expect(screen.getByText("Cost must be greater than zero")).toBeInTheDocument()
+
+    fireEvent.blur(input)
+
+    expect(fetch).not.toHaveBeenCalled()
+    expect(setSelectedSubstance).not.toHaveBeenCalled()
+    expect(refreshSubstances).not.toHaveBeenCalled()
   })
 
   test("updates costType", async (): Promise<void> => {
@@ -388,5 +373,36 @@ describe("Settings", (): void => {
 
     expect(setSelectedSubstance).not.toHaveBeenCalled()
     expect(refreshSubstances).not.toHaveBeenCalled()
+  })
+
+  test("syncs cost", (): void => {
+    const props = {
+      allSubstances: [substance],
+      refreshSubstances,
+      selectedSubstance: substance,
+      setSelectedSubstance,
+      substances: [toDisplay(substance)],
+      user: currentUser
+    }
+
+    const { rerender } = render(<Settings {...props} />, { wrapper: MantineProvider })
+
+    const updatedCost = substance.cost + fake.number.int({ max: 100, min: 1 })
+
+    rerender(
+      <Settings
+        {...props}
+        selectedSubstance={{
+          ...substance,
+          cost: updatedCost
+        }}
+      />
+    )
+
+    expect(
+      screen.getByRole("textbox", {
+        name: `Cost Per ${getKeyByValue(CostType, substance.costType)}`
+      })
+    ).toHaveValue(`$ ${updatedCost.toFixed(2)}`)
   })
 })

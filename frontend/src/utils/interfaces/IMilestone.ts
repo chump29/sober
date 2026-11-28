@@ -1,12 +1,20 @@
 import { type Dayjs } from "dayjs"
 
-export interface IMilestoneDefinition {
-  days?: number
-  label: string
-  months?: number
-}
+// * NOTE: leaving I prefix even though types
 
-export interface IMilestone extends IMilestoneDefinition {
+export type IMilestoneDefinition =
+  | {
+      days: number
+      label: string
+      months?: never
+    }
+  | {
+      days?: never
+      label: string
+      months: number
+    }
+
+export type IMilestone = IMilestoneDefinition & {
   completed: boolean
   targetDate: Dayjs
 }

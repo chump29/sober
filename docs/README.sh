@@ -54,21 +54,21 @@ for _env in frontend backend; do
     export _coverage
     echo -e "\n☂️  Coverage: $_coverage%"
   else
-    _fastapi=$(yq '.project.dependencies[3] // "❓"' pyproject.toml)
+    _fastapi=$(yq '[.project.dependencies[] | select(test("^fastapi(\\[.*\\])?[>=<~!]"))] | .[0] // "❓"' pyproject.toml)
     if [[ $_fastapi != "❓" ]]; then
       _fastapi=$(getVersion "$_fastapi")
     fi
     export _fastapi
     echo -e " • fastapi: $_fastapi"
 
-    _peewee=$(yq '.project.dependencies[6] // "❓"' pyproject.toml)
+    _peewee=$(yq '[.project.dependencies[] | select(test("^peewee(\\[.*\\])?[>=<~!]"))] | .[0] // "❓"' pyproject.toml)
     if [[ $_peewee != "❓" ]]; then
       _peewee=$(getVersion "$_peewee")
     fi
     export _peewee
     echo -e " • peewee: $_peewee"
 
-    _pydantic=$(yq '.project.dependencies[8] // "❓"' pyproject.toml)
+    _pydantic=$(yq '[.project.dependencies[] | select(test("^pydantic(\\[.*\\])?[>=<~!]"))] | .[0] // "❓"' pyproject.toml)
     if [[ $_pydantic != "❓" ]]; then
       _pydantic=$(getVersion "$_pydantic")
     fi
@@ -82,11 +82,13 @@ for _env in frontend backend; do
     _sqlite=N/A
     if [[ -n $(docker ps -q -f name="$_name") ]]; then
       _sqlite=$(docker exec "$_name" apk list --no-cache sqlite | cut -d " " -f 1)
-      _sqlite=${_sqlite:7:-3}
+      _sqlite=${_sqlite#sqlite-}
+      _sqlite=${_sqlite%-r*}
     else
       if command -v htmlq > /dev/null; then
         _sqlite=$(curl -s https://pkgs.alpinelinux.org/package/edge/main/x86_64/sqlite | htmlq --text "strong[aria-label='Package up-to-date']")
-        _sqlite=${_sqlite:7:-3}
+        _sqlite=${_sqlite#sqlite-}
+        _sqlite=${_sqlite%-r*}
       fi
     fi
     docker context use default > /dev/null 2>&1
@@ -106,8 +108,6 @@ for _env in frontend backend; do
     fi
     export _coverage
     echo -e "\n☂️  Coverage: $_coverage%"
-
-    sed -i "/MD060/d" ../backend/README.md
   fi
 
   popd > /dev/null

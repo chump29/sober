@@ -140,20 +140,18 @@ const rePercent = /%/u
 beforeEach((): void => {
   isMobile = false
 
-  substance = {
-    ...getSubstance({
-      cost: getAmount(),
-      costType: CostType.Day,
-      date: dayjs()
-        .subtract(fake.number.int({ max: Math.floor(TIME.DAYS_PER_YEAR), min: 1 }), "days")
-        .format(DATETIME_FORMAT)
-    }),
+  substance = getSubstance({
+    cost: getAmount(),
+    costType: CostType.Day,
+    date: dayjs()
+      .subtract(fake.number.int({ max: Math.floor(TIME.DAYS_PER_YEAR), min: 1 }), "days")
+      .format(DATETIME_FORMAT),
     showCoin: true,
     showCost: true,
     showDecimals: fake.datatype.boolean(),
     showTime: true,
-    statsType: StatsType.Alcohol // ! TODO: Test StatsType.Smoking & StatsType.None
-  }
+    statsType: StatsType.Alcohol
+  })
 
   statsMock = getStats(substance.showDecimals)
 
@@ -178,12 +176,7 @@ describe("Stats", (): void => {
   })
 
   test("hides savings when showCost is false", (): void => {
-    renderStats({
-      selectedSubstance: {
-        ...substance,
-        showCost: false
-      }
-    })
+    renderStats({ selectedSubstance: getSubstance({ showCost: false }) })
 
     expect(screen.queryByText("MONEY SAVED")).toBeNull()
     expect(screen.queryByText("SAVINGS BREAKDOWN")).toBeNull()
@@ -191,20 +184,14 @@ describe("Stats", (): void => {
   })
 
   test("hides savings when cost is 0", (): void => {
-    renderStats({
-      selectedSubstance: {
-        ...substance,
-        cost: 0,
-        showCost: true
-      }
-    })
+    renderStats({ selectedSubstance: getSubstance({ cost: 0, showCost: true }) })
 
     expect(screen.getByText("MONEY SAVED")).toBeInTheDocument()
     expect(screen.queryByText("SAVINGS BREAKDOWN")).toBeNull()
     expect(screen.queryByTestId("line-chart")).toBeNull()
   })
 
-  test("displays healing in progress", (): void => {
+  test("displays healing in progress, days = 0", (): void => {
     statsMock = {
       ...statsMock,
       days: 0
@@ -224,7 +211,7 @@ describe("Stats", (): void => {
     ).toBeNull()
   })
 
-  test("displays bars", (): void => {
+  test("displays alcohol bars", (): void => {
     statsMock = {
       ...statsMock,
       days: fake.number.int({ max: Math.floor(TIME.DAYS_PER_YEAR), min: 65 })
@@ -285,9 +272,11 @@ describe("Stats", (): void => {
   })
 
   test("displays chart", (): void => {
+    const THIRTY_DAYS = 30
+
     statsMock = {
       ...statsMock,
-      days: TIME.DAYS_30
+      days: THIRTY_DAYS
     }
     // * NOTE: the "30 Days" milestone is replaced by "Today (30 Days)"
 
@@ -332,5 +321,45 @@ describe("Stats", (): void => {
     expect(chartProps?.data.some((d: IChart): boolean => d.label === "+1 Year")).toBe(true)
     expect(chartProps?.xAxisProps?.interval).toBe(1)
     expect(chartProps?.xAxisProps?.tick?.angle).toBe(0)
+  })
+
+  test("displays smoking bars", (): void => {
+    statsMock = {
+      ...statsMock,
+      days: fake.number.int({ max: Math.floor(TIME.DAYS_PER_YEAR), min: 65 })
+    }
+    // * NOTE: >= 65 days ensures all four bars are > 10%
+
+    renderStats({ selectedSubstance: getSubstance({ statsType: StatsType.Smoking }) })
+
+    expect(screen.getByText("Oxygenation & Circulation")).toBeInTheDocument()
+    expect(screen.getByText("Lung & Cilia Function")).toBeInTheDocument()
+    expect(screen.getByText("Heart & Vascular Risk Reduction")).toBeInTheDocument()
+    expect(screen.getByText("Overall Respiratory Recovery")).toBeInTheDocument()
+
+    const LEN = 4
+
+    expect(screen.getAllByText(rePercent)).toHaveLength(LEN)
+  })
+
+  test("displays healing in progress, StatsType.None", (): void => {
+    renderStats({ selectedSubstance: getSubstance({ statsType: StatsType.None }) })
+
+    expect(screen.getByText("Healing in progress…")).toBeInTheDocument()
+  })
+
+  test("verifies decimals", (): void => {
+    const num = fake.number.float({ max: 0.0099 })
+
+    savingsMock = {
+      ...savingsMock,
+      day: num
+    }
+
+    renderStats()
+
+    const NUM_DIGITS = 8
+
+    expect(screen.getByText(`Based on $${num.toFixed(NUM_DIGITS)} per day`)).toBeInTheDocument()
   })
 })

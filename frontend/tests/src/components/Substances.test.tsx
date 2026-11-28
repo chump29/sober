@@ -70,10 +70,8 @@ const setSelectedSubstance = mock((): void => undefined)
 const substance1 = getSubstance()
 const substance2 = getSubstance()
 
-if (substance1.id && substance2.id && substance1.id === substance2.id) {
-  substance2.id++
-}
 if (substance1.name === substance2.name) {
+  // just in case
   substance2.name += "2"
 }
 
@@ -239,7 +237,7 @@ describe("Substances", (): void => {
 
     const title = titleCase(name)
 
-    substance = { ...substance1, name: title }
+    substance = getSubstance({ id: substance1.id, name: title })
 
     renderSubstances()
 
@@ -320,7 +318,7 @@ describe("Substances", (): void => {
     expect(screen.queryByRole("dialog")).toBeNull()
   })
 
-  test("falls back to defaultSubstance when last substance is removed", async (): Promise<void> => {
+  test("falls back to defaultSubstance when last substance removed", async (): Promise<void> => {
     const user = userEvent.setup()
 
     renderSubstances({
@@ -349,5 +347,37 @@ describe("Substances", (): void => {
 
     expect(screen.queryByRole("dialog")).toBeNull()
     expect(fetch).not.toHaveBeenCalled()
+  })
+
+  test("closes rename modal when name is unchanged", async (): Promise<void> => {
+    const user = userEvent.setup()
+
+    renderSubstances()
+
+    fireEvent.doubleClick(screen.getByRole("radio", { name: substance1.name }))
+
+    await user.click(screen.getByRole("button", { name: "Rename" }))
+
+    expect(fetch).not.toHaveBeenCalled()
+    expect(screen.queryByText("Rename Substance")).toBeNull()
+  })
+
+  test("shows notification when refreshSubstances fails", async (): Promise<void> => {
+    const user = userEvent.setup()
+
+    refreshSubstances.mockRejectedValueOnce(new Error("Refresh error"))
+
+    renderSubstances()
+
+    await user.click(screen.getByRole("button", { name: "Remove" }))
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Remove" }))
+
+    await waitFor((): void => {
+      expect(showNotificationMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: "Refresh Failed"
+        })
+      )
+    })
   })
 })

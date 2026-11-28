@@ -1,29 +1,26 @@
 import { type TablerIcon } from "@tabler/icons-react"
 
-import { StatsType } from "../schemas.ts"
+import { type StatsType } from "../schemas.ts"
 
-export interface IAlcohol {
-  bloodPressure: number
+interface IShared {
   longTerm: number
   overall: number
+}
+
+export interface IAlcohol extends IShared {
+  bloodPressure: number
   sleep: number
   type: typeof StatsType.Alcohol
 }
 
-export interface ISmoking {
-  longTerm: number
+export interface ISmoking extends IShared {
   lungFunction: number
-  overall: number
   oxygenation: number
   type: typeof StatsType.Smoking
 }
 
-export interface IHealthMap {
-  [StatsType.Alcohol]: IAlcohol
-  [StatsType.Smoking]: ISmoking
-}
-
-export type IHealth = IHealthMap[keyof IHealthMap]
+// * NOTE: leaving I prefix even though type
+export type IHealth = IAlcohol | ISmoking
 
 export interface IStat {
   bg: string

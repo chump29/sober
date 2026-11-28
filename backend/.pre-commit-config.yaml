@@ -13,8 +13,6 @@ repos:
           - --locked
           - --preview-features
           - audit-command
-  - repo: local
-    hooks:
       - id: ty
         name: ty
         entry: uv run ty
@@ -46,3 +44,4 @@ repos:
     rev: v0.17.6
     hooks:
       - id: ruff-check
+      - id: ruff-format

@@ -9,7 +9,7 @@
 ![React](https://img.shields.io/badge/React-19.3.1-informational?style=plastic&logo=react "React") &nbsp;
 ![Vite](https://img.shields.io/badge/Vite-8.4.0-informational?style=plastic&logo=vite "Vite")
 
-![Coverage](https://img.shields.io/badge/Coverage-95.49%25-success?style=plastic&logo=v8 "Coverage")
+![Coverage](https://img.shields.io/badge/Coverage-97.98%25-success?style=plastic&logo=v8 "Coverage")
 
 ---
 

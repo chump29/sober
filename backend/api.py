@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING, Annotated, Final, NoReturn, cast, final
 from anyio import to_thread
 from cachetools import LRUCache, cached
 from cachetools.keys import hashkey
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Path as FastAPIPath, Response, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from guard import SecurityConfig
 from guard.middleware import SecurityMiddleware
@@ -81,7 +81,6 @@ DB: Final[SqliteDatabase] = SqliteDatabase(
         "foreign_keys": True,
         "journal_mode": "WAL",
         "synchronous": "NORMAL",
-        "wal_checkpoint": "TRUNCATE",
     },
 )
 
@@ -145,11 +144,6 @@ class User(BaseModel):
     id = AutoField()
     user = CharField(max_length=MAX_LEN_HASH, unique=True)
 
-    @property
-    def substances(self: User) -> list[Substance]:
-        """Back reference"""
-        return list(Substance.select().where(Substance.user == self.user))
-
     def __str__(self: User) -> str:
         """Show User data as string"""
         return f"user={_shorten(str(self.user))}, created={_format_datetime(self.created)}"
@@ -179,7 +173,7 @@ class Substance(BaseModel):
     created_at = ISODateTimeField(default=_get_datetime_now)
     date = ISODateTimeField(default=_get_datetime_now)
     id = AutoField()
-    name = CharField(max_length=MAX_LEN_NAME, unique=True)
+    name = CharField(max_length=MAX_LEN_NAME)
     show_coin = BooleanField(default=False)
     show_cost = BooleanField(default=False)
     show_decimals = BooleanField(default=True)
@@ -201,6 +195,9 @@ class Substance(BaseModel):
     def __repr__(self: Substance) -> str:
         """Show Substance data as string representation"""
         return str(self)
+
+
+Substance.add_index(Substance.user, Substance.name, unique=True)
 
 
 class BaseValidation(ValidationModel):
@@ -227,18 +224,18 @@ class SubstanceDTO(BaseValidation):
     show_time: bool = Field(alias="showTime")
     stats_type: StrictInt = Field(alias="statsType", ge=0, le=len(StatsType))
 
+    @field_validator("name", mode="before")  # must be first decorator
     @classmethod
-    @field_validator("name", mode="before")
     def sanitize_name(cls: type[SubstanceDTO], name: str) -> str:
         """Sanitize name"""
         return clean(name, tags=set()).replace("&amp;", "&")
 
+    @field_validator("date")  # must be first decorator
     @classmethod
-    @field_validator("date", mode="after")
     def date_lte(cls: type[SubstanceDTO], date: datetime) -> datetime:
         """Check date"""
         if date > _get_datetime_now():
-            msg: Final[str] = "Date must be less than or equal to now"
+            msg: Final[str] = "Date cannot be in the future"
             raise ValueError(msg)
 
         return date
@@ -282,17 +279,28 @@ elif env.SOBER_DEBUG:
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncGenerator:
     """Handle FastAPI lifespan"""
+
+    def _start_db() -> None:
+        DB.connect()
+        DB.create_tables([User, Substance])
+
+    def _stop_db() -> None:
+        DB.execute_sql("PRAGMA wal_checkpoint(TRUNCATE);")
+        DB.close()
+
     CONSOLE.print("✨ Running local server…")
 
     if env.SOBER_DEBUG:
         CONSOLE.print("🐞 Debug is ON")
+
+    await to_thread.run_sync(_start_db)
 
     yield
 
     if env.SOBER_DEBUG:
         CONSOLE.print("🛢️  Closing database")
 
-    await to_thread.run_sync(DB.close)
+    await to_thread.run_sync(_stop_db)
 
     if env.SOBER_DEBUG:
         CONSOLE.print("🛑 Stopping server")
@@ -333,6 +341,52 @@ API: Final[APIRouter] = APIRouter(prefix="/api")
 NA: Final[str] = "N/A"
 
 type Json = int | float | dict[str, Json] | list[str] | list[dict[str, Json]] | str | None
+
+
+def _verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())]) -> str:
+    """Verify unsecured JWT"""
+
+    def _invalid_jwt() -> NoReturn:
+        """Invalid JWT"""
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token", headers={"WWW-Authenticate": "Bearer"}
+        )
+
+    try:
+        payload = decode(
+            jwt=credentials.credentials,
+            options={
+                "require": ["aud", "exp", "iat", "iss", "sub"],
+                "verify_aud": True,
+                "verify_exp": True,
+                "verify_iat": True,
+                "verify_iss": True,
+                "verify_signature": False,
+                "verify_sub": True,
+            },
+            leeway=5,
+            audience=env.SOBER_NAME,
+            issuer=env.SOBER_JWT_FRONTEND,
+        )
+
+        user = payload.get("sub")
+
+        if not isinstance(user, str) or not user.strip():
+            _invalid_jwt()
+    except InvalidTokenError as e:
+        if env.SOBER_DEBUG:
+            CONSOLE.print(f"[bold][red]❌ JWT Error:[/bold] {e}[/red]")
+
+        _invalid_jwt()
+    except HTTPException:
+        raise
+    except Exception:
+        if env.SOBER_DEBUG:
+            CONSOLE.print_exception()
+
+        raise
+
+    return user
 
 
 def _parse_cached_user(key: tuple) -> str | None:
@@ -409,7 +463,7 @@ def _create_cache_stats(func: _cached_wrapper_info) -> dict[str, Json]:
     }
 
 
-@ROUTER.get("/cache", response_model=Json)
+@ROUTER.get("/cache", response_model=Json, dependencies=[Depends(_verify_jwt)])
 async def get_cache_stats() -> Json:
     """Get cache stats"""
     try:
@@ -420,7 +474,7 @@ async def get_cache_stats() -> Json:
         return None
 
 
-@ROUTER.get("/cache/clear", response_model=str)
+@ROUTER.get("/cache/clear", response_model=str, dependencies=[Depends(_verify_jwt)])
 async def clear_cache_stats() -> str:
     """Clear cache stats"""
     _user_get_or_create.cache_clear()
@@ -454,61 +508,9 @@ def get_version() -> str | None:
     return env.SOBER_VERSION
 
 
-def _verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())]) -> str | None:
-    """Verify unsecured JWT"""
-
-    def _invalid_jwt() -> NoReturn:
-        """Invalid JWT"""
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token", headers={"WWW-Authenticate": "Bearer"}
-        )
-
-    user: str | None = None
-    try:
-        payload = decode(
-            jwt=credentials.credentials,
-            options={
-                "require": ["aud", "exp", "iat", "iss", "sub"],
-                "verify_aud": True,
-                "verify_exp": True,
-                "verify_iat": True,
-                "verify_iss": True,
-                "verify_signature": False,
-                "verify_sub": True,
-            },
-            leeway=5,
-            audience=env.SOBER_NAME,
-            issuer=env.SOBER_JWT_FRONTEND,
-        )
-        user = payload.get("sub")
-    except InvalidTokenError as e:
-        if env.SOBER_DEBUG:
-            CONSOLE.print(f"[bold][red]❌ JWT Error:[/bold] {e}[/red]")
-
-        _invalid_jwt()
-    except Exception:
-        if env.SOBER_DEBUG:
-            CONSOLE.print_exception()
-
-        raise
-
-    return user
-
-
 def _get_user_hash(user: str) -> str:
     """Get user hash"""
     return hashed(user.encode())
-
-
-def _validate_user(user: str) -> bool:
-    """Validate user"""
-    try:
-        TypeAdapter(Annotated[str, Field(max_length=MAX_LEN_NAME, strict=True)]).validate_python(user)
-    except ValidationError:
-        CONSOLE.print("[bold][red]❌ Validation Error:[/bold] Invalid user[/red]")
-        return False
-
-    return True
 
 
 def _bad_request() -> NoReturn:
@@ -531,9 +533,6 @@ def _user_get_or_create(hashed_user: str, state: dict | None = None, /) -> User:
 @API.get("/user", response_class=Response, response_model=None)
 def get_user(user: Annotated[str, Depends(_verify_jwt)]) -> Response:
     """Get user"""
-    if not _validate_user(user):
-        _bad_request()
-
     state: Final[dict[str, bool]] = {"created": False}
 
     user_hash: Final[str] = _get_user_hash(user)
@@ -559,14 +558,8 @@ def get_user(user: Annotated[str, Depends(_verify_jwt)]) -> Response:
     return Response(status_code=status.HTTP_201_CREATED if created else status.HTTP_204_NO_CONTENT)
 
 
-@API.delete("/user/evict", response_class=Response, response_model=None, status_code=status.HTTP_204_NO_CONTENT)
-async def evict_user(user: Annotated[str, Depends(_verify_jwt)]) -> None:
-    """Evict user from cache"""
-    if not _validate_user(user):
-        _bad_request()
-
-    hashed_user: Final[str] = _get_user_hash(user)
-
+def _evict_user_hash(hashed_user: str) -> None:
+    """Evict hashed user from cache"""
     key: Final[tuple[str]] = _user_get_or_create.cache_key(hashed_user)
 
     if _user_get_or_create.cache_lock is not None:
@@ -577,21 +570,32 @@ async def evict_user(user: Annotated[str, Depends(_verify_jwt)]) -> None:
             log(f"{_shorten(hashed_user)} evicted")
 
 
-@API.delete("/user/delete/{user}", response_class=Response, response_model=None, status_code=status.HTTP_204_NO_CONTENT)
-async def delete_user(user: Annotated[str, Depends(_verify_jwt)]) -> None:
+@API.delete("/user/evict", response_class=Response, response_model=None, status_code=status.HTTP_204_NO_CONTENT)
+async def evict_user(user: Annotated[str, Depends(_verify_jwt)]) -> None:
+    """Evict user from cache"""
+    _evict_user_hash(_get_user_hash(user))
+
+
+@API.delete(
+    "/user/delete/{target_user}",
+    dependencies=[Depends(_verify_jwt)],
+    response_class=Response,
+    response_model=None,
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def delete_user(target_user: Annotated[str, FastAPIPath(min_length=1, max_length=MAX_LEN_NAME)]) -> None:
     """Delete user"""
-    if not _validate_user(user):
-        _bad_request()
+    user_hash: Final[str] = _get_user_hash(target_user)
 
-    user_hash: Final[str] = _get_user_hash(user)
-
-    if (u := _user_get_or_create(user_hash)) is None:
-        _bad_request()
+    if (u := User.get_or_none(User.user == user_hash)) is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     try:
         u.delete_instance()
 
-        await evict_user(user)
+        _evict_user_hash(user_hash)
+
+        get_substances.cache_clear()
 
         if env.SOBER_DEBUG:
             log(f"Deleted user: {_shorten(user_hash)}")
@@ -609,22 +613,18 @@ def _to_substance_dto(substance: Substance) -> SubstanceDTO:
 @API.get("/substances", response_model=list[SubstanceDTO] | None)
 @cached(
     cache=LRUCache(maxsize=5),
-    key=lambda user, _=None: hashkey(_shorten(_get_user_hash(user))),
+    key=lambda user, _=None: hashkey(_get_user_hash(user)),
     info=True,
     lock=RLock(),
 )
 def get_substances(user: Annotated[str, Depends(_verify_jwt)]) -> list[SubstanceDTO] | None:
     """Get all substances"""
-    if not _validate_user(user):
-        return None
-
     try:
         user_hash: Final[str] = _get_user_hash(user)
 
-        if (u := _user_get_or_create(user_hash)) is None:
-            return None
+        _user_get_or_create(user_hash)
 
-        substances: Final[list[Substance]] = u.substances
+        substances: Final[list[Substance]] = list(Substance.select().where(Substance.user == user_hash))
 
         if (count := len(substances)) == 0:
             return None
@@ -639,127 +639,92 @@ def get_substances(user: Annotated[str, Depends(_verify_jwt)]) -> list[Substance
         return None
 
 
-def _validate_substance(substance: SubstanceDTO) -> bool:
-    """Validate substance"""
-    try:
-        TypeAdapter(SubstanceDTO).validate_python(substance)
-    except ValidationError:
-        CONSOLE.print("[bold][red]❌ Validation Error:[/bold] Invalid SubstanceDTO[/red]")
-
-        return False
-
-    return True
-
-
-@API.post("/substances/add", response_model=SubstanceDTO | None, status_code=status.HTTP_201_CREATED)
-async def add_substance(substance: SubstanceDTO, user: Annotated[str, Depends(_verify_jwt)]) -> SubstanceDTO | None:
+@API.post("/substances/add", response_model=SubstanceDTO, status_code=status.HTTP_201_CREATED)
+def add_substance(substance: SubstanceDTO, user: Annotated[str, Depends(_verify_jwt)]) -> SubstanceDTO:
     """Add substance"""
-    if not _validate_substance(substance) or not _validate_user(user):
-        return None
-
     try:
         user_hash: Final[str] = _get_user_hash(user)
+
+        _user_get_or_create(user_hash, {})
 
         if env.SOBER_DEBUG:
             log(f"Adding substance for {_shorten(user_hash)}:", str(substance))
 
         get_substances.cache_clear()
 
-        return _to_substance_dto(Substance.create(**substance.model_dump(), user=user_hash))
+        return _to_substance_dto(Substance.create(**substance.model_dump(exclude={"id"}), user=user_hash))
     except Exception:
         CONSOLE.print_exception()
 
-        return None
+        _bad_request()
 
 
-def _validate_pk(pk: int) -> bool:
-    """Validate PK"""
-    try:
-        TypeAdapter(Annotated[int, Field(gt=0, strict=True)]).validate_python(pk)
-    except ValidationError:
-        CONSOLE.print("[bold][red]❌ Validation Error:[/bold] Invalid PK[/red]")
-
-        return False
-
-    return True
-
-
-@API.get("/substances/get/{pk}", response_model=SubstanceDTO | None)
-async def get_substance(pk: int, user: Annotated[str, Depends(_verify_jwt)]) -> SubstanceDTO | None:
+@API.get("/substances/get/{pk}", response_model=SubstanceDTO)
+def get_substance(pk: Annotated[int, FastAPIPath(gt=0)], user: Annotated[str, Depends(_verify_jwt)]) -> SubstanceDTO:
     """Get substance"""
-    if not _validate_pk(pk) or not _validate_user(user):
-        return None
+    if (substance := Substance.get_or_none(Substance.id == pk, Substance.user == _get_user_hash(user))) is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Substance not found")
 
-    try:
-        if (substance := Substance.get_or_none(Substance.id == pk)) is None:
-            return None
+    if env.SOBER_DEBUG:
+        log("Getting substance ID", str(pk))
 
-        if env.SOBER_DEBUG:
-            log("Getting substance ID", str(pk))
-
-        return _to_substance_dto(substance)
-    except Exception:
-        CONSOLE.print_exception()
-
-        return None
+    return _to_substance_dto(substance)
 
 
-@API.delete("/substances/delete/{pk}", response_model=bool)
-async def delete_substance(pk: int, user: Annotated[str, Depends(_verify_jwt)]) -> bool:
+@API.delete(
+    "/substances/delete/{pk}", response_class=Response, response_model=None, status_code=status.HTTP_204_NO_CONTENT
+)
+def delete_substance(pk: Annotated[int, FastAPIPath(gt=0)], user: Annotated[str, Depends(_verify_jwt)]) -> None:
     """Delete substance"""
-    if not _validate_pk(pk) or not _validate_user(user):
-        return False
+    user_hash: Final[str] = _get_user_hash(user)
 
-    try:
-        user_hash: Final[str] = _get_user_hash(user)
-
-        if (substance := Substance.get_or_none(Substance.id == pk, Substance.user == user_hash)) is not None:
-            if env.SOBER_DEBUG:
-                log(f"Deleting substance {substance.name} for {_shorten(user_hash)}")
-
-            get_substances.cache_clear()
-
-            substance.delete_instance()
-        else:
-            if env.SOBER_DEBUG:
-                log("Could not delete ID", str(pk))
-
-            return False
-    except Exception:
-        CONSOLE.print_exception()
-
-        return False
-
-    return True
-
-
-@API.put("/substances/update/{pk}", response_model=SubstanceDTO | None)
-async def update_substance(
-    pk: int, substance: SubstanceDTO, user: Annotated[str, Depends(_verify_jwt)]
-) -> SubstanceDTO | None:
-    """Update substance"""
-    if not _validate_pk(pk) or not _validate_substance(substance) or not _validate_user(user):
-        return None
-
-    try:
-        user_hash: Final[str] = _get_user_hash(user)
-
+    if (substance := Substance.get_or_none(Substance.id == pk, Substance.user == user_hash)) is None:
         if env.SOBER_DEBUG:
-            log(f"Updating substance for {_shorten(user_hash)}:", str(substance))
+            log("Could not delete ID", str(pk))
+
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Substance not found")
+
+    try:
+        if env.SOBER_DEBUG:
+            log(f"Deleting substance {substance.name} for {_shorten(user_hash)}")
 
         get_substances.cache_clear()
 
-        return _to_substance_dto(
-            Substance.update(**substance.model_dump(), updated_at=_get_datetime_now())
-            .where(Substance.id == substance.id)
-            .where(Substance.user == user_hash)
+        substance.delete_instance()
+    except Exception:
+        CONSOLE.print_exception()
+
+        _bad_request()
+
+
+@API.put("/substances/update/{pk}", response_model=SubstanceDTO)
+def update_substance(
+    pk: Annotated[int, FastAPIPath(gt=0)], substance: SubstanceDTO, user: Annotated[str, Depends(_verify_jwt)]
+) -> SubstanceDTO:
+    """Update substance"""
+    user_hash: Final[str] = _get_user_hash(user)
+
+    if env.SOBER_DEBUG:
+        log(f"Updating substance for {_shorten(user_hash)}:", str(substance))
+
+    try:
+        rows: Final[list[Substance]] = (
+            Substance.update(**substance.model_dump(exclude={"id"}), updated_at=_get_datetime_now())
+            .where((Substance.id == pk) & (Substance.user == user_hash))
             .returning(Substance)
-            .execute()[0]
+            .execute()
         )
     except Exception:
         CONSOLE.print_exception()
 
-        return None
+        _bad_request()
+
+    if not rows:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Substance not found")
+
+    get_substances.cache_clear()
+
+    return _to_substance_dto(rows[0])
 
 
 ROUTER.include_router(API)
@@ -807,4 +772,4 @@ except Exception as e:
 get_version()  # precache
 
 if __name__ == "__main__":
-    run("api:ROUTER", host="0.0.0.0", port=env.SOBER_API_PORT, reload=True)  # noqa: S104
+    run("api:ROUTER", host="0.0.0.0", port=env.SOBER_API_PORT, reload=env.SOBER_DEBUG)  # noqa: S104

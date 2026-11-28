@@ -11,10 +11,15 @@ from behave import given, then, when
 from box import Box
 from environment import get_new_substance
 from fake import fake
+from fastapi import status
+from fastapi.testclient import TestClient
+from jwt import encode as jwt_encode
 from loadfig import pyproject as load_pyproject
+from whenever import Instant
 
 # pylint: disable=import-private-name
 from api import (
+    ROUTER,
     Substance,
     SubstanceDTO,
     User,
@@ -50,7 +55,9 @@ def stringify_substance_dto(_: Context) -> None:
 @when("a SubstanceDTO is output")
 def output_substance_dto(context: Context) -> None:
     """Output a SubstanceDTO"""
-    context.substance_dto = str(get_new_substance())
+    dto: Final[SubstanceDTO] = get_new_substance()
+    context.substance_dto = str(dto)
+    assert repr(dto) == context.substance_dto, "Invalid SubstanceDTO repr"
 
     assert not context.failed, "Unable to set SubstanceDTO"
 
@@ -245,7 +252,7 @@ def delete_user_record(_: Context) -> None:
 @when("/user/delete API endpoint is called with an ID")
 def call_delete_user(context: Context) -> None:
     """Call /user/delete API"""
-    run_async(delete_user(context.user))
+    delete_user(context.user)
 
     assert not context.failed, "/user/delete call failed"
 
@@ -273,7 +280,7 @@ def add_substance_record(context: Context) -> None:
 def call_substance_add(context: Context) -> None:
     """Call /substances/add API"""
     substance: Final[SubstanceDTO] = get_new_substance()
-    context.substance = run_async(add_substance(substance, context.user))
+    context.substance = add_substance(substance, context.user)
 
     assert not context.failed, "/substance/add call failed"
 
@@ -322,8 +329,6 @@ def verify_substances_cache(_: Context) -> None:
 
 # endregion
 
-# ! context lost
-
 # region Get substance by ID
 
 
@@ -338,7 +343,10 @@ def get_substance_by_id(context: Context) -> None:
 @when("/substances/get API endpoint is called with an ID")
 def call_get_substance(context: Context) -> None:
     """Call /substances/get API"""
-    context.substance = run_async(get_substance(context.substances[0].id, context.user))
+    substance_id: Final[int | None] = context.substances[0].id
+    assert substance_id is not None, "Invalid substance ID"
+
+    context.substance = get_substance(substance_id, context.user)
 
     assert not context.failed, "/substances/get call failed"
 
@@ -350,8 +358,6 @@ def return_substance(context: Context) -> None:
 
 
 # endregion
-
-# ! context lost
 
 # region Update substance by ID
 
@@ -367,17 +373,14 @@ def update_substance_by_id(context: Context) -> None:
 @when("/substances/update API endpoint is called with an ID")
 def call_update_substance(context: Context) -> None:
     """Call /substance/update API"""
-    substance: Final[SubstanceDTO] = context.substances[0]
+    original: Final[SubstanceDTO] = context.substances[0]
+    assert original.id is not None, "Invalid substance ID"
 
-    context.date = substance.date
+    context.date = original.date
 
-    object.__setattr__(substance, "date", fake.date_time())  # frozen
+    updated: Final[SubstanceDTO] = original.model_copy(update={"date": fake.date_time()})
 
-    user: Final[User | None] = User.get_or_none(User.user == _get_user_hash(context.user))
-
-    assert user, "Invalid user"
-
-    context.substance = run_async(update_substance(pk=user.id, substance=substance, user=context.user))
+    context.substance = update_substance(pk=original.id, substance=updated, user=context.user)
 
     assert not context.failed, "/substance/update call failed"
 
@@ -391,8 +394,6 @@ def return_updated_substance(context: Context) -> None:
 
 
 # endregion
-
-# ! context lost
 
 # region Delete substance by ID
 
@@ -410,7 +411,7 @@ def delete_substance_by_id(context: Context) -> None:
 @when("/substance/delete API endpoint is called with an ID")
 def call_delete_substance(context: Context) -> None:
     """Call /substance/delete API"""
-    context.isDeleted = run_async(delete_substance(pk=context.substance_id, user=context.user))
+    delete_substance(pk=context.substance_id, user=context.user)
 
     assert not context.failed, "/substance/delete call failed"
 
@@ -418,12 +419,10 @@ def call_delete_substance(context: Context) -> None:
 @then("substance is deleted")
 def is_deleted(context: Context) -> None:
     """Is deleted"""
-    assert context.isDeleted, "Could not delete substance"
+    assert Substance.get_or_none(Substance.id == context.substance_id) is None, "Could not delete substance"
 
 
 # endregion
-
-# ! context lost
 
 # region Get favicon
 
@@ -445,6 +444,190 @@ def call_favicon(context: Context) -> None:
 def favicon_return(context: Context) -> None:
     """Nothing is returned"""
     assert not context.favicon, "Invalid /favicon results"
+
+
+# endregion
+
+# region HTTP endpoints & middleware
+
+
+def _make_token(subject: str) -> str:
+    """Create unsecured JWT matching frontend format"""
+    now: Final[int] = Instant.now().timestamp()
+
+    return jwt_encode(
+        payload={
+            "aud": env.SOBER_NAME,
+            "exp": now + 60,
+            "iat": now,
+            "iss": env.SOBER_JWT_FRONTEND,
+            "sub": subject,
+        },
+        key="",
+        algorithm="none",
+    )
+
+
+def _auth_headers(subject: str) -> dict[str, str]:
+    """Return Bearer headers"""
+    return {"Authorization": f"Bearer {_make_token(subject)}"}
+
+
+@given("an HTTP test client")
+def setup_http_client(context: Context) -> None:
+    """Setup HTTP test client"""
+    if not hasattr(context, "http_client"):
+        context.http_client = TestClient(ROUTER, client=("127.0.0.1", 50000))
+
+
+@when("/api/user is called without a token")
+def http_user_no_token(context: Context) -> None:
+    """Call /api/user without Authorization header"""
+    context.response = context.http_client.get("/api/user")
+
+
+@when("/api/user is called with an invalid token")
+def http_user_invalid_token(context: Context) -> None:
+    """Call /api/user with malformed token"""
+    context.response = context.http_client.get("/api/user", headers={"Authorization": "Bearer invalid.token.here"})
+
+
+@when("/api/user is called via HTTP (first time)")
+def http_user_first(context: Context) -> None:
+    """Call /api/user to create user"""
+    context.http_user = fake.first_name()
+    context.response = context.http_client.get("/api/user", headers=_auth_headers(context.http_user))
+
+
+@when("/api/user is called via HTTP (second time)")
+def http_user_second(context: Context) -> None:
+    """Call /api/user for existing user"""
+    context.response = context.http_client.get("/api/user", headers=_auth_headers(context.http_user))
+
+
+@when("a substance is added via HTTP")
+def http_add_substance(context: Context) -> None:
+    """Add substance via HTTP"""
+    context.http_user = fake.first_name()
+    context.other_user = f"{context.http_user}_other"
+    payload: Final[SubstanceDTO] = get_new_substance()
+    context.http_payload = payload.model_dump(mode="json")
+    context.http_client.get("/api/user", headers=_auth_headers(context.http_user))
+    context.http_client.get("/api/user", headers=_auth_headers(context.other_user))
+
+    context.response = context.http_client.post(
+        "/api/substances/add",
+        headers=_auth_headers(context.http_user),
+        json=context.http_payload,
+    )
+    if context.response.status_code == status.HTTP_201_CREATED:
+        context.created_substance = context.response.json()
+
+
+@when("the same substance name is added again for the same user via HTTP")
+def http_add_duplicate_substance(context: Context) -> None:
+    """Attempt duplicate substance name for same user"""
+    context.response = context.http_client.post(
+        "/api/substances/add",
+        headers=_auth_headers(context.http_user),
+        json=context.http_payload,
+    )
+
+
+@when("the same substance name is added for another user via HTTP")
+def http_add_same_name_other_user(context: Context) -> None:
+    """Add substance with same name for a different user"""
+    context.response = context.http_client.post(
+        "/api/substances/add",
+        headers=_auth_headers(context.other_user),
+        json=context.http_payload,
+    )
+
+
+@when("a substance with a future date is added via HTTP")
+def http_add_future_substance(context: Context) -> None:
+    """Attempt adding substance with future date"""
+    future_payload: Final[dict[str, object]] = {
+        **context.http_payload,
+        "date": Instant.now().add(hours=24).to_stdlib().isoformat(),
+        "name": fake.word(),
+    }
+    context.response = context.http_client.post(
+        "/api/substances/add",
+        headers=_auth_headers(context.http_user),
+        json=future_payload,
+    )
+
+
+@when("another user requests the created substance via HTTP")
+def http_other_user_get(context: Context) -> None:
+    """Attempt GET on another user's substance"""
+    pk: Final[int] = context.created_substance["id"]
+    context.response = context.http_client.get(
+        f"/api/substances/get/{pk}",
+        headers=_auth_headers(context.other_user),
+    )
+
+
+@when("another user updates the created substance via HTTP")
+def http_other_user_update(context: Context) -> None:
+    """Attempt PUT on another user's substance"""
+    pk: Final[int] = context.created_substance["id"]
+    context.response = context.http_client.put(
+        f"/api/substances/update/{pk}",
+        headers=_auth_headers(context.other_user),
+        json=context.created_substance,
+    )
+
+
+@when("another user deletes the created substance via HTTP")
+def http_other_user_delete(context: Context) -> None:
+    """Attempt DELETE on another user's substance"""
+    pk: Final[int] = context.created_substance["id"]
+    context.response = context.http_client.delete(
+        f"/api/substances/delete/{pk}",
+        headers=_auth_headers(context.other_user),
+    )
+
+
+@then("HTTP status {code:d} is returned")
+def verify_http_status(context: Context, code: int) -> None:
+    """Verify HTTP response status code"""
+    assert context.response.status_code == code, (
+        f"Expected HTTP {code}, got {context.response.status_code}: {context.response.text}"
+    )
+
+
+@when("/api/substances is called via HTTP for a user with no substances")
+def http_get_empty_substances(context: Context) -> None:
+    """Call /api/substances for a user without substances"""
+    empty_user: Final[str] = f"{fake.first_name()}_empty"
+    context.response = context.http_client.get("/api/substances", headers=_auth_headers(empty_user))
+
+
+@then("JSON response is null")
+def verify_json_null(context: Context) -> None:
+    """Verify JSON response body is null"""
+    assert context.response.json() is None, f"Expected null JSON, got: {context.response.text}"
+
+
+@when("/api/user/delete is called via HTTP for a nonexistent user")
+def http_delete_missing_user(context: Context) -> None:
+    """Attempt DELETE /api/user/delete for unknown user"""
+    missing_user: Final[str] = f"{fake.first_name()}_missing"
+    context.response = context.http_client.delete(
+        f"/api/user/delete/{missing_user}",
+        headers=_auth_headers(missing_user),
+    )
+
+
+@when("/api/user/delete is called via HTTP for that user")
+def http_delete_existing_user(context: Context) -> None:
+    """DELETE /api/user/delete for created user"""
+    context.response = context.http_client.delete(
+        f"/api/user/delete/{context.http_user}",
+        headers=_auth_headers(context.http_user),
+    )
 
 
 # endregion

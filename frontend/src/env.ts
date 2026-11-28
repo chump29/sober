@@ -1,16 +1,15 @@
-import { printVars } from "@postfmly/logger"
+import { error, printVars } from "@postfmly/logger"
 
 import { parse as ms } from "@lukeed/ms"
 import { bool, cleanEnv, makeExactValidator, str, url } from "envalid"
 import { type InferOutput, parse } from "valibot"
 
-import { ExpireTimeSchema, TimeoutSchema, TitleSchema } from "./utils/schemas.ts"
+import { ExpireTimeSchema, TimeoutSchema } from "./utils/schemas.ts"
 
 type ExpireTime = InferOutput<typeof ExpireTimeSchema>
 
-const timeoutValidator = makeExactValidator((s: string): number => parse(TimeoutSchema, s))
+const timeoutValidator = makeExactValidator((s: string): number => parse(TimeoutSchema, Number(s)))
 const expireTimeValidator = makeExactValidator((s: string): ExpireTime => parse(ExpireTimeSchema, s))
-const titleValidator = makeExactValidator((s: string): string => parse(TitleSchema, s))
 
 const originalEnv = cleanEnv(import.meta.env, {
   API_TIMEOUT: timeoutValidator({ default: ms("2s") }),
@@ -19,7 +18,7 @@ const originalEnv = cleanEnv(import.meta.env, {
   TEST_FULL: bool({ default: false }),
   VITE_API_URL: url({ default: "" }),
   VITE_DEBUG: bool({ default: false, testDefault: true }),
-  VITE_TITLE: titleValidator({ default: "Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" })
+  VITE_TITLE: str({ default: "Sᴏʙᴇᴙ Tᴙᴀᴄᴋᴇᴙ" })
 })
 
 type OriginalEnv = typeof originalEnv
@@ -39,7 +38,7 @@ const env: Env = Object.freeze({
 })
 
 if (import.meta.main) {
-  printVars(env)
+  printVars(env).catch(error)
 }
 
 export { env }
