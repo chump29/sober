@@ -6,6 +6,7 @@ FROM oven/bun:alpine AS build
 WORKDIR /app
 
 COPY package.json bun.lock ./
+COPY patches ./patches
 
 RUN --mount=type=cache,target=/root/.bun/install/cache \
     bun ci
