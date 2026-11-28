@@ -19,9 +19,6 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 COPY . /backend/
 
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-editable
-
 # -=-
 
 FROM python:${PYTHON_VERSION}-alpine
