@@ -1,6 +1,8 @@
 import { type JSX, type KeyboardEvent, useEffect, useState } from "react"
 
 import {
+  IconCheck,
+  IconExclamationCircle,
   IconGlassFull,
   IconPencil,
   IconPlus,
@@ -26,7 +28,7 @@ import { Endpoint, HttpMethod, MAX_SUBSTANCES } from "../utils/index.ts"
 import { type IFetchClientSettings } from "../utils/interfaces/IFetchClientSettings.ts"
 import { defaultSubstance, type ISubstance, SubstanceSchema } from "../utils/interfaces/ISubstance.ts"
 import { type ISubstancesProps } from "../utils/interfaces/ISubstancesProps.ts"
-import { BooleanSchema, MAX_LEN_STR } from "../utils/schemas.ts"
+import { MAX_LEN_STR } from "../utils/schemas.ts"
 
 import "./Substances.css"
 
@@ -68,6 +70,7 @@ export const Substances = ({
 
       showNotification({
         color: "var(--accent-red)",
+        icon: <IconExclamationCircle color="var(--text-primary)" size={20} />,
         message:
           "Your change was saved, but the substance list could not be refreshed. Reload the page to see the latest changes.",
         title: "Refresh Failed"
@@ -96,12 +99,29 @@ export const Substances = ({
     )
 
     if (!data) {
-      error(`Could not add substance: ${name}`)
+      const message = `Could not add substance: ${name}`
+
+      showNotification({
+        color: "var(--accent-red)",
+        icon: <IconExclamationCircle color="var(--text-primary)" size={20} />,
+        message,
+        title: "Add Substance Failed"
+      })
+
+      error(message)
 
       return false
     }
 
     setSelectedSubstance(data)
+
+    showNotification({
+      color: "var(--accent-green)",
+      icon: <IconCheck color="var(--text-primary)" size={20} />,
+      id: "added",
+      message: `${name} added`,
+      title: "Substance Added"
+    })
 
     if (env.DEBUG) {
       info(`Substance added: ${name}`)
@@ -110,7 +130,8 @@ export const Substances = ({
     await refreshAllSubstances()
 
     showNotification({
-      color: "var(--accent-blue)",
+      color: "var(--accent-purple)",
+      icon: <IconExclamationCircle color="var(--text-primary)" size={20} />,
       id: "setDate",
       message: `Choose your sober date for ${name}`,
       title: "Set Sober Date"
@@ -124,7 +145,9 @@ export const Substances = ({
       return
     }
 
-    if (name === selectedSubstance.name) {
+    const oldName = selectedSubstance.name
+
+    if (name === oldName) {
       handleClose()
 
       return
@@ -156,15 +179,32 @@ export const Substances = ({
     )
 
     if (!data) {
-      error(`Could not update ID ${id}`)
+      const message = `Could not rename ${oldName}`
+
+      showNotification({
+        color: "var(--accent-red)",
+        icon: <IconExclamationCircle color="var(--text-primary)" size={20} />,
+        message,
+        title: "Rename Substance Failed"
+      })
+
+      error(message)
 
       return
     }
 
+    showNotification({
+      color: "var(--accent-green)",
+      icon: <IconCheck color="var(--text-primary)" size={20} />,
+      id: "renamed",
+      message: `${oldName} renamed to ${name}`,
+      title: "Rename Substance"
+    })
+
     setSelectedSubstance(data)
 
     if (env.DEBUG) {
-      info(`Updated ID ${id} to ${data.name}`)
+      info(`Renamed ID ${id} to ${name}`)
     }
 
     await refreshAllSubstances()
@@ -215,7 +255,7 @@ export const Substances = ({
         info(`Added substance: ${name}`)
       }
     } catch (e: unknown) {
-      error(`Could not ${isRenaming ? "rename" : "add"} substance`, e)
+      error(`Could not add ${name}`, e)
     } finally {
       setIsSubmitting(false)
     }
@@ -234,40 +274,52 @@ export const Substances = ({
 
     setIsRemoving(true)
 
-    hideNotification("setDate") // in case immediately removed
+    // in case immediately removed
+    hideNotification("added")
+    hideNotification("setDate")
+    hideNotification("renamed")
+    hideNotification("removed")
 
     try {
-      const { id } = selectedSubstance
+      const { id, name } = selectedSubstance
 
-      const data = await fetchClient(
-        {
-          endpoint: Endpoint.DeleteSubstance,
-          id,
-          method: HttpMethod.DELETE,
-          user
-        } satisfies IFetchClientSettings,
-        BooleanSchema
-      )
-
-      if (!data) {
-        error(`Could not delete ID ${id}`)
-
-        return
-      }
+      await fetchClient({
+        endpoint: Endpoint.DeleteSubstance,
+        id,
+        method: HttpMethod.DELETE,
+        user
+      } satisfies IFetchClientSettings)
 
       if (env.DEBUG) {
         info(`Deleted ID ${id}`)
       }
 
+      await refreshAllSubstances()
+
       const remainingSubstances = (allSubstances ?? []).filter((substance: ISubstance): boolean => substance.id !== id)
 
       setSelectedSubstance(remainingSubstances[0] ?? defaultSubstance)
 
-      await refreshAllSubstances()
+      showNotification({
+        color: "var(--accent-green)",
+        icon: <IconCheck color="var(--text-primary)" size={20} />,
+        id: "removed",
+        message: `${name} removed`,
+        title: "Remove Substance"
+      })
 
       closeRemove()
     } catch (e: unknown) {
-      error("Could not remove substance", e)
+      const message = `Could not remove ${selectedSubstance.name}`
+
+      showNotification({
+        color: "var(--accent-red)",
+        icon: <IconCheck color="var(--text-primary)" size={20} />,
+        message,
+        title: "Remove Substance Failed"
+      })
+
+      error(message, e)
     } finally {
       setIsRemoving(false)
     }

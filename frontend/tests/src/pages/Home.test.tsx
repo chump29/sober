@@ -42,17 +42,34 @@ mock.module(
   })
 )
 
+const showNotificationMock = mock((): void => undefined)
+const hideNotificationMock = mock((): void => undefined)
+mock.module(
+  "@mantine/notifications",
+  (): MockComponent => ({
+    hideNotification: hideNotificationMock,
+    showNotification: showNotificationMock
+  })
+)
+
 const date = dayjs(fake.date.past()).format(DATETIME_FORMAT.replace(".SSS", ""))
 
 interface IDateTimePickerMockProps {
   disabled?: boolean
   onChange?: (value: string) => void
+  onDropdownClose?: () => void
   timePickerProps?: {
     leftSection?: JSX.Element
   }
   value?: string
 }
-const DateTimePicker = ({ disabled, onChange, timePickerProps, value }: IDateTimePickerMockProps): JSX.Element => (
+const DateTimePicker = ({
+  disabled,
+  onChange,
+  onDropdownClose,
+  timePickerProps,
+  value
+}: IDateTimePickerMockProps): JSX.Element => (
   <div data-testid="date-time-picker">
     <button disabled={disabled} type="button">
       {value ? dayjs(value).format(DATETIME_FORMAT) : ""}
@@ -67,9 +84,29 @@ const DateTimePicker = ({ disabled, onChange, timePickerProps, value }: IDateTim
     <button
       onClick={(): void => {
         onChange?.(date)
+        onDropdownClose?.()
       }}
       type="button">
       Trigger Date Change
+    </button>
+    <button
+      onClick={(): void => {
+        onDropdownClose?.()
+      }}
+      type="button">
+      Close Date Picker
+    </button>
+    <button
+      onClick={(): void => {
+        onChange?.(
+          dayjs(value)
+            .hour((dayjs(value).hour() + 1) % 24)
+            .format(DATETIME_FORMAT)
+        )
+        onDropdownClose?.()
+      }}
+      type="button">
+      Trigger Time Change
     </button>
     {timePickerProps?.leftSection}
   </div>
@@ -289,6 +326,14 @@ describe("Home", (): void => {
     await waitFor((): void => {
       expect(setSelectedSubstance).toHaveBeenCalledWith(validate(updated, SubstanceSchema))
       expect(refreshSubstances).toHaveBeenCalledTimes(1)
+      expect(hideNotificationMock).toHaveBeenCalledWith("update")
+      expect(showNotificationMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: "update",
+          message: `Updated date for ${updated.name}`,
+          title: "Saved"
+        })
+      )
     })
   })
 
@@ -310,6 +355,20 @@ describe("Home", (): void => {
     expect(checkbox).toBeChecked()
 
     await user.click(checkbox)
+
+    await user.click(screen.getByRole("button", { name: "Close Date Picker" }))
+
+    await waitFor((): void => {
+      expect(setSelectedSubstance).toHaveBeenCalledWith(validate(updated, SubstanceSchema))
+      expect(refreshSubstances).toHaveBeenCalledTimes(1)
+      expect(showNotificationMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: "update",
+          message: `Updated time (disabled) for ${updated.name}`,
+          title: "Saved"
+        })
+      )
+    })
 
     await waitFor((): void => {
       expect(fetch).toHaveBeenCalledTimes(1)
@@ -352,6 +411,20 @@ describe("Home", (): void => {
     expect(checkbox).not.toBeChecked()
 
     await user.click(checkbox)
+
+    await user.click(screen.getByRole("button", { name: "Close Date Picker" }))
+
+    await waitFor((): void => {
+      expect(setSelectedSubstance).toHaveBeenCalledWith(validate(updated, SubstanceSchema))
+      expect(refreshSubstances).toHaveBeenCalledTimes(1)
+      expect(showNotificationMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: "update",
+          message: `Updated time (enabled) for ${updated.name}`,
+          title: "Saved"
+        })
+      )
+    })
 
     await waitFor((): void => {
       expect(fetch).toHaveBeenCalledTimes(1)
@@ -407,5 +480,34 @@ describe("Home", (): void => {
     })
 
     expect(setSelectedSubstance).not.toHaveBeenCalled()
+  })
+
+  test("changes time on same day", async (): Promise<void> => {
+    const newTime = dayjs(substance.date)
+      .hour((dayjs(substance.date).hour() + 1) % 24)
+      .format(DATETIME_FORMAT)
+
+    const updated: ISubstance = {
+      ...substance,
+      date: newTime
+    }
+
+    fetchResponse = updated
+
+    renderHome()
+
+    const user = userEvent.setup()
+
+    await user.click(screen.getByRole("button", { name: "Trigger Time Change" }))
+
+    await waitFor((): void => {
+      expect(showNotificationMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: "update",
+          message: `Updated time for ${updated.name}`,
+          title: "Saved"
+        })
+      )
+    })
   })
 })

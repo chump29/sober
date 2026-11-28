@@ -1,10 +1,11 @@
 import { type ChangeEvent, type JSX, useState } from "react"
 
-import { IconSettings } from "@tabler/icons-react"
+import { IconCheck, IconExclamationCircle, IconSettings } from "@tabler/icons-react"
 
 import { Box, Center, Group, NumberInput, Paper, Select, Stack, Switch, Text, Title, Tooltip } from "@mantine/core"
+import { hideNotification, showNotification } from "@mantine/notifications"
 
-import { info } from "@postfmly/logger"
+import { error, info } from "@postfmly/logger"
 import { type Nullable } from "@postfmly/types"
 
 import { match, P } from "ts-pattern"
@@ -33,6 +34,15 @@ const costTypeOptions = toOptions(CostType)
 
 const statsTypeOptions = toOptions(StatsType)
 
+const Label = {
+  Cost: "Cost",
+  CostFrequency: "Cost Frequency",
+  ShowCoin: "Show Coin",
+  ShowCost: "Show Cost",
+  ShowDecimals: "Show Decimals",
+  StatsType: "Stats Type"
+} as const
+
 export const Settings = ({
   allSubstances,
   refreshSubstances,
@@ -50,7 +60,7 @@ export const Settings = ({
     setCostInput(selectedSubstance.cost)
   }
 
-  const updateSubstance = async (updates: Partial<ISubstance>): Promise<void> => {
+  const updateSubstance = async (updates: Partial<ISubstance>, label: string): Promise<void> => {
     const { id } = selectedSubstance
 
     if (!user || id === undefined || updating) {
@@ -75,10 +85,30 @@ export const Settings = ({
       )
 
       if (!data) {
+        const message = `Could not update ${label} for ${selectedSubstance.name}`
+
+        showNotification({
+          color: "var(--accent-red)",
+          icon: <IconExclamationCircle color="var(--text-primary)" size={20} />,
+          message,
+          title: "Setting Update Failed"
+        })
+
+        error(message)
+
         return
       }
 
       setSelectedSubstance(data)
+
+      hideNotification("updated")
+      showNotification({
+        color: "var(--accent-green)",
+        icon: <IconCheck color="var(--text-primary)" size={20} />,
+        id: "updated",
+        message: `${label} updated for ${data.name}`,
+        title: "Setting Updated"
+      })
 
       if (env.DEBUG) {
         info(`${data.name} updated`)
@@ -128,17 +158,17 @@ export const Settings = ({
               </Stack>
             </Group>
             <Stack>
-              <Tooltip label="Stats Type">
+              <Tooltip label={Label.StatsType}>
                 <Select
                   allowDeselect={false}
                   data={statsTypeOptions}
                   disabled={updating}
-                  label="Stats Type"
+                  label={Label.StatsType}
                   onChange={async (value: Nullable<string>): Promise<void> => {
                     const statsType = validate(value === null ? null : Number(value), StatsTypeSchema)
 
                     if (statsType !== null) {
-                      await updateSubstance({ statsType })
+                      await updateSubstance({ statsType }, Label.StatsType)
                     }
                   }}
                   value={String(selectedSubstance.statsType)}
@@ -146,36 +176,36 @@ export const Settings = ({
                   withScrollArea={false}
                 />
               </Tooltip>
-              <Tooltip label="Show Coin" refProp="rootRef">
+              <Tooltip label={Label.ShowCoin} refProp="rootRef">
                 <Switch
                   checked={selectedSubstance.showCoin}
                   description="Display AA Coin"
                   disabled={updating}
-                  label="Show Coin"
+                  label={Label.ShowCoin}
                   onChange={async (e: ChangeEvent<HTMLInputElement>): Promise<void> =>
-                    await updateSubstance({ showCoin: e.currentTarget.checked })
+                    await updateSubstance({ showCoin: e.currentTarget.checked }, Label.ShowCoin)
                   }
                 />
               </Tooltip>
-              <Tooltip label="Show Decimals" refProp="rootRef">
+              <Tooltip label={Label.ShowDecimals} refProp="rootRef">
                 <Switch
                   checked={selectedSubstance.showDecimals}
                   description="Show decimal places"
                   disabled={updating}
-                  label="Show Decimals"
+                  label={Label.ShowDecimals}
                   onChange={async (e: ChangeEvent<HTMLInputElement>): Promise<void> =>
-                    await updateSubstance({ showDecimals: e.currentTarget.checked })
+                    await updateSubstance({ showDecimals: e.currentTarget.checked }, Label.ShowDecimals)
                   }
                 />
               </Tooltip>
-              <Tooltip label="Show Cost" refProp="rootRef">
+              <Tooltip label={Label.ShowCost} refProp="rootRef">
                 <Switch
                   checked={selectedSubstance.showCost}
                   description="Display cost savings"
                   disabled={updating}
-                  label="Show Cost"
+                  label={Label.ShowCost}
                   onChange={async (e: ChangeEvent<HTMLInputElement>): Promise<void> =>
-                    await updateSubstance({ showCost: e.currentTarget.checked })
+                    await updateSubstance({ showCost: e.currentTarget.checked }, Label.ShowCost)
                   }
                 />
               </Tooltip>
@@ -199,9 +229,12 @@ export const Settings = ({
                       return
                     }
 
-                    await updateSubstance({
-                      cost: costInput
-                    })
+                    await updateSubstance(
+                      {
+                        cost: costInput
+                      },
+                      Label.Cost
+                    )
                   }}
                   onChange={(value: string | number): void => {
                     const cost = match<string | number, number>(value)
@@ -218,17 +251,17 @@ export const Settings = ({
                   withAsterisk={true}
                 />
               </Tooltip>
-              <Tooltip label="Cost Frequency">
+              <Tooltip label={Label.CostFrequency}>
                 <Select
                   allowDeselect={false}
                   data={costTypeOptions}
                   disabled={updating}
-                  label="Cost Frequency"
+                  label={Label.CostFrequency}
                   onChange={async (value: Nullable<string>): Promise<void> => {
                     const costType = validate(value === null ? null : Number(value), CostTypeSchema)
 
                     if (costType !== null) {
-                      await updateSubstance({ costType })
+                      await updateSubstance({ costType }, Label.CostFrequency)
                     }
                   }}
                   value={String(selectedSubstance.costType)}

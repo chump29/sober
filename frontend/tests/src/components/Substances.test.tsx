@@ -12,7 +12,7 @@ import { titleCase } from "title-case"
 import { match, P } from "ts-pattern"
 
 import { Substances } from "../../../src/components/Substances.tsx"
-import { Endpoint, HttpMethod, MAX_SUBSTANCES, validate } from "../../../src/utils/index.ts"
+import { Endpoint, HttpMethod, HttpStatus, MAX_SUBSTANCES, validate } from "../../../src/utils/index.ts"
 import { defaultSubstance, type ISubstance, SubstanceSchema } from "../../../src/utils/interfaces/ISubstance.ts"
 import { type ISubstanceDisplay } from "../../../src/utils/interfaces/ISubstanceDisplay.ts"
 import { type ISubstancesProps } from "../../../src/utils/interfaces/ISubstancesProps.ts"
@@ -25,7 +25,7 @@ const fetch = fetchMock.enableMocks().mockResponse(
       .with(P.string.endsWith(Endpoint.AddSubstance), P.string.includes(Endpoint.UpdateSubstance), () =>
         Response.json(substance)
       )
-      .with(P.string.includes(Endpoint.DeleteSubstance), () => Response.json(true))
+      .with(P.string.includes(Endpoint.DeleteSubstance), () => new Response(null, { status: HttpStatus.NoContent }))
       .otherwise((s: string): never => {
         throw new Error(`Invalid API call: ${s}`)
       })
@@ -190,6 +190,13 @@ describe("Substances", (): void => {
     expect(refreshSubstances).toHaveBeenCalledTimes(1)
     expect(showNotificationMock).toHaveBeenCalledWith(
       expect.objectContaining({
+        id: "added",
+        message: `${titleCase(name)} added`,
+        title: "Substance Added"
+      })
+    )
+    expect(showNotificationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
         id: "setDate",
         title: "Set Sober Date"
       })
@@ -265,6 +272,13 @@ describe("Substances", (): void => {
       )
     })
 
+    expect(showNotificationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: "renamed",
+        message: `${substance1.name} renamed to ${title}`,
+        title: "Rename Substance"
+      })
+    )
     expect(setSelectedSubstance).toHaveBeenCalledWith(validate(substance, SubstanceSchema))
     expect(refreshSubstances).toHaveBeenCalledTimes(1)
     expect(screen.queryByText("Rename Substance")).toBeNull()
@@ -302,7 +316,17 @@ describe("Substances", (): void => {
 
     await user.click(within(dialog).getByRole("button", { name: "Remove" }))
 
+    expect(hideNotificationMock).toHaveBeenCalledWith("added")
     expect(hideNotificationMock).toHaveBeenCalledWith("setDate")
+    expect(hideNotificationMock).toHaveBeenCalledWith("renamed")
+    expect(hideNotificationMock).toHaveBeenCalledWith("removed")
+    expect(showNotificationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: "removed",
+        message: `${substance1.name} removed`,
+        title: "Remove Substance"
+      })
+    )
 
     await waitFor((): void => {
       expect(fetch).toHaveBeenCalledWith(

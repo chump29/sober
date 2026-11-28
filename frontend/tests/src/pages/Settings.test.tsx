@@ -20,6 +20,16 @@ import { type ISubstancesProps } from "../../../src/utils/interfaces/ISubstances
 import { CostType, StatsType } from "../../../src/utils/schemas.ts"
 import { getSubstance, toDisplay } from "../utils/helpers.ts"
 
+const showNotificationMock = mock((): void => undefined)
+const hideNotificationMock = mock((): void => undefined)
+mock.module(
+  "@mantine/notifications",
+  (): Record<string, unknown> => ({
+    hideNotification: hideNotificationMock,
+    showNotification: showNotificationMock
+  })
+)
+
 const Substances = (): JSX.Element => <div data-testid="substances" />
 mock.module(
   "../../../src/components/Substances.tsx",
@@ -132,6 +142,15 @@ describe("Settings", (): void => {
       expect(setSelectedSubstance).toHaveBeenCalledWith(validate(updated, SubstanceSchema))
       expect(refreshSubstances).toHaveBeenCalledTimes(1)
     })
+
+    expect(hideNotificationMock).toHaveBeenCalledWith("updated")
+    expect(showNotificationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: "updated",
+        message: `Stats Type updated for ${updated.name}`,
+        title: "Setting Updated"
+      })
+    )
   })
 
   test("toggles showCoin", async (): Promise<void> => {
@@ -168,6 +187,15 @@ describe("Settings", (): void => {
       expect(setSelectedSubstance).toHaveBeenCalledWith(validate(updated, SubstanceSchema))
       expect(refreshSubstances).toHaveBeenCalledTimes(1)
     })
+
+    expect(hideNotificationMock).toHaveBeenCalledWith("updated")
+    expect(showNotificationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: "updated",
+        message: `Show Coin updated for ${updated.name}`,
+        title: "Setting Updated"
+      })
+    )
   })
 
   test("toggles showDecimals", async (): Promise<void> => {
@@ -202,6 +230,15 @@ describe("Settings", (): void => {
       expect(setSelectedSubstance).toHaveBeenCalledWith(validate(updated, SubstanceSchema))
       expect(refreshSubstances).toHaveBeenCalledTimes(1)
     })
+
+    expect(hideNotificationMock).toHaveBeenCalledWith("updated")
+    expect(showNotificationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: "updated",
+        message: `Show Decimals updated for ${updated.name}`,
+        title: "Setting Updated"
+      })
+    )
   })
 
   test("toggles showCost", async (): Promise<void> => {
@@ -236,6 +273,15 @@ describe("Settings", (): void => {
       expect(setSelectedSubstance).toHaveBeenCalledWith(validate(updated, SubstanceSchema))
       expect(refreshSubstances).toHaveBeenCalledTimes(1)
     })
+
+    expect(hideNotificationMock).toHaveBeenCalledWith("updated")
+    expect(showNotificationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: "updated",
+        message: `Show Cost updated for ${updated.name}`,
+        title: "Setting Updated"
+      })
+    )
   })
 
   test("hides cost", async (): Promise<void> => {
@@ -294,6 +340,15 @@ describe("Settings", (): void => {
       expect(setSelectedSubstance).toHaveBeenCalledWith(validate(updated, SubstanceSchema))
       expect(refreshSubstances).toHaveBeenCalledTimes(1)
     })
+
+    expect(hideNotificationMock).toHaveBeenCalledWith("updated")
+    expect(showNotificationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: "updated",
+        message: `Cost updated for ${updated.name}`,
+        title: "Setting Updated"
+      })
+    )
   })
 
   test("clears cost", async (): Promise<void> => {
@@ -344,6 +399,15 @@ describe("Settings", (): void => {
       expect(setSelectedSubstance).toHaveBeenCalledWith(validate(updated, SubstanceSchema))
       expect(refreshSubstances).toHaveBeenCalledTimes(1)
     })
+
+    expect(hideNotificationMock).toHaveBeenCalledWith("updated")
+    expect(showNotificationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: "updated",
+        message: `Cost Frequency updated for ${updated.name}`,
+        title: "Setting Updated"
+      })
+    )
   })
 
   test("does not update substance when user is null", async (): Promise<void> => {
@@ -371,6 +435,12 @@ describe("Settings", (): void => {
       expect(fetch).toHaveBeenCalledTimes(1)
     })
 
+    expect(showNotificationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: `Could not update Show Coin for ${substance.name}`,
+        title: "Setting Update Failed"
+      })
+    )
     expect(setSelectedSubstance).not.toHaveBeenCalled()
     expect(refreshSubstances).not.toHaveBeenCalled()
   })

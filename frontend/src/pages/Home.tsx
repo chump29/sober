@@ -7,6 +7,7 @@ import {
   IconCalendarEvent,
   IconCalendarMonth,
   IconCalendarWeek,
+  IconCheck,
   IconCircleOff,
   IconClock,
   IconHourglass,
@@ -29,6 +30,7 @@ import {
 } from "@mantine/core"
 import { DateTimePicker } from "@mantine/dates"
 import { useDisclosure } from "@mantine/hooks"
+import { hideNotification, showNotification } from "@mantine/notifications"
 
 import { info } from "@postfmly/logger"
 import { type Nullable } from "@postfmly/types"
@@ -151,7 +153,21 @@ export const Home = ({
 
       setSelectedSubstance(data)
 
-      await refreshSubstances()
+      let field = "date"
+      if (isShowTime !== undefined) {
+        field = isShowTime ? "time (enabled)" : "time (disabled)"
+      } else if (dayjs(data.date).isSame(dayjs(selectedSubstance.date), "day")) {
+        field = "time"
+      }
+
+      hideNotification("update")
+      showNotification({
+        color: "var(--accent-green)",
+        icon: <IconCheck color="var(--text-primary)" size={20} />,
+        id: "update",
+        message: `Updated ${field} for ${data.name}`,
+        title: "Saved"
+      })
 
       if (env.DEBUG) {
         info(`New sober date for ${data.name}: ${date}`)
@@ -222,7 +238,7 @@ export const Home = ({
               </Group>
               <Tooltip label="Set Sober Date">
                 <DateTimePicker
-                  disabled={!selectedSubstance.name || updatingDate}
+                  disabled={!selectedSubstance.name}
                   dropdownType="modal"
                   firstDayOfWeek={0}
                   highlightToday={true}
@@ -232,6 +248,7 @@ export const Home = ({
                       await handleChangeDate(val)
                     }
                   }}
+                  onDropdownClose={refreshSubstances}
                   pointer={true}
                   styles={{
                     calendarHeaderLevel: {
